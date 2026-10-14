@@ -168,8 +168,9 @@ gc.fetch=async()=>({ok:false,status:503});await assert.rejects(gc.api('upiita',p
 const horarios=leer('web/sate/horarios.js'),grupo=['B','M',1,'1BM4',0,[],[[0,540,600]],4,'B105'];
 const generador=vm.createContext({S:{car:'B',chips:[],onlyWant:true,gpref:[],gavoid:[],gt:'*'},GT:{src:'todo',n:'auto',a:'',b:''},
   classes:()=>[grupo],tr:()=>({want:['B105'],oblig:['B105'],done:[],curso:[]}),ws:()=>({marks:{}}),norm:String,ownAsClasses:()=>[],keyOf:g=>g[3],DATA:{prof:[]},tmin:()=>null,overlaps:()=>false,
-  cur:()=>({B105:true}),optCupo:()=>({}),optExceso:()=>({}),generateBank:s=>s,CUPOS:{excluir:()=>true},txH:k=>k});
-vm.runInContext(horarios.slice(horarios.indexOf('function generate('),horarios.indexOf('function generateBank(')),generador);
+  cur:()=>({B105:true}),optCupo:()=>({}),optExceso:()=>({}),CUPOS:{excluir:()=>true},txH:k=>k,performance});
+vm.runInContext('function* generateBank(s){return s}',generador);  // doble: el banco real es un generador por pasos
+vm.runInContext(horarios.slice(horarios.indexOf('function* pasoGen('),horarios.indexOf('function* generateBank(')),generador);
 assert.equal(generador.generate()[0].opts.length,0);generador.CUPOS.excluir=()=>false;assert.equal(generador.generate()[0].opts.length,1);
 generador.tr=()=>({want:[],oblig:[],done:[],curso:[]});assert.equal(generador.generate(['B105'])[0].opts.length,1);
 // Panel real, sin navegador: solo el botón consulta, con un mínimo de 60 s.

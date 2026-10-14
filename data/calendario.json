@@ -172,7 +172,8 @@
           "alumnos"
         ],
         "simbolo": "rayado",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2026-02-03",
@@ -215,7 +216,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2026-03-16",
@@ -229,7 +231,8 @@
           "alumnos"
         ],
         "simbolo": "rayado",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2026-03-17",
@@ -243,7 +246,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2026-03-30",
@@ -257,7 +261,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "vacaciones"
       },
       {
         "desde": "2026-05-01",
@@ -271,7 +276,8 @@
           "alumnos"
         ],
         "simbolo": "rayado",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2026-05-05",
@@ -285,7 +291,8 @@
           "alumnos"
         ],
         "simbolo": "rayado",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2026-05-12",
@@ -299,7 +306,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2026-05-15",
@@ -356,7 +364,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "vacaciones"
       },
       {
         "desde": "2026-07-21",
@@ -370,7 +379,8 @@
           "alumnos"
         ],
         "simbolo": "rayado",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2026-08-01",
@@ -384,7 +394,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "vacaciones"
       },
       {
         "desde": "2026-09-14",
@@ -412,7 +423,8 @@
           "alumnos"
         ],
         "simbolo": "rayado",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2026-09-28",
@@ -426,7 +438,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2026-10-01",
@@ -488,7 +501,8 @@
         "reemplaza": true,
         "donde": "ventanillas",
         "para": "adeudo",
-        "texto": "Consulta los horarios en la página de la unidad."
+        "texto": "Consulta los horarios en la página de la unidad.",
+        "grupo": "ets"
       },
       {
         "desde": "2026-10-12",
@@ -505,7 +519,8 @@
         "reemplaza": true,
         "donde": "ventanillas",
         "para": "adeudo",
-        "texto": "Consulta los horarios en la página de la unidad."
+        "texto": "Consulta los horarios en la página de la unidad.",
+        "grupo": "ets"
       },
       {
         "desde": "2026-10-13",
@@ -519,7 +534,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "inscripcion"
       },
       {
         "desde": "2026-10-05",
@@ -603,7 +619,8 @@
           "alumnos"
         ],
         "simbolo": "contorno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2026-12-25",
@@ -617,7 +634,8 @@
           "alumnos"
         ],
         "simbolo": "contorno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2027-01-01",
@@ -631,7 +649,8 @@
           "alumnos"
         ],
         "simbolo": "contorno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2027-02-01",
@@ -645,7 +664,8 @@
           "alumnos"
         ],
         "simbolo": "contorno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2026-11-18",
@@ -659,7 +679,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2027-01-04",
@@ -673,7 +694,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2027-02-08",
@@ -687,7 +709,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2026-12-21",
@@ -716,7 +739,8 @@
         ],
         "simbolo": "relleno",
         "reemplaza": true,
-        "nota": "Último día de clases antes de vacaciones: 19 dic. Regreso a clases: lunes 4 ene 2027."
+        "nota": "Último día de clases antes de vacaciones: 19 dic. Regreso a clases: lunes 4 ene 2027.",
+        "grupo": "vacaciones"
       },
       {
         "desde": "2027-01-04",
@@ -786,7 +810,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ets"
       },
       {
         "desde": "2027-02-22",
@@ -800,7 +825,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ets"
       },
       {
         "desde": "2027-02-25",
@@ -814,7 +840,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "inscripcion"
       },
       {
         "desde": "2027-03-01",
@@ -828,7 +855,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "inscripcion"
       },
       {
         "desde": "2027-07-14",
@@ -842,7 +870,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "inscripcion"
       },
       {
         "desde": "2027-03-04",
@@ -870,7 +899,8 @@
           "alumnos"
         ],
         "simbolo": "contorno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2027-05-01",
@@ -884,7 +914,8 @@
           "alumnos"
         ],
         "simbolo": "contorno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2027-05-05",
@@ -898,7 +929,8 @@
           "alumnos"
         ],
         "simbolo": "contorno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2027-07-21",
@@ -912,7 +944,8 @@
           "alumnos"
         ],
         "simbolo": "contorno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "descanso"
       },
       {
         "desde": "2027-04-16",
@@ -926,7 +959,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2027-05-19",
@@ -940,7 +974,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2027-05-24",
@@ -954,7 +989,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2027-06-25",
@@ -968,7 +1004,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2027-06-28",
@@ -982,7 +1019,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ordinaria"
       },
       {
         "desde": "2027-05-10",
@@ -1080,7 +1118,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ets"
       },
       {
         "desde": "2027-07-12",
@@ -1094,7 +1133,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "ets"
       },
       {
         "desde": "2027-07-05",
@@ -1136,7 +1176,8 @@
           "alumnos"
         ],
         "simbolo": "relleno",
-        "reemplaza": true
+        "reemplaza": true,
+        "grupo": "vacaciones"
       },
       {
         "desde": "2026-10-26",

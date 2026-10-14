@@ -132,115 +132,173 @@ body.sate-flotante #sate-tabs{display:none}
   .title-row .header-actions button{width:2rem;height:2rem;padding:0;justify-content:center}
   .header-actions .enc-btn span,.header-actions .ipnt-btn span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 }
-/* Paleta propia del calendario: rellenos oficiales y texto con contraste AA. */
-#sate-calendario{--cal-fondo:#ffffff;--cal-texto:#25252b;--cal-tenue:#565660;--cal-linea:#c9c9d0;--cal-hundido:#f5f5f8;--cal-aguja:#741b47;--cal-fill:#d6e8ff;--cal-ink:#173a76;min-width:0;color:var(--cal-texto)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]) #sate-calendario{--cal-fondo:#202027;--cal-texto:#f3f3f5;--cal-tenue:#bcbcc8;--cal-linea:#686877;--cal-hundido:#292931;--cal-aguja:#f1bdd5}}
-[data-theme=dark] #sate-calendario{--cal-fondo:#202027;--cal-texto:#f3f3f5;--cal-tenue:#bcbcc8;--cal-linea:#686877;--cal-hundido:#292931;--cal-aguja:#f1bdd5}
+/* Calendario: dos pistas, colores comunes y contraste independiente del relleno. */
+#sate-calendario{--cal-fondo:#fff;--cal-texto:#18181b;--cal-tenue:#52525b;--cal-linea:#e4e4e7;--cal-hundido:#f4f4f5;--cal-acento:var(--sate-acento-base);min-width:0;color:var(--cal-texto);--cal-color:var(--ipn-cal-gestion)}
 #sate-calendario *{box-sizing:border-box}
-.calendario-intro,.calendario-leyenda,.calendario-rango{color:var(--cal-tenue);font-size:.85rem;line-height:1.6}
-.calendario-controles,.calendario-nav{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-block:1rem}
-.calendario-selector,.calendario-audiencia{display:flex;align-items:center;gap:.5rem;font-size:.85rem;min-width:0}
-.calendario-selector select{width:auto;min-width:0;max-width:100%;min-height:2.75rem;background:var(--cal-fondo);color:var(--cal-texto);border:1px solid var(--cal-linea);border-radius:.5rem;padding:.5rem}
-.calendario-audiencia input,.calendario-filtro input{flex-shrink:0;width:1rem;height:1rem;margin:0}
-.calendario-audiencia{flex:1;min-height:2.75rem}
-.calendario-audiencia-corta{display:none}
-@media(max-width:599px){.calendario-audiencia{flex:0 0 100%}.calendario-audiencia-larga{display:none}.calendario-audiencia-corta{display:inline}}
-.calendario-filtros{border-block:1px solid var(--cal-linea);padding:.5rem 0;margin-bottom:1rem}
-.calendario-filtros summary,.calendario-lista summary{cursor:pointer;min-height:2.75rem;padding:.65rem 0;font-weight:600}
-.calendario-filtro{display:inline-flex;align-items:center;gap:.5rem;min-height:2.75rem;margin-right:1rem;font-size:.85rem}
-.calendario-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:1.5rem;align-items:start}
-.calendario-contenido,.calendario-cuadricula{min-width:0;max-width:100%}
-@media(min-width:1024px){.calendario-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
-.calendario-detalle{min-width:0;padding:1rem;border:1px solid var(--cal-linea);border-radius:.75rem;background:var(--cal-hundido);font-size:.85rem;line-height:1.5;overflow-wrap:anywhere}
-.calendario-detalle h3{margin:0 0 .5rem;font-size:1rem}.calendario-detalle h4{margin:0;font-size:.95rem}
-.calendario-detalle-evento{border-left:3px solid var(--cal-fill);padding-left:.75rem;margin-top:.75rem}
-.calendario-detalle-evento p{margin:.35rem 0;color:var(--cal-texto)}.calendario-fuente{font-size:.75rem;color:var(--cal-tenue)}
-.calendario-semicirculo{display:block;width:100%;height:auto;margin-inline:auto}
-.calendario-anillo-categoria{fill:none;stroke:var(--cal-fill);opacity:.06}
-.calendario-anillo-simbolos{fill:none;stroke:var(--cal-linea);stroke-width:1}
-.calendario-guia{fill:none;stroke:var(--cal-tenue);stroke-width:1;pointer-events:none}
-.calendario-etiqueta-exterior{cursor:pointer}
-.calendario-etiqueta-fondo{fill:var(--cal-fondo);stroke:var(--cal-linea);stroke-width:.5}
-.calendario-etiqueta-nombre{fill:var(--cal-texto);font:12px var(--ipn-fuente-texto)}
-.calendario-etiqueta-exterior[data-seleccionada=true] .calendario-etiqueta-fondo{stroke:var(--cal-aguja);stroke-width:2}
-.calendario-pista{fill:none;stroke:var(--cal-linea);stroke-width:1}
-.calendario-tick{stroke:var(--cal-tenue);stroke-width:1}
-.calendario-arco{cursor:pointer}.calendario-trazo{fill:none;stroke:var(--cal-fill);stroke-linecap:butt}
-.calendario-arco-nombre{fill:var(--cal-ink);font:12px var(--ipn-fuente-texto);pointer-events:none}
-.calendario-svg-simbolo{fill:var(--cal-ink);font:12px var(--ipn-fuente-texto);pointer-events:none}
-.calendario-punto-fondo{fill:var(--cal-fill)}
-.calendario-detalle{max-height:22rem;overflow:auto}
-.calendario-detalle a{display:block;color:var(--cal-aguja);margin-block:.5rem}
-.calendario-arco[aria-pressed=true] .calendario-trazo,.calendario-arco[data-resaltado=true] .calendario-trazo{stroke:var(--cal-ink)}
-.calendario-arco[data-atenuado=true],.calendario-proceso[data-atenuado=true]{opacity:.45}
-.calendario-arco:focus-visible{outline:2px solid var(--sate-realce);outline-offset:3px}
-.calendario-aguja{stroke:var(--cal-aguja);stroke-width:2;pointer-events:none}
-.calendario-svg-mes{fill:var(--cal-tenue);font:14px var(--ipn-fuente-texto)}
-.calendario-svg-periodo{fill:var(--cal-texto);font:600 20px var(--ipn-fuente-texto)}
-.calendario-svg-hoy{fill:var(--cal-texto);font:600 14px var(--ipn-fuente-texto)}
-.calendario-categorias{display:flex;flex-wrap:wrap;gap:.5rem 1rem;list-style:none;padding:0;margin:1.25rem 0;font-size:.8rem}
-.calendario-categorias li{display:flex;align-items:center;gap:.5rem;color:var(--cal-texto)}
-.calendario-muestra{display:inline-grid;place-items:center;width:1.5rem;height:1.5rem;color:var(--cal-ink);background:var(--cal-fill);border-radius:3px;flex-shrink:0}
-.calendario-procesos{list-style:none;padding:0;margin:0}.calendario-procesos li{border-bottom:1px solid var(--cal-linea)}
-.calendario-proceso{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.7fr);gap:.75rem;width:100%;min-height:2.75rem;text-align:left;border:0;border-left:3px solid var(--cal-fill);padding:.75rem;background:var(--cal-fondo);color:var(--cal-texto);font:inherit;cursor:pointer;overflow-wrap:anywhere}
-.calendario-proceso small{color:var(--cal-tenue)}.calendario-proceso[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--cal-aguja)}
-.calendario-nav h3{flex:1;margin:0;font-size:1rem}.calendario-nav .sate-btn{color:var(--cal-texto);background:var(--cal-fondo);min-width:2.75rem;min-height:2.75rem}.calendario-nav .sate-btn:disabled{opacity:.5}
-.calendario-mes{width:100%;min-width:0;border:1px solid var(--cal-linea);border-radius:.75rem;overflow:hidden;background:var(--cal-fondo)}
+.calendario-cabecera{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1rem;justify-content:space-between;margin-bottom:.75rem}
+.calendario-cabecera h2{margin:0}
+.calendario-controles{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem;min-width:0;max-width:100%}
+.calendario-selector{display:flex;align-items:center;gap:.5rem;min-width:0;max-width:100%;color:var(--cal-acento)}
+.calendario-selector svg{flex:none}
+.calendario-selector select{min-width:0;width:100%;max-width:100%;min-height:44px;border:1px solid var(--cal-linea);border-radius:999px;background:var(--cal-fondo);color:var(--cal-texto);font:inherit;font-size:.85rem;padding:.5rem}
+.calendario-audiencia{display:flex;align-items:center;gap:.5rem;font-size:.8rem;min-height:44px;margin-bottom:.5rem}
+.calendario-audiencia input{width:1rem;height:1rem;flex:none}
+/* Acomodo común: resumen y mes arriba, bloque principal a todo lo ancho, agenda y detalle abajo. */
+.calendario-tarjeta{min-width:0;background:var(--cal-fondo);border:1px solid var(--cal-linea);border-radius:14px;padding:16px 20px}
+.calendario-tarjeta[hidden]{display:none}
+.calendario-arriba{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:1rem;margin-bottom:1rem;align-items:stretch}
+.calendario-estado{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:center}
+.calendario-semana{display:flex;flex-direction:column}
+.calendario-semana strong{font-size:1.9rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.calendario-hoy-fecha,.calendario-semana-sub{color:var(--cal-tenue);font-size:.85rem}
+.calendario-avance-bloque{display:flex;flex-direction:column;gap:8px;min-width:0}
+.calendario-barra{position:relative;height:8px;background:var(--cal-hundido);border-radius:99px;overflow:hidden}
+.calendario-barra i{position:absolute;inset:0 auto 0 0;background:var(--cal-acento);border-radius:99px}
+.calendario-extremos{display:flex;justify-content:space-between;gap:1rem;font-size:.8rem;color:var(--cal-tenue)}
+.calendario-fichas{display:flex;flex-wrap:wrap;gap:8px}
+.calendario-ficha{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;min-height:36px;padding:4px 10px;border:1px solid var(--cal-linea);border-radius:999px;background:var(--cal-hundido);color:var(--cal-texto);font:inherit;font-size:.82rem;text-align:left;cursor:pointer}
+.calendario-ficha>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.calendario-ficha small{flex:none;color:var(--cal-tenue)}
+.calendario-ficha-ahora{border-color:transparent;background:color-mix(in srgb,var(--cal-acento) 14%,var(--cal-fondo))}
+.calendario-ficha-punto{flex:none;width:8px;height:8px;border-radius:50%;background:var(--cal-color)}
+.calendario-ficha[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--cal-texto)}
+.calendario-mes-chico{padding:12px 14px}
+.calendario-principal{min-width:0;max-width:100%}
+#sate-calendario[data-vista=semicirculo] .calendario-principal{padding:16px 20px;border:1px solid var(--cal-linea);border-radius:14px;background:var(--cal-fondo)}
+.calendario-abajo{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:1rem;margin-top:1rem;align-items:start}
+.calendario-lado{position:sticky;top:1rem;display:flex;flex-direction:column;gap:1rem;min-width:0}
+.calendario-tarjeta-cab{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.75rem}
+.calendario-tarjeta-titulo{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.25rem .75rem;margin:0 0 .75rem;font-size:1rem}
+.calendario-tarjeta-cab .calendario-tarjeta-titulo{margin:0}
+.calendario-tarjeta-titulo small{font-weight:400;color:var(--cal-tenue);font-size:.8rem}
+.calendario-vacio{margin:0;color:var(--cal-tenue)}
+.calendario-arco-contenedor{position:relative;container-type:inline-size;max-width:760px;margin-inline:auto}
+.calendario-vistas{display:flex;flex-wrap:wrap;gap:4px;width:fit-content;max-width:100%;padding:4px;margin:0;border:1px solid var(--cal-linea);border-radius:12px;background:var(--cal-hundido)}
+.calendario-vistas .sate-btn{min-height:44px;padding:.5rem .85rem;border:0;border-radius:8px;background:transparent;color:var(--cal-tenue);font:inherit;font-size:.85rem;cursor:pointer}
+.calendario-vistas .sate-btn[aria-pressed=true]{background:var(--cal-fondo);color:var(--cal-texto);font-weight:600;box-shadow:0 1px 3px rgb(0 0 0 / .1)}
+/* Vista Detallado: una fila delgada por tipo de fecha, meses proporcionales y línea «Hoy». */
+.calendario-linea{--etq:136px;position:relative;min-width:0}
+.calendario-linea-meses{display:grid;margin-left:var(--etq);padding-bottom:4px;border-bottom:1px solid var(--cal-linea);font-size:.75rem;color:var(--cal-tenue)}
+.calendario-linea-meses span{padding-left:6px;border-left:1px solid var(--cal-linea);overflow:hidden;white-space:nowrap}
+.calendario-linea-cuerpo{position:relative;margin-top:22px}
+.calendario-linea-fila{display:grid;grid-template-columns:var(--etq) minmax(0,1fr);align-items:center;min-height:34px}
+.calendario-linea-fila+.calendario-linea-fila{border-top:1px dashed var(--cal-linea)}
+.calendario-linea-fila>b{display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--cal-tenue)}
+.calendario-linea-pista{position:relative;min-width:0;min-height:34px}
+.calendario-ev{position:absolute;height:20px;min-width:6px;padding:0;border:0;border-radius:6px;background:var(--cal-color);cursor:pointer}
+.calendario-ev::before{content:"";position:absolute;inset:-6px -3px}
+.calendario-ev[data-puntual=true]{width:12px;height:12px;min-width:0;border-radius:50%;transform:translateX(-6px)}
+.calendario-ev[data-rayado=true]{background:repeating-linear-gradient(135deg,var(--cal-color) 0 3px,transparent 3px 6px);outline:1px solid var(--cal-color)}
+.calendario-ev[data-pasado=true]:not([data-seleccionado=true]){opacity:.35}
+.calendario-ev[data-seleccionado=true]{outline:2px solid var(--cal-texto);outline-offset:2px;opacity:1}
+.calendario-linea-nombre{position:absolute;height:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.72rem;line-height:16px;color:var(--cal-texto);pointer-events:none}
+.calendario-linea-hoy-capa{position:absolute;top:-4px;bottom:0;left:var(--etq);right:0;z-index:2;pointer-events:none}
+.calendario-linea-hoy{position:absolute;top:0;bottom:0;width:2px;background:var(--cal-acento)}
+.calendario-linea-hoy::before{content:attr(data-etiqueta);position:absolute;top:-18px;left:50%;transform:translateX(-50%);padding:0 3px;background:var(--cal-fondo);font-size:.68rem;font-weight:700;color:var(--cal-acento)}
+.calendario-linea-leyenda{margin:.75rem 0 0;font-size:.75rem;color:var(--cal-tenue)}
+/* Agenda «Lo que viene» */
+.calendario-agenda-lista{display:flex;flex-direction:column;gap:18px}
+.calendario-agenda-mes h4{margin:0 0 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cal-tenue)}
+.calendario-item{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;min-height:48px;padding:8px 10px;border:1px solid transparent;border-radius:10px;background:none;color:var(--cal-texto);font:inherit;text-align:left;cursor:pointer}
+.calendario-item:hover{background:var(--cal-hundido)}
+.calendario-item[aria-pressed=true]{border-color:var(--cal-texto);background:var(--cal-hundido)}
+.calendario-fecha{display:flex;flex-direction:column;align-items:center;line-height:1.1;padding-left:6px;border-left:3px solid var(--cal-color)}
+.calendario-fecha b{font-size:1.1rem;font-variant-numeric:tabular-nums}
+.calendario-fecha small{font-size:.68rem;color:var(--cal-tenue);text-transform:uppercase}
+.calendario-item-texto{display:flex;flex-direction:column;min-width:0}
+.calendario-item-titulo{font-weight:500;overflow-wrap:anywhere}
+.calendario-item-texto small{font-size:.78rem;color:var(--cal-tenue);overflow-wrap:anywhere}
+.calendario-item[data-estado=pasado] .calendario-item-titulo{color:var(--cal-tenue)}
+.calendario-item[data-estado=pasado] .calendario-fecha{border-left-color:color-mix(in srgb,var(--cal-color) 40%,transparent)}
+.calendario-pildora{padding:2px 8px;border-radius:999px;background:var(--cal-hundido);font-size:.72rem;color:var(--cal-tenue);white-space:nowrap}
+.calendario-item[data-estado=pronto] .calendario-pildora{color:var(--cal-texto)}
+.calendario-item[data-estado=ahora] .calendario-pildora{background:color-mix(in srgb,var(--cal-acento) 14%,var(--cal-fondo));color:var(--cal-texto);font-weight:600}
+.calendario-pasados{width:100%;min-height:44px;margin-bottom:12px;border:1px dashed var(--cal-linea);border-radius:10px;background:none;color:var(--cal-tenue);font:inherit;font-size:.82rem;cursor:pointer}
+#sate-calendario button:focus-visible,.calendario-arco:focus-visible{outline:2px solid var(--cal-acento);outline-offset:3px}
+.calendario-semicirculo{display:block;width:100%;height:auto}
+.calendario-pista{fill:var(--cal-hundido)}
+.calendario-tick{stroke:var(--cal-linea);stroke-width:1}
+.calendario-arco{cursor:pointer}
+.calendario-arco[data-pasado=true]:not([data-seleccionado=true]){opacity:.38}
+.calendario-arco[data-puntual=true][data-pasado=true]:not([data-seleccionado=true]){opacity:.5}
+.calendario-trazo{stroke:var(--cal-fondo);stroke-width:1}
+.calendario-arco[data-categoria=suspension] .calendario-trazo{stroke:var(--ipn-cal-suspension);stroke-width:1.5}
+.calendario-arco[data-seleccionado=true] .calendario-trazo,.calendario-arco[data-seleccionado=true] .calendario-punto-fondo{stroke:var(--cal-texto);stroke-width:2.5}
+.calendario-punto-fondo{fill:var(--cal-fondo);stroke:var(--cal-color);stroke-width:2}
+.calendario-svg-simbolo{fill:var(--cal-color);font:14px var(--ipn-fuente-texto);pointer-events:none}
+.calendario-svg-mes,.calendario-svg-extremo{fill:var(--cal-tenue);font:14px var(--ipn-fuente-texto)}
+.calendario-svg-extremo{font-weight:600;fill:var(--cal-texto)}
+.calendario-patron-fondo{fill:var(--cal-fondo)}
+.calendario-patron-linea{fill:var(--cal-color);opacity:.65}
+.calendario-avance{fill:none;stroke:var(--cal-acento);stroke-width:3;stroke-linecap:round}
+.calendario-aguja{stroke:var(--cal-acento);stroke-width:3;stroke-linecap:round;pointer-events:none}
+.calendario-aguja-punta{fill:var(--cal-acento);stroke:var(--cal-fondo);stroke-width:2;pointer-events:none}
+/* El texto central crece como en la maqueta; limitar su altura introduce una barra sobre el arco. */
+.calendario-centro{position:absolute;left:50%;bottom:9%;width:44%;transform:translateX(-50%);display:flex;flex-direction:column;gap:4px;text-align:center;overflow-wrap:anywhere;font-size:clamp(.65rem,1.9cqw,.9rem);line-height:1.35}
+.calendario-centro-etiqueta{color:var(--cal-tenue)}
+.calendario-centro strong{font-size:clamp(.9rem,3.8cqw,1.8rem);line-height:1.15}
+.calendario-centro-largo{display:flex;flex-direction:column;gap:4px}
+.calendario-centro .sate-btn{padding:0 .25rem;min-height:32px;font:inherit;color:var(--cal-acento);background:none;border:0}
+.calendario-nav{display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem}
+.calendario-nav h3{flex:1;margin:0;font-size:.9rem;text-align:center;text-transform:capitalize}
+.calendario-nav .sate-btn{min-width:40px;min-height:40px;padding:0;background:var(--cal-fondo);color:var(--cal-texto)}
+.calendario-nav .sate-btn:disabled{opacity:.5}
+.calendario-mes{width:100%;min-width:0;overflow:hidden;background:var(--cal-fondo)}
 .calendario-dias-semana,.calendario-fechas{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
-.calendario-dias-semana{background:var(--cal-hundido);text-align:center;color:var(--cal-tenue);padding:.65rem 0;font-size:.8rem;font-weight:600}
-.calendario-celda{min-width:0;border-top:1px solid var(--cal-linea);border-right:1px solid var(--cal-linea);padding:2px}.calendario-celda:nth-child(7n){border-right:0}
-.calendario-dia{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-width:0;min-height:3.25rem;border:0;border-radius:3px;background:var(--cal-fondo);color:var(--cal-texto);font:inherit;font-size:.85rem;padding:2px;cursor:pointer}
-.calendario-dia[data-categoria]{background:var(--cal-fill);color:var(--cal-ink)}
-.calendario-fuera{opacity:.65}.calendario-numero{display:grid;place-items:center;min-width:1.5rem;min-height:1.5rem}
-.calendario-dia[aria-current=date] .calendario-numero{border:2px solid currentColor;border-radius:50%;font-weight:700}
-.calendario-signos{display:flex;flex-wrap:wrap;justify-content:center;gap:1px;max-width:100%;font-size:.65rem;line-height:1}
-.calendario-signo{color:var(--cal-ink);background:var(--cal-fill);border-radius:2px}
+.calendario-dias-semana{text-align:center;color:var(--cal-tenue);padding:.25rem 0;font-size:.72rem}
+.calendario-celda{min-width:0;padding:1px}
+.calendario-dia{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-width:0;min-height:40px;border:0;border-radius:8px;background:var(--cal-fondo);color:var(--cal-texto);font:inherit;font-size:.78rem;padding:2px;cursor:pointer;font-variant-numeric:tabular-nums}
+.calendario-dia:hover{background:var(--cal-hundido)}
+.calendario-fuera{opacity:.5}
+.calendario-numero{display:grid;place-items:center;min-width:1.5rem;min-height:1.5rem;background:transparent;border-radius:4px}
+.calendario-dia[aria-current=date] .calendario-numero{border:2px solid var(--cal-acento);border-radius:50%;font-weight:700}
+.calendario-signos{display:flex;justify-content:center;gap:2px;min-height:6px;max-width:100%}
+.calendario-signo{width:6px;height:6px;border-radius:50%;background:var(--cal-color)}
 .calendario-dia.calendario-rayado{background:repeating-linear-gradient(135deg,var(--cal-fondo) 0 4px,var(--cal-linea) 4px 5px)}
-/* El rayado del paro se superpone al relleno de vacaciones sin ocultar sus símbolos. */
-.calendario-dia.calendario-suspension{background-color:var(--cal-fondo);background-image:repeating-linear-gradient(135deg,transparent 0 4px,var(--cal-suspension-linea) 4px 5px)}
-.calendario-dia.calendario-suspension[data-categoria]{background-color:var(--cal-fill)}
-.calendario-suspension .calendario-numero{background:var(--cal-fondo);color:var(--cal-texto);border-radius:3px}
-#sate-calendario [data-categoria=suspension] .calendario-trazo{opacity:.35}
-#sate-calendario [data-categoria=suspension] .calendario-muestra{background-image:repeating-linear-gradient(135deg,transparent 0 4px,var(--cal-suspension-linea) 4px 5px)}
-.calendario-sindical .calendario-numero{border:2px solid #3470b0;border-radius:50%}
-.calendario-dia[data-seleccionado=true]{box-shadow:inset 0 0 0 2px var(--cal-aguja)}
-.calendario-dia[data-categoria][data-seleccionado=true]{box-shadow:inset 0 0 0 2px var(--cal-ink)}
-:is(.calendario-dia,.calendario-proceso,.calendario-filtro input,.calendario-selector select,.calendario-audiencia input):focus-visible{outline:2px solid var(--sate-realce);outline-offset:-2px}
-@media(max-width:1023px){.calendario-detalle{padding:.75rem;font-size:.8rem;max-height:16rem}.calendario-categorias{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.calendario-categorias li{border:1px solid var(--cal-linea);border-radius:.5rem;padding:.4rem;overflow-wrap:anywhere}.calendario-fuente summary{cursor:pointer;min-height:2rem}}
-@media(max-width:720px){.calendario-proceso{grid-template-columns:minmax(0,1fr)}.calendario-nav h3{flex-basis:100%}.calendario-dia{font-size:.8rem}.calendario-controles{align-items:flex-start}}
-#sate-calendario [data-categoria=inscripcion]{--cal-fill:#b4dfb6;--cal-ink:#122716}
-#sate-calendario [data-categoria=ordinaria]{--cal-fill:#66348c;--cal-ink:#ffffff}
-#sate-calendario [data-categoria=extraordinaria]{--cal-fill:#f5e65a;--cal-ink:#25220b}
-#sate-calendario [data-categoria=inscripcion_ets]{--cal-fill:#20254f;--cal-ink:#ffffff}
-#sate-calendario [data-categoria=ets]{--cal-fill:#aad2eb;--cal-ink:#142634}
-#sate-calendario [data-categoria=vacaciones]{--cal-fill:#d7d7d7;--cal-ink:#222222}
-#sate-calendario [data-categoria=saberes]{--cal-fill:#f5c5a5;--cal-ink:#322316}
-#sate-calendario[data-unidad=upiita][data-calendario-propio=true] [data-categoria=inscripcion_ets]{--cal-fill:#f5c5a5;--cal-ink:#322316}
-#sate-calendario[data-unidad=upiita][data-calendario-propio=true] [data-categoria=saberes]{--cal-fill:#f5ecd1;--cal-ink:#322316}
-#sate-calendario [data-categoria=descanso]{--cal-fill:#eeeeee;--cal-ink:#222222}
-#sate-calendario [data-categoria=sindical]{--cal-fill:#d6e8ff;--cal-ink:#173a76}
-#sate-calendario{--cal-suspension-linea:#b3263b}
-#sate-calendario [data-categoria=suspension]{--cal-fill:#fbe8eb;--cal-ink:#891b2c}
-#sate-calendario [data-categoria=reanudacion]{--cal-fill:#e8d3ff;--cal-ink:#512772}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]) #sate-calendario{--cal-suspension-linea:#ef889a}:root:not([data-theme=light]) #sate-calendario [data-categoria=suspension]{--cal-fill:#56232c;--cal-ink:#ffd9df}:root:not([data-theme=light]) #sate-calendario [data-categoria=reanudacion]{--cal-fill:#4a2a69;--cal-ink:#f2dfff}}
-[data-theme=dark] #sate-calendario{--cal-suspension-linea:#ef889a}
-[data-theme=dark] #sate-calendario [data-categoria=suspension]{--cal-fill:#56232c;--cal-ink:#ffd9df}
-[data-theme=dark] #sate-calendario [data-categoria=reanudacion]{--cal-fill:#4a2a69;--cal-ink:#f2dfff}
-#sate-calendario [data-categoria=inicio]{--cal-fill:#b4dfb6;--cal-ink:#122716}
-#sate-calendario [data-categoria=fin]{--cal-fill:#ffd6d6;--cal-ink:#7c1724}
-#sate-calendario [data-categoria=politecnico]{--cal-fill:#efd4df;--cal-ink:#671e3c}
-#sate-calendario [data-categoria=induccion]{--cal-fill:#fff5ba;--cal-ink:#302808}
-#sate-calendario [data-categoria=nivelacion]{--cal-fill:#d7e1f6;--cal-ink:#20366b}
-#sate-calendario [data-categoria=planeacion]{--cal-fill:#f2d8dd;--cal-ink:#651b31}
-#sate-calendario [data-categoria=posgrado]{--cal-fill:#f6d5ec;--cal-ink:#6d1554}
-#sate-calendario [data-categoria=academico]{--cal-fill:#efd4df;--cal-ink:#671e3c}
-#sate-calendario [data-categoria=gestion]{--cal-fill:#d6e8ff;--cal-ink:#173a76}
-#sate-calendario [data-categoria=becas]{--cal-fill:#b4dfb6;--cal-ink:#122716}
-#sate-calendario [data-categoria=servicios]{--cal-fill:#c5eeee;--cal-ink:#16383a}
-#sate-calendario [data-categoria=tt]{--cal-fill:#e8d3ff;--cal-ink:#512772}
-#sate-calendario [data-categoria=feriado]{--cal-fill:#eeeeee;--cal-ink:#222222}
-#sate-calendario [data-categoria=inicio_nms],#sate-calendario [data-categoria=induccion_nms]{--cal-fill:#d6e8ff;--cal-ink:#173a76}
-#sate-calendario [data-categoria=grado_posgrado]{--cal-fill:#f6d5ec;--cal-ink:#6d1554}
+.calendario-dia.calendario-suspension{border:1px solid var(--ipn-cal-suspension);background:repeating-linear-gradient(135deg,var(--cal-fondo) 0 4px,var(--ipn-cal-suspension) 4px 5px)}
+.calendario-dia[data-seleccionado=true]{background:color-mix(in srgb,var(--cal-color) 24%,var(--cal-fondo));box-shadow:inset 0 0 0 2px var(--cal-texto)}
+.calendario-detalle{min-width:0;max-height:calc(100dvh - 2rem);padding:1rem 1.25rem;overflow:auto;border:1px solid var(--cal-linea);border-radius:14px;background:var(--cal-fondo);color:var(--cal-texto);font-size:.88rem;line-height:1.5;overflow-wrap:anywhere}
+.calendario-lado[data-copia=true] .calendario-detalle{max-height:max(10rem,calc(100dvh - 2rem - 22rem))}
+.calendario-detalle[hidden]{display:none}.calendario-detalle h3{margin:0 0 .5rem;font-size:1.05rem}.calendario-detalle h4{margin:0;font-size:.95rem}
+.calendario-detalle-evento{border-left:3px solid var(--cal-color);padding-left:.75rem;margin-top:1rem}
+.calendario-detalle-categoria{display:block;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--cal-color)}
+.calendario-cuenta{display:block;margin:.5rem 0 .25rem;font-size:1.6rem;font-weight:700;line-height:1.2}
+.calendario-detalle-evento p{margin:.4rem 0}.calendario-detalle-vacio{color:var(--cal-tenue)}.calendario-fuente{color:var(--cal-tenue);font-size:.8rem}.calendario-fuente summary{cursor:pointer;min-height:44px;padding-top:.5rem}.calendario-fuente a{color:var(--cal-acento)}
+.calendario-detalle>.sate-btn{margin-top:1rem;min-height:44px}
+.calendario-hoja-fondo{position:fixed;inset:0;background:rgb(9 9 11 / .45);border:0;z-index:1000}
+#sate-calendario :is(button,select,input,summary):focus-visible{outline:2px solid var(--cal-acento);outline-offset:2px}
+@media(max-width:819px){.calendario-arriba,.calendario-abajo{grid-template-columns:minmax(0,1fr)}.calendario-lado{position:static}.calendario-lado .calendario-mes-chico{display:none}.calendario-estado{grid-template-columns:minmax(0,1fr);gap:12px}.calendario-tarjeta{padding:14px}#sate-calendario[data-vista=semicirculo] .calendario-principal{padding:12px}.calendario-centro{bottom:16%;gap:2px;font-size:clamp(.65rem,2.5cqw,.85rem)}.calendario-centro strong{font-size:clamp(.85rem,4cqw,1.35rem)}.calendario-centro-largo{display:none}.calendario-svg-mes,.calendario-svg-extremo{font-size:21px}.calendario-linea{--etq:0px}.calendario-linea-fila{grid-template-columns:minmax(0,1fr);margin-bottom:4px}.calendario-linea-fila+.calendario-linea-fila{border-top:0}.calendario-linea-fila>b{position:relative;z-index:3;width:max-content;margin-top:6px;padding-right:8px;background:var(--cal-fondo);font-size:.72rem}.calendario-linea-nombre{display:none}.calendario-linea-meses span{font-size:.7rem}.calendario-detalle{position:fixed;left:0;right:0;bottom:0;max-height:75dvh;z-index:1001;margin:0;border-radius:20px 20px 0 0;padding:1rem 1.25rem max(1rem,env(safe-area-inset-bottom))}.calendario-detalle::before{content:'';display:block;width:40px;height:4px;background:var(--cal-linea);border-radius:4px;margin:0 auto .75rem}}
+@media(max-width:720px){.calendario-controles{width:100%}.calendario-selector{flex:1 1 12rem}.calendario-item{grid-template-columns:48px minmax(0,1fr)}.calendario-pildora{grid-column:2;justify-self:start}}
+#sate-calendario{--ipn-cal-academico:#475569;--ipn-cal-becas:#0E7490;--ipn-cal-descanso:#71717A;--ipn-cal-ets:#0369A1;--ipn-cal-extraordinaria:#854D0E;--ipn-cal-feriado:#57534E;--ipn-cal-fin:#9F1239;--ipn-cal-gestion:var(--sate-acento-base);--ipn-cal-grado_posgrado:#86198F;--ipn-cal-induccion:#3F6212;--ipn-cal-induccion_nms:#4D7C0F;--ipn-cal-inicio:#15803D;--ipn-cal-inicio_nms:#166534;--ipn-cal-inscripcion:#1D4ED8;--ipn-cal-inscripcion_ets:#1E3A6E;--ipn-cal-nivelacion:#0F766E;--ipn-cal-ordinaria:#6D4AB0;--ipn-cal-planeacion:#5B21B6;--ipn-cal-politecnico:#A16207;--ipn-cal-posgrado:#A21CAF;--ipn-cal-reanudacion:#115E59;--ipn-cal-saberes:#9A3412;--ipn-cal-servicios:#155E75;--ipn-cal-sindical:#4338CA;--ipn-cal-suspension:#C62828;--ipn-cal-tt:#9A5B13;--ipn-cal-vacaciones:#52525B;}
+[data-theme=dark] #sate-calendario{--cal-fondo:#18181b;--cal-texto:#fafafa;--cal-tenue:#a1a1aa;--cal-linea:#3f3f46;--cal-hundido:#232326;--cal-acento:#f0a3c4;--ipn-cal-academico:#CBD5E1;--ipn-cal-becas:#5EC8D8;--ipn-cal-descanso:#A1A1AA;--ipn-cal-ets:#A6D3F2;--ipn-cal-extraordinaria:#E9B824;--ipn-cal-feriado:#D6D3D1;--ipn-cal-fin:#FDA4AF;--ipn-cal-gestion:#F0A3C4;--ipn-cal-grado_posgrado:#E879F9;--ipn-cal-induccion:#BEF264;--ipn-cal-induccion_nms:#A3E635;--ipn-cal-inicio:#4ADE80;--ipn-cal-inicio_nms:#86EFAC;--ipn-cal-inscripcion:#93C5FD;--ipn-cal-inscripcion_ets:#7393DA;--ipn-cal-nivelacion:#5EEAD4;--ipn-cal-ordinaria:#A58BE6;--ipn-cal-planeacion:#C4B5FD;--ipn-cal-politecnico:#FBBF24;--ipn-cal-posgrado:#F0ABFC;--ipn-cal-reanudacion:#2DD4BF;--ipn-cal-saberes:#F5B48A;--ipn-cal-servicios:#67E8F9;--ipn-cal-sindical:#818CF8;--ipn-cal-suspension:#F87171;--ipn-cal-tt:#E0A458;--ipn-cal-vacaciones:#D4D4D8;}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) #sate-calendario{--cal-fondo:#18181b;--cal-texto:#fafafa;--cal-tenue:#a1a1aa;--cal-linea:#3f3f46;--cal-hundido:#232326;--cal-acento:#f0a3c4;--ipn-cal-academico:#CBD5E1;--ipn-cal-becas:#5EC8D8;--ipn-cal-descanso:#A1A1AA;--ipn-cal-ets:#A6D3F2;--ipn-cal-extraordinaria:#E9B824;--ipn-cal-feriado:#D6D3D1;--ipn-cal-fin:#FDA4AF;--ipn-cal-gestion:#F0A3C4;--ipn-cal-grado_posgrado:#E879F9;--ipn-cal-induccion:#BEF264;--ipn-cal-induccion_nms:#A3E635;--ipn-cal-inicio:#4ADE80;--ipn-cal-inicio_nms:#86EFAC;--ipn-cal-inscripcion:#93C5FD;--ipn-cal-inscripcion_ets:#7393DA;--ipn-cal-nivelacion:#5EEAD4;--ipn-cal-ordinaria:#A58BE6;--ipn-cal-planeacion:#C4B5FD;--ipn-cal-politecnico:#FBBF24;--ipn-cal-posgrado:#F0ABFC;--ipn-cal-reanudacion:#2DD4BF;--ipn-cal-saberes:#F5B48A;--ipn-cal-servicios:#67E8F9;--ipn-cal-sindical:#818CF8;--ipn-cal-suspension:#F87171;--ipn-cal-tt:#E0A458;--ipn-cal-vacaciones:#D4D4D8;}}
+#sate-calendario [data-categoria=academico]{--cal-color:var(--ipn-cal-academico)}
+#sate-calendario [data-categoria=becas]{--cal-color:var(--ipn-cal-becas)}
+#sate-calendario [data-categoria=descanso]{--cal-color:var(--ipn-cal-descanso)}
+#sate-calendario [data-categoria=ets]{--cal-color:var(--ipn-cal-ets)}
+#sate-calendario [data-categoria=extraordinaria]{--cal-color:var(--ipn-cal-extraordinaria)}
+#sate-calendario [data-categoria=feriado]{--cal-color:var(--ipn-cal-feriado)}
+#sate-calendario [data-categoria=fin]{--cal-color:var(--ipn-cal-fin)}
+#sate-calendario [data-categoria=gestion]{--cal-color:var(--ipn-cal-gestion)}
+#sate-calendario [data-categoria=grado_posgrado]{--cal-color:var(--ipn-cal-grado_posgrado)}
+#sate-calendario [data-categoria=induccion]{--cal-color:var(--ipn-cal-induccion)}
+#sate-calendario [data-categoria=induccion_nms]{--cal-color:var(--ipn-cal-induccion_nms)}
+#sate-calendario [data-categoria=inicio]{--cal-color:var(--ipn-cal-inicio)}
+#sate-calendario [data-categoria=inicio_nms]{--cal-color:var(--ipn-cal-inicio_nms)}
+#sate-calendario [data-categoria=inscripcion]{--cal-color:var(--ipn-cal-inscripcion)}
+#sate-calendario [data-categoria=inscripcion_ets]{--cal-color:var(--ipn-cal-inscripcion_ets)}
+#sate-calendario [data-categoria=nivelacion]{--cal-color:var(--ipn-cal-nivelacion)}
+#sate-calendario [data-categoria=ordinaria]{--cal-color:var(--ipn-cal-ordinaria)}
+#sate-calendario [data-categoria=planeacion]{--cal-color:var(--ipn-cal-planeacion)}
+#sate-calendario [data-categoria=politecnico]{--cal-color:var(--ipn-cal-politecnico)}
+#sate-calendario [data-categoria=posgrado]{--cal-color:var(--ipn-cal-posgrado)}
+#sate-calendario [data-categoria=reanudacion]{--cal-color:var(--ipn-cal-reanudacion)}
+#sate-calendario [data-categoria=saberes]{--cal-color:var(--ipn-cal-saberes)}
+#sate-calendario [data-categoria=servicios]{--cal-color:var(--ipn-cal-servicios)}
+#sate-calendario [data-categoria=sindical]{--cal-color:var(--ipn-cal-sindical)}
+#sate-calendario [data-categoria=suspension]{--cal-color:var(--ipn-cal-suspension)}
+#sate-calendario [data-categoria=tt]{--cal-color:var(--ipn-cal-tt)}
+#sate-calendario [data-categoria=vacaciones]{--cal-color:var(--ipn-cal-vacaciones)}
 .sate-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .sate-sin-scroll{overflow:hidden}
 .situacion-cifras{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--ipn-esp-3);margin:var(--ipn-esp-4) 0}
@@ -482,3 +540,4 @@ body.sate-flotante .sate-barra{display:flex}
   .req-fila td{padding-top:0;font-size:.8rem}
   .req-etiqueta{display:inline;color:var(--muted)}
 }
+

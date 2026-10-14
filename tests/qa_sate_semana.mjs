@@ -26,7 +26,7 @@ for(const unidad of ['upiita','escom','upibi'])for(const activa of [true,false])
     setCustomValidity(s){this.error=s},reportValidity(){},checkValidity(){return true}});return nodos.get(id)};
   const cfg=structuredClone(config);cfg.unidades[unidad].miSemana=activa;
   let oferta=[bloque(0,540,600)],sel=oferta;
-  const c=vm.createContext({window:{SATE_CONFIG:cfg},UNIDAD:unidad,S,$:nodo,document:{querySelectorAll:()=>[],createElement:()=>{const f=nodo('ficha'+(nficha++));f.querySelector=q=>nodo('ficha:'+q);return f}},
+  const c=vm.createContext({performance,window:{SATE_CONFIG:cfg},UNIDAD:unidad,S,$:nodo,document:{querySelectorAll:()=>[],createElement:()=>{const f=nodo('ficha'+(nficha++));f.querySelector=q=>nodo('ficha:'+q);return f}},
     SateUI:{ayuda:clave=>({ayuda:clave}),modal:(t,cont,op)=>{modales.push({t,cont,op,cerrado:false});const m=modales.at(-1);return {cerrar(){m.cerrado=true}}}},setTimeout:()=>1,clearTimeout(){},
     store:{get:(k,d)=>guardado.get(k)??d,set:(k,v)=>guardado.set(k,structuredClone(v))},
     txH:(k,v={})=>(config.textos['sate.horarios.'+k]||k).replace(/\{(\w+)\}/g,(_,k)=>v[k]??''),
@@ -40,7 +40,7 @@ for(const unidad of ['upiita','escom','upibi'])for(const activa of [true,false])
   });
   vm.runInContext(nucleo.slice(nucleo.indexOf('const ownAsClasses='),nucleo.indexOf('const slots=')),c);
   vm.runInContext(fuente.slice(fuente.indexOf('const GT='),fuente.indexOf('function renderGTime()')),c);
-  vm.runInContext(fuente.slice(fuente.indexOf('function generate('),fuente.indexOf('function renderGen()')),c);
+  vm.runInContext(fuente.slice(fuente.indexOf('let generacion=null;'),fuente.indexOf('function renderGen()')),c);
   vm.runInContext(fuente.slice(fuente.indexOf('function breaksOk('),fuente.indexOf('function renderGPrefs(')),c);
   const ms=vm.runInContext('MS',c),gt=vm.runInContext('GT',c);
   const check=(nombre,fn)=>{try{fn()}catch(e){e.message=`${unidad}, activa=${activa}, ${nombre}: ${e.message}`;throw e}};

@@ -654,7 +654,7 @@ function requisitosHtml(want){
     }).join('')+'</table>'+(acreditados?`<p class="muted req-acreditados">${esc(tx('requisitos_acreditados',{n:acreditados}))}</p>`:'')+'</details>';
 }
 function renderSide0(){
-  if(S.reqHover){S.reqHover=null;S.mapHover=null;S.mapFocus=false;renderMap()}
+  if(S.reqHover){S.reqHover=null;S.mapHover=null;S.mapFocus=false;resaltarMapa()}
   const c=cur(), want=tr().want.filter(k=>c[k]), credWant=want.reduce((s,k)=>s+c[k][1],0), off=offeredClaves();
   const tx=(k,v)=>SATE.texto('sate.planeacion.'+k,v);
   $('#plan-panel').setAttribute('aria-label',tx('titulo'));$('#map-ayuda').textContent='ⓘ '+tx('leer_mapa');$('#plan-periodos').setAttribute('aria-label',tx('periodos'));
@@ -967,7 +967,7 @@ function renderTray(){
   if(SATE.actual?.pestana==='trayectoria'){renderStats();return}
   if(SATE.modulos.mapa){renderMap();conSim(usaSim('mapa'),()=>conPlan(renderList))}renderSide();
 }
-function renderHor(){if(isPersonal())renderEqvHorario(ALUMNO);else $('#est-eqv').hidden=true;renderHFilters();renderOffer();renderPlans();renderCal();renderOwnForm();renderGen();renderEquiv();montarAyudasCreditos()}
+function renderHor(){cancelarGeneracion();if(isPersonal())renderEqvHorario(ALUMNO);else $('#est-eqv').hidden=true;renderHFilters();renderOffer();renderPlans();renderCal();renderOwnForm();renderGen();renderEquiv();montarAyudasCreditos()}
 /* Equivalencias con otras carreras de la misma unidad (tabla «Equivalencia de Materias» del SAES): solo consulta.
    Cada unidad decide cómo aplicarlas; no cambian el avance, la seriación ni el generador de horarios. */
 function renderEquiv(){
@@ -1003,7 +1003,7 @@ function renderEquiv(){
 function render(){return SATE.repintar()}
 // perfil del SAES de otra carrera: se avisa y se ofrece volver; nada del perfil se aplica aquí
 function renderAviso(){SAES.mismatch(S.car,k=>DATA.carreras[k],c=>{if(!DATA.carreras[c])return;S.car=c;store.set('car',c);S.chips=[];S.gen=null;ZOOM=null;render()},carreraPerfil)}
-function refresh(){save();renderOffer();renderPlans();renderCal();if(S.gen&&typeof generate==='function'){S.gen=generate();renderGen()}}
+function refresh(){save();renderOffer();renderPlans();renderCal();if((S.gen||typeof generacion!=='undefined'&&generacion)&&typeof iniciarGeneracion==='function')iniciarGeneracion()}
 function addClass(c){const pl=plan();pl.sel=pl.sel.filter(x=>byKey(x)?.[4]!==c[4]);pl.sel.push(keyOf(c))}
 function toggle(k){const pl=plan(),i=pl.sel.indexOf(k);if(i>=0)pl.sel.splice(i,1);else{const c=byKey(k);addClass(c);
     avisoOptativa(c[8],pl.sel.map(x=>byKey(x)?.[8]).filter(Boolean));
@@ -1031,9 +1031,9 @@ $('#plan-deshacer').addEventListener('click',()=>{
 });
 function toggleBox(k){return conSim(usaSim('sugg'),()=>conPlan(()=>toggleBox0(k)))}
 function toggleBox0(k,mover=false){
-  if(isElec(k)){S.mapHover=k;S.mapFocus=true;renderMap();if(mview()==='lista'){S.lfocus=k;renderList()}return}   // se explica en el inspector
+  if(isElec(k)){S.mapHover=k;S.mapFocus=true;resaltarMapa();if(mview()==='lista'){S.lfocus=k;renderList()}return}   // se explica en el inspector
   const paso=PLAN_PASO, base=conPlan(()=>tr(),0), otro=planAsignado(k);
-  if(PLAN_DOS_PERIODOS&&otro!=null&&otro!==paso&&!mover){S.mapHover=k;S.mapFocus=true;S.lfocus=k;renderMap();conPlan(renderList);return}
+  if(PLAN_DOS_PERIODOS&&otro!=null&&otro!==paso&&!mover){S.mapHover=k;S.mapFocus=true;S.lfocus=k;resaltarMapa();conPlan(renderList);return}
   if(mover&&(!PLAN_DOS_PERIODOS||otro==null||otro===paso))return;
   if(PLAN_DOS_PERIODOS){S.mapHover=k;S.mapFocus=true}
   // Una obligatoria no puede quitarse ni posponerse a un periodo posterior; sí adelantarse (N+1 → N), que evita el desfase.
@@ -1060,9 +1060,9 @@ function toggleBox0(k,mover=false){
 document.addEventListener('click',e=>{
   const li=e.target.closest('#ac li');if(li){pick(+li.dataset.i);return}
   // táctil: un toque fuera del mapa y del inspector retira el enfoque
-  if((S.mapFocus||S.reqHover)&&!e.target.closest('#map,#insp,#lineas,#chosen-req')){S.mapFocus=false;S.mapHover=null;S.reqHover=null;renderMap()}
+  if((S.mapFocus||S.reqHover)&&!e.target.closest('#map,#insp,#lineas,#chosen-req')){S.mapFocus=false;S.mapHover=null;S.reqHover=null;resaltarMapa()}
   const requisito=e.target.closest('[data-req]');
-  if(requisito){S.mapHover=requisito.dataset.req;S.reqHover=requisito.dataset.piden.split(' ');S.mapFocus=true;renderMap();return}
+  if(requisito){S.mapHover=requisito.dataset.req;S.reqHover=requisito.dataset.piden.split(' ');S.mapFocus=true;resaltarMapa();return}
   const bx=e.target.closest('[data-box]');if(bx){S.reqHover=null;toggleBox(bx.dataset.box);return}
   const ob=e.target.closest('[data-obox]');if(ob){S.reqHover=null;toggleBox(ob.dataset.obox);return}
   // táctil: tocar un grupo de la oferta muestra (o retira) su vista previa en el horario
@@ -1074,7 +1074,7 @@ document.addEventListener('click',e=>{
   if(d.lwant){toggleBox(d.lwant);return}
   if(d.fwant){toggleBox(d.fwant);return}
   if(d.fmover){const otro=planAsignado(d.fmover);if(otro!=null)conSim(usaSim('sugg'),()=>conPlan(()=>toggleBox0(d.fmover,true),1-otro));return}
-  if(d.fclose){S.mapFocus=false;S.mapHover=null;S.reqHover=null;renderMap();return}
+  if(d.fclose){S.mapFocus=false;S.mapHover=null;S.reqHover=null;resaltarMapa();return}
   if(d.mview){S.mview=d.mview;store.set('mview',S.mview);renderTray();return}
   if(d.cview){S.cview=d.cview;store.set('cview',S.cview);renderCal();return}
   if(t.id==='b-filt'){const f=t.closest('.filters');f.classList.toggle('open');t.setAttribute('aria-expanded',String(f.classList.contains('open')));return}
@@ -1106,16 +1106,16 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{const bx=e.target.closest?.('[data-box]');if(bx&&(e.key==='Enter'||e.key===' ')){e.preventDefault();const k=bx.dataset.box;toggleBox(k);document.querySelector(`[data-box="${CSS.escape(k)}"]`)?.focus()}});
 document.addEventListener('change',e=>{if(e.target.dataset.note){const k=e.target.dataset.note,m=ws().marks;m[k]={...(m[k]||{}),n:e.target.value.trim()};save()}});
-$('#chosen-req').addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const fila=e.target.closest('[data-req]');if(fila){S.mapHover=fila.dataset.req;S.reqHover=fila.dataset.piden.split(' ');S.mapFocus=false;renderMap()}});
-$('#chosen-req').addEventListener('focusin',e=>{const fila=e.target.closest('[data-req]');if(fila){S.mapHover=fila.dataset.req;S.reqHover=fila.dataset.piden.split(' ');S.mapFocus=false;renderMap()}});
-const salirRequisitos=()=>{if(S.reqHover&&!S.mapFocus){S.mapHover=null;S.reqHover=null;renderMap()}};
+$('#chosen-req').addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const fila=e.target.closest('[data-req]');if(fila){S.mapHover=fila.dataset.req;S.reqHover=fila.dataset.piden.split(' ');S.mapFocus=false;pedirResalte()}});
+$('#chosen-req').addEventListener('focusin',e=>{const fila=e.target.closest('[data-req]');if(fila){S.mapHover=fila.dataset.req;S.reqHover=fila.dataset.piden.split(' ');S.mapFocus=false;pedirResalte()}});
+const salirRequisitos=()=>{if(S.reqHover&&!S.mapFocus){S.mapHover=null;S.reqHover=null;pedirResalte()}};
 $('#chosen-req').addEventListener('toggle',e=>{if(!e.target.open&&S.reqHover){S.mapFocus=false;salirRequisitos()}},true);
 $('#chosen-req').addEventListener('pointerleave',salirRequisitos);
 $('#chosen-req').addEventListener('focusout',e=>{if(!e.relatedTarget?.closest('[data-req]'))salirRequisitos()});
-$('#map').addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const b=e.target.closest('[data-box]');const k=b?b.dataset.box:null;if(k!==S.mapHover||S.reqHover){S.reqHover=null;S.mapHover=k;renderMap()}});
-$('#lineas').addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const b=e.target.closest('[data-obox]');const k=b?b.dataset.obox:null;if(k!==S.mapHover||S.reqHover){S.reqHover=null;S.mapHover=k;renderMap()}});
-$('#lineas').addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&S.mapHover&&!S.mapFocus){S.mapHover=null;renderMap()}});
-$('#map').addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&S.mapHover&&!S.mapFocus){S.mapHover=null;renderMap()}});
+$('#map').addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const b=e.target.closest('[data-box]');const k=b?b.dataset.box:null;if(k!==S.mapHover||S.reqHover){S.reqHover=null;S.mapHover=k;pedirResalte()}});
+$('#lineas').addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const b=e.target.closest('[data-obox]');const k=b?b.dataset.obox:null;if(k!==S.mapHover||S.reqHover){S.reqHover=null;S.mapHover=k;pedirResalte()}});
+$('#lineas').addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&S.mapHover&&!S.mapFocus){S.mapHover=null;pedirResalte()}});
+$('#map').addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&S.mapHover&&!S.mapFocus){S.mapHover=null;pedirResalte()}});
 /* globo de ayuda inmediato (el «title» nativo tarda ~1 s): un solo elemento fijo, colocado junto al ⓘ sin salirse de la
    pantalla ni quedar recortado por recuadros con overflow; cursor, teclado y toque */
 const TIP=(()=>{const d=document.createElement('div');d.className='tip-flot';d.setAttribute('role','tooltip');d.hidden=true;document.documentElement.appendChild(d);return d})();   // fuera del <body>: no hereda su «zoom» (--ui-zoom)

@@ -971,6 +971,11 @@ def escribir_sate(data):
     (dist / ("horarios-" + UNIDAD + ".html")).write_text(redireccion(UNIDAD), encoding="utf-8")
     (dist / "horarios.html").write_text(redireccion(None), encoding="utf-8")
     fuente = ROOT / "web/sate"
+    # Medición interna (?medir): solo en compilaciones locales con SATE_MEDIR=1; nunca en el sitio publicado.
+    if os.environ.get("SATE_MEDIR") == "1":
+        shutil.copy(fuente / "medicion.js", destino / "medicion.js")
+    else:
+        (destino / "medicion.js").unlink(missing_ok=True)
     for nombre in ("calendario.js", "situacion.js", "mapa.js", "horarios.js", "inicio.js", "rutas.js", "componentes.js", "desempeno.js", "exportacion.js", "tramites.js", "dictamen.js", "electivas.js"):
         shutil.copy(fuente / nombre, destino / nombre)
     shutil.copytree(ROOT / 'web/tramites', dist / 'tramites', dirs_exist_ok=True)

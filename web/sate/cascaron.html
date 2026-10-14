@@ -536,7 +536,16 @@ details.box2>summary{cursor:pointer;font-weight:600;font-size:.92rem}
 
 /* fijo al desplazar, con su propio scroll: nunca más alto que la ventana (aunque la columna de la oferta sea larga) */
 .planner{position:sticky;top:calc(env(safe-area-inset-top,0px) + 96px);max-height:calc(100vh / var(--ui-zoom,1) - 96px - 12px);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:4px}
-@media (max-width:980px){.planner{position:static;max-height:none;overflow:visible;padding-right:0;order:-1}}   /* teléfono: el horario arriba de la oferta */
+@media (max-width:980px){.planner{position:static;max-height:none;overflow:visible;padding-right:0;order:-1}}
+.horario-flotante{display:none}
+.horario-compacto{width:calc(100% - 24px);max-width:680px;max-height:85dvh;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--fg);overflow:auto}
+.horario-compacto::backdrop{background:#0008}
+.horario-compacto .dl-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.horario-compacto .cal{min-width:0;grid-template-columns:2.2rem repeat(var(--days),minmax(0,1fr))}
+.horario-compacto .blk{min-width:0;padding:2px;font-size:.6rem;overflow-wrap:anywhere}
+.horario-compacto .ag-it{grid-template-columns:5rem minmax(0,1fr)}
+.horario-compacto .ag-it>span{min-width:0;overflow-wrap:anywhere}
+@media (max-width:980px){.horario-flotante{display:block;position:fixed;right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:30;box-shadow:0 3px 12px #0003}}
 .plans{display:flex;gap:4px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
 .plans .chip{font-family:var(--f-display);font-weight:600;letter-spacing:.02em}
 .plans .chip small{font-family:var(--f-mono);font-weight:400;color:inherit;opacity:.75;margin-left:4px}
@@ -659,7 +668,6 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);color:v
    angostas ocupaban casi toda la altura y dejaban un espacio mínimo para desplazarse */
 @media (max-width:980px),(max-height:760px){
   .filters{position:static}
-  .planner{position:static;max-height:none;overflow:visible;padding-right:0}
 }
 /*__SAES_CSS__*/
 /*__COMPONENTES_CSS__*/
@@ -861,6 +869,7 @@ body.sate-flotante:has(.sate-barra) .plan-bandeja{bottom:calc(96px + env(safe-ar
             <label class="check"><input type="checkbox" id="cupos-omitir" disabled aria-describedby="cupos-omitir-ayuda"><span id="cupos-omitir-texto"></span></label>
             <small id="cupos-omitir-ayuda" class="cupos-antigua"></small>
             <button class="btn primary" id="b-gen">Generar</button>
+            <button class="btn" type="button" id="b-gen-clear" data-htexto="generador_borrar" hidden>Borrar opciones generadas</button>
           </div>
           <div class="gtime">
             <div class="field"><span>Días a la semana</span><div class="seg" role="group" aria-label="Días a la semana en la escuela" id="g-days">
@@ -872,6 +881,7 @@ body.sate-flotante:has(.sate-barra) .plan-bandeja{bottom:calc(96px + env(safe-ar
             <div class="field"><span>Descansos</span><div class="gbreaks" id="gbreaks"></div></div>
           </div>
           <div class="active" id="gprefs" style="padding-top:8px"></div>
+          <p id="gen-status" role="status" aria-live="polite"></p>
           <div class="genres" id="genres"></div>
         </details>
         <details class="box2" id="equiv" style="margin-bottom:12px" hidden>
@@ -917,6 +927,11 @@ body.sate-flotante:has(.sate-barra) .plan-bandeja{bottom:calc(96px + env(safe-ar
         </div>
       </section>
     </div>
+    <button type="button" class="btn primary horario-flotante" id="b-horario" data-htexto="horario_ver" aria-haspopup="dialog">Ver horario</button>
+    <dialog class="horario-compacto" id="horario-compacto" aria-labelledby="horario-compacto-titulo">
+      <div class="dl-head"><h2 id="horario-compacto-titulo" data-htexto="horario_ver">Ver horario</h2><button class="btn" type="button" id="horario-compacto-cerrar" data-htexto="horario_cerrar">Cerrar</button></div>
+      <div id="horario-compacto-cuerpo"></div>
+    </dialog>
   </section>
 
 

@@ -137,10 +137,11 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
   if(modo==='periodos'){p.no_cursadas=[['Z401',null,0,null]];p.reprobadas_periodo=p.reprobadas_periodo.map(r=>r.slice(0,3));p.desfasadas_saes=[];}
   const almacen=new Map(modo==='vacio'||modo.startsWith('demo')?[]:[['saes.alumno',JSON.stringify(p)]]),nodos=new Map(),archivos=[],eventos={};let c;
   function nodo(id=''){return {id,hidden:false,textContent:'',innerHTML:'',style:{setProperty(k,v){this[k]=v}},dataset:{},children:[],
-    clientWidth:ancho,classList:{toggle(){}},setAttribute(){},getAttribute(){return null},removeAttribute(){},addEventListener(){},replaceChildren(){},remove(){},prepend(n){this.children.unshift(n)},appendChild(n){this.children.push(n)},
+    clientWidth:ancho,classList:{toggle(){}},setAttribute(){},getAttribute(){return null},removeAttribute(){},addEventListener(){},replaceChildren(){this.children=[]},focus(){document.activeElement=this},remove(){},prepend(n){this.children.unshift(n)},appendChild(n){this.children.push(n)},
     querySelector:s=>nodo(s),querySelectorAll:()=>[],closest:()=>null};}
-  const document={readyState:'loading',documentElement:{getAttribute(){return null},setAttribute(){},style:{setProperty(){},removeProperty(){}}},addEventListener(k,f){(eventos['dom:'+k]??=[]).push(f)},getElementById(id){if(!nodos.has(id))nodos.set(id,nodo(id));return nodos.get(id)},
-    querySelector:s=>document.getElementById(s),querySelectorAll:()=>[],createElement:()=>nodo(),createElementNS:()=>nodo(),body:nodo(),head:{appendChild(s){
+  const buscarId=(n,id)=>n.id===id?n:n.children.map(h=>buscarId(h,id)).find(Boolean);
+  const document={readyState:'loading',documentElement:{getAttribute(){return null},setAttribute(){},style:{setProperty(){},removeProperty(){}}},addEventListener(k,f){(eventos['dom:'+k]??=[]).push(f)},getElementById(id){for(const n of nodos.values()){const encontrado=buscarId(n,id);if(encontrado)return encontrado}if(!nodos.has(id))nodos.set(id,nodo(id));return nodos.get(id)},
+    querySelector:s=>document.getElementById(s),querySelectorAll:()=>[],createElement:tag=>Object.assign(nodo(),{tagName:tag}),createElementNS:(_,tag)=>Object.assign(nodo(),{tagName:tag}),body:nodo(),head:{appendChild(s){
       if(!s.src)return;archivos.push(s.src);setImmediate(()=>{vm.runInContext(leer('web/dist/sate/'+s.src),c,{filename:s.src});s.onload()});
     }}};
   const location={hash:modo.startsWith('demo')?'#'+modo:'',search:'?sateUnidad='+unidad,pathname:'/sate/index.html'};
@@ -221,6 +222,10 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
   assert.ok(c.SATE.calendario.eventos().some(e=>e.categoria==='inicio'));
   const buscar=(n,clase)=>n.children?.some(h=>h.className===clase||buscar(h,clase));
   assert.ok(buscar(document.getElementById('sate-calendario'),'calendario-mes'));
+  document.getElementById('cal-vista-carriles').onclick();
+  assert.ok(buscar(document.getElementById('sate-calendario'),'calendario-linea'));
+  assert.equal(c.SATE.almacen.get('cal.vista'),'carriles','Recuerdo también sin plan cargado');
+  document.getElementById('cal-vista-semicirculo').onclick();
   assert.equal(c.SATE.calendario.eventos().filter(e=>e.audiencia.includes('nuevo_ingreso')).length,modo==='vacio'?7:0);
   }
   const rutaHor=c.SateRutas.ruta('#/'+unidad+'/horarios',unidad,c.SATE_CONFIG.unidades);

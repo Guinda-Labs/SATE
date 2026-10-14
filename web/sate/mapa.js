@@ -1,5 +1,27 @@
 function renderMap(){return conSim(usaSim('mapa'),()=>conPlan(renderMap0))}
+/* Cadena de requisitos y dependientes de la materia bajo el cursor (o de la fila elegida en «requisitos»).
+   Devuelve null sin resaltado, o un Set con .pre (antes) y .post (después). Pura: solo usa sus argumentos. */
+function calcHot(mapHover,reqHover,pre){
+  if(mapHover&&reqHover){
+    const hot=new Set([mapHover,...reqHover]);hot.pre=new Set([mapHover]);hot.post=new Set(reqHover);return hot;
+  }
+  if(!mapHover)return null;
+  const hot=new Set([mapHover]);
+  const post={};Object.entries(pre).forEach(([b,as])=>as.forEach(a=>(post[a]=post[a]||[]).push(b)));
+  const walk=(k,g)=>{(g[k]||[]).forEach(x=>{if(!hot.has(x)){hot.add(x);walk(x,g)}})};
+  walk(mapHover,pre);hot.pre=new Set([...hot].filter(x=>x!==mapHover));   // requisitos (antes)
+  const antes=new Set(hot);walk(mapHover,post);hot.post=new Set([...hot].filter(x=>!antes.has(x)));   // lo que desbloquea (después)
+  return hot;
+}
+// estado de resaltado de una flecha a->b: clases y marcador de punta
+function resalteArista(hot,a,b,mapHover){
+  if(!hot)return {cls:'',marker:'ah'};
+  if(!(hot.has(a)&&hot.has(b)))return {cls:' dim',marker:'ah'};
+  const lado=b===mapHover||hot.pre.has(b)?'pre':'post';
+  return {cls:' hot '+lado,marker:'ah'+lado};
+}
 function renderMap0(){
+  MAPIDX=null;
   $('#mapcut').hidden=true;   // se vuelve a mostrar si aplica (mapa con trayectoria y datos del SAES)
   const mv=mview();document.querySelectorAll('[data-mview]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mview===mv)));
   $('#zoomseg [data-zoom="0"]').textContent=SATE.texto('sate.planeacion.'+(MQ_PHONE.matches?'zoom_completo_corto':'zoom_completo'));
@@ -10,16 +32,7 @@ function renderMap0(){
   const want=planElegidas(), off=offeredClaves(), pre=prereqs();
   const done=new Set(tr().done), req=new Set([...ancestors(want)].filter(k=>!want.has(k)&&!done.has(k)));
   // cadena de requisitos y dependientes de la materia bajo el cursor
-  let hot=null;
-  if(S.mapHover&&S.reqHover){
-    hot=new Set([S.mapHover,...S.reqHover]);hot.pre=new Set([S.mapHover]);hot.post=new Set(S.reqHover);
-  }else if(S.mapHover){
-    hot=new Set([S.mapHover]);
-    const post={};Object.entries(pre).forEach(([b,as])=>as.forEach(a=>(post[a]=post[a]||[]).push(b)));
-    const walk=(k,g)=>{(g[k]||[]).forEach(x=>{if(!hot.has(x)){hot.add(x);walk(x,g)}})};
-    walk(S.mapHover,pre);hot.pre=new Set([...hot].filter(x=>x!==S.mapHover));   // requisitos (antes)
-    const antes=new Set(hot);walk(S.mapHover,post);hot.post=new Set([...hot].filter(x=>!antes.has(x)));   // lo que desbloquea (después)
-  }
+  const hot=calcHot(S.mapHover,S.reqHover,pre);
   renderInsp();
   if(mv==='lista')renderList();
   if(!L){ // carrera sin trayectoria propuesta: cuadrícula por nivel del SAES
@@ -90,12 +103,12 @@ function renderMap0(){
      Aparecen completas al resaltar una de sus materias, junto con toda la cadena. */
   L.edges.forEach(([s,d,p,larga,ls,ld])=>{
     const bs=L.boxes[s];if(!kOf(bandOf(bs[1]+bs[3]/2)))return;   // sale de un semestre plegado: no se dibuja
-    const a=L.boxes[s][4], b=L.boxes[d][4], on=hot&&hot.has(a)&&hot.has(b);
+    const a=L.boxes[s][4], b=L.boxes[d][4], r=resalteArista(hot,a,b,S.mapHover);
     const pts=[];for(let i=0;i<p.length;i+=2)pts.push([p[i],Y(p[i+1])]);
-    const lado=on?(b===S.mapHover||hot.pre.has(b)?'pre':'post'):'';
-    const cls=`edge${L.propuesto?' prop':''}${on?' hot '+lado:hot?' dim':''}${!hot&&isPersonal()&&done.has(b)?' past':''}`, mk=`marker-end="url(#${on?'ah'+lado:'ah'})"`;
-    if(L.rutas&&larga&&!on)return;   // lejana: el requisito ya se cursó muchas materias antes; se ve al resaltar
-    svg+=L.rutas?`<path class="${cls}" d="${rutaRedonda(pts)}" ${mk}/>`:`<polyline class="${cls}" points="${pts.map(q=>q.join(',')).join(' ')}" ${mk}/>`;
+    const pasada=isPersonal()&&done.has(b);
+    // las flechas lejanas existen siempre pero solo se ven al resaltarlas (clase «lejana», sin redibujar al pasar el cursor)
+    const cls=`edge${L.propuesto?' prop':''}${L.rutas&&larga?' lejana':''}${r.cls}${!hot&&pasada?' past':''}`, mk=`marker-end="url(#${r.marker})"`, dt=`data-a="${a}" data-b="${b}"${pasada?' data-past="1"':''}`;
+    svg+=L.rutas?`<path class="${cls}" ${dt} d="${rutaRedonda(pts)}" ${mk}/>`:`<polyline class="${cls}" ${dt} points="${pts.map(q=>q.join(',')).join(' ')}" ${mk}/>`;
   });
   svg+='</svg>';
   let html=svg;
@@ -157,3 +170,32 @@ function renderAyudaPrimeraVisita(){
     alDescartar(){store.set('mapAyudaDescartada',true);box.hidden=true}}));
 }
 SATE.pestana('mapa',{montar(){},mostrar(){renderAyudaPrimeraVisita();renderTray()},ocultar(){tipOculta()}});
+
+/* ---------- resaltado al pasar el cursor, sin redibujar ----------
+   Alterna clases en las cajas y flechas ya dibujadas (mismas reglas que el dibujo: resalteCaja y resalteArista). */
+let MAPIDX=null, RESALTE_RAF=0;
+function indiceMapa(){
+  if(!MAPIDX){const el=$('#map');MAPIDX={cajas:[...el.querySelectorAll('.box')],aristas:[...el.querySelectorAll('.edge')]}}
+  return MAPIDX;
+}
+function resaltarMapa(){
+  RESALTE_RAF=0;
+  if(!$('#map').childElementCount){renderMap();return}   // aún sin dibujar: dibujo completo
+  const hot=calcHot(S.mapHover,S.reqHover,prereqs()), ix=indiceMapa();
+  const Q=['hot','hpre','hpost','dim'];
+  for(const n of ix.cajas){
+    n.classList.remove(...Q);
+    const c=n.dataset.box?SateUI.resalteCaja(hot,n.dataset.box,S.mapHover,S.reqHover):hot?' dim':'';
+    if(c)n.classList.add(...c.trim().split(' '));
+  }
+  for(const n of ix.aristas){
+    const r=resalteArista(hot,n.dataset.a,n.dataset.b,S.mapHover);
+    n.classList.remove('hot','pre','post','dim','past');
+    if(r.cls)n.classList.add(...r.cls.trim().split(' '));
+    else if(n.dataset.past)n.classList.add('past');
+    n.setAttribute('marker-end',`url(#${r.marker})`);
+  }
+  conSim(usaSim('mapa'),()=>conPlan(()=>{renderInsp();if(mview()==='lista')renderList()}));
+}
+// agrupa los eventos del cursor y del teclado en un solo cuadro de animación
+function pedirResalte(){if(!RESALTE_RAF)RESALTE_RAF=requestAnimationFrame(resaltarMapa)}

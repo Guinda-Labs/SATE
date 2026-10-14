@@ -66,7 +66,7 @@
   function script(src) {
     if (!cargas.has(src)) cargas.set(src, new Promise((ok, no) => {
       const s = document.createElement('script'); s.src = src;
-      s.onload = ok; s.onerror = () => { cargas.delete(src); no(new Error('Archivo: ' + src)); };
+      s.onload = () => { window.SateMedicion?.instrumentar(); ok(); }; s.onerror = () => { cargas.delete(src); no(new Error('Archivo: ' + src)); };
       document.head.appendChild(s);
     }));
     return cargas.get(src);
@@ -198,6 +198,8 @@
   }
   async function activar(r) {
     if (!r || !api) return;
+    const medida = window.SateMedicion?.iniciar('ruta', r.pestana);
+    try {
     if (unidadRealce || r.unidad !== u) aplicarRealce(r.unidad);
     if (r.unidad !== u) { IPNT.set('ipnt.unidad', r.unidad); location.reload(); return; }
     const v = ++version;
@@ -223,18 +225,22 @@
     api.store.set('ruta', r.hash);
     document.getElementById('sate-carga').hidden = true;
     repintar();
+    } finally { window.SateMedicion?.terminar(medida); }
   }
   function repintar() {
     if (!actual) return;
     if (!cfg.generica && window.SATE_DATA.mapas[api.estado.car]?.generico && !['horarios','calendario'].includes(actual.pestana)) { ir('horarios'); return; }
-    api.renderTop(); api.renderAviso(); SATE.presente.avisos(); modulos[actual.pestana].mostrar(actual);
+    api.renderTop(); api.renderAviso(); SATE.presente.avisos();
+    const m = window.SateMedicion;
+    if (m) m.render(actual.pestana, () => modulos[actual.pestana].mostrar(actual));
+    else modulos[actual.pestana].mostrar(actual);
     SATE.calendario?.pintarRecorte(actual.pestana);
     document.body.setAttribute('data-sate-pestana',actual.pestana);
     document.getElementById('sate-oferta-periodo').hidden=cfg.generica||actual.pestana!=='horarios';
     document.getElementById('notice').hidden=cfg.generica||actual.pestana!=='horarios';
     document.getElementById('mobnote').hidden=true;
   }
-  window.SATE = {texto, modulos, error, script, identidadSaes, get actual(){return actual}, pestana(id, m) { modulos[id] = m; }, ir, elegirUnidad, repintar, cargarOferta,
+  window.SATE = {texto, modulos, error, script, identidadSaes, get actual(){return actual}, get almacen(){return api?.store}, pestana(id, m) { modulos[id] = m; }, ir, elegirUnidad, repintar, cargarOferta,
     async nucleoListo(a) {
       api = a; if (!cfg.generica) await script('situacion.js'); SateUI.usarAlmacen({leer,guardar:(k,v)=>IPNT.set(k,v)});
       const r = SateRutas.ruta(location.hash==='#cupos'&&cfg.cupos?'#/'+u+'/horarios':location.hash, u, config) ||
@@ -260,7 +266,10 @@
       recalcularPestanas();
       if(actual&&actual.pestana!==activa)activar(SateRutas.ruta('#/'+u+'/'+activa,u,config)).catch(error);
   }
-  if (!u) { mostrarEntrada().catch(error); return; }
+  // Sin el parámetro no se descarga ni se ejecuta el módulo de diagnóstico.
+  // Medición interna: solo con ?medir en un servidor local (el archivo no se publica).
+  const medicionLista = parametros.has('medir') && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) ? script('medicion.js').catch(() => {}) : Promise.resolve();
+  if (!u) { medicionLista.then(mostrarEntrada).catch(error); return; }
   const siglasUnidad = document.createElement('span'); siglasUnidad.className = 'sate-unidad'; siglasUnidad.textContent = cfg.siglas;
   document.getElementById('sate-titulo').replaceChildren(logoUnidad(u, cfg.nombre), texto('sate.siglas') + ' ', siglasUnidad);
   if (cfg.leyenda) {
@@ -287,6 +296,8 @@
       }
     }
   }
-  if (cfg.generica) script('generico.js').catch(error);
-  else json('nucleo').then(d=>{window.SATE_DATA=Object.assign({periodos:{actual:[],proximo:[]},asig:[],prof:[]},d);return script('nucleo.js')}).catch(error);
+  medicionLista.then(() => {
+    if (cfg.generica) return script('generico.js');
+    return json('nucleo').then(d=>{window.SATE_DATA=Object.assign({periodos:{actual:[],proximo:[]},asig:[],prof:[]},d);return script('nucleo.js')});
+  }).catch(error);
 })();
