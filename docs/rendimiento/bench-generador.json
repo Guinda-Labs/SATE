@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "semilla": 20261014,
+  "node": "v24.19.0",
+  "msTotal": 7532.58,
+  "presupuesto": {
+    "ms": 3000,
+    "nodos": 250000
+  },
+  "filas": [
+    {
+      "materias": 4,
+      "grupos": [
+        4,
+        3,
+        3,
+        5
+      ],
+      "modo": "Automático",
+      "pasos": 364,
+      "ms": 11.4,
+      "opciones": 1,
+      "trunco": false
+    },
+    {
+      "materias": 4,
+      "grupos": [
+        4,
+        3,
+        3,
+        5
+      ],
+      "modo": "Todas",
+      "pasos": 899,
+      "ms": 9.73,
+      "opciones": 6,
+      "trunco": false
+    },
+    {
+      "materias": 6,
+      "grupos": [
+        5,
+        3,
+        6,
+        6,
+        2,
+        6
+      ],
+      "modo": "Automático",
+      "pasos": 17113,
+      "ms": 120.24,
+      "opciones": 6,
+      "trunco": false
+    },
+    {
+      "materias": 6,
+      "grupos": [
+        5,
+        3,
+        6,
+        6,
+        2,
+        6
+      ],
+      "modo": "Todas",
+      "pasos": 24220,
+      "ms": 118.81,
+      "opciones": 6,
+      "trunco": false
+    },
+    {
+      "materias": 8,
+      "grupos": [
+        2,
+        2,
+        5,
+        4,
+        2,
+        2,
+        6,
+        2
+      ],
+      "modo": "Automático",
+      "pasos": 57857,
+      "ms": 384.42,
+      "opciones": 6,
+      "trunco": false
+    },
+    {
+      "materias": 8,
+      "grupos": [
+        2,
+        2,
+        5,
+        4,
+        2,
+        2,
+        6,
+        2
+      ],
+      "modo": "Todas",
+      "pasos": 51771,
+      "ms": 289.08,
+      "opciones": 6,
+      "trunco": false
+    },
+    {
+      "materias": 10,
+      "grupos": [
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        6,
+        5,
+        4,
+        4
+      ],
+      "modo": "Automático",
+      "pasos": 250003,
+      "ms": 1827.83,
+      "opciones": 6,
+      "trunco": true
+    },
+    {
+      "materias": 10,
+      "grupos": [
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        6,
+        5,
+        4,
+        4
+      ],
+      "modo": "Todas",
+      "pasos": 250005,
+      "ms": 1672.94,
+      "opciones": 6,
+      "trunco": true
+    },
+    {
+      "materias": 12,
+      "grupos": [
+        5,
+        3,
+        3,
+        3,
+        4,
+        3,
+        4,
+        5,
+        4,
+        4,
+        3,
+        3
+      ],
+      "modo": "Automático",
+      "pasos": 250004,
+      "ms": 1434.36,
+      "opciones": 6,
+      "trunco": true
+    },
+    {
+      "materias": 12,
+      "grupos": [
+        5,
+        3,
+        3,
+        3,
+        4,
+        3,
+        4,
+        5,
+        4,
+        4,
+        3,
+        3
+      ],
+      "modo": "Todas",
+      "pasos": 250009,
+      "ms": 1648.61,
+      "opciones": 6,
+      "trunco": true
+    }
+  ]
+}

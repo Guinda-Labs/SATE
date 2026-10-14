@@ -413,6 +413,13 @@ function renderGPrefs(){
 }
 let generacion=null;
 const GEN_MS=3000, GEN_NODOS=250000;
+function presupuestoGenerador(dispositivo=typeof navigator==='undefined'?{}:navigator){
+  const bajo=(dispositivo.hardwareConcurrency>0&&dispositivo.hardwareConcurrency<=4)||(dispositivo.deviceMemory>0&&dispositivo.deviceMemory<=4)||dispositivo.connection?.saveData;
+  const alto=dispositivo.hardwareConcurrency>=8&&dispositivo.deviceMemory>=8;
+  // Señales ausentes: conservar el presupuesto histórico; no adivinar la RAM.
+  const medio=!bajo&&!alto&&(dispositivo.hardwareConcurrency>0||dispositivo.deviceMemory>0);
+  return {clase:bajo?'baja':medio?'media':'alta',ms:GEN_MS,nodos:bajo?60000:medio?140000:GEN_NODOS};
+}
 function cancelarGeneracion(){
   if(!generacion)return;
   generacion.cancelada=true;generacion=null;
@@ -422,11 +429,13 @@ function cancelarGeneracion(){
 function* pasoGen(run){
   // También cuentan las ramas rechazadas por carga u optativas: antes escapaban del límite.
   if(++run.nodes%128===0)yield;
-  if(run.nodes>GEN_NODOS||performance.now()-run.start>=GEN_MS)run.limited=true;
+  const presupuesto=run.presupuesto||(run.presupuesto=presupuestoGenerador());
+  if(run.nodes>presupuesto.nodos||performance.now()-run.start>=presupuesto.ms)run.limited=true;
 }
 async function iniciarGeneracion(){
   cancelarGeneracion();
-  const run={start:performance.now(),nodes:0,limited:false,cancelada:false};generacion=run;
+  const run={start:performance.now(),nodes:0,limited:false,cancelada:false,presupuesto:presupuestoGenerador()};generacion=run;
+  const medida=window.SateMedicion?.iniciar('generacion',GT.n==='auto'?'automatico':'todas');
   const boton=$('#b-gen');
   try{
     S.gen=null;renderGen();boton.disabled=false;boton.textContent=txH('generar_reiniciar');
@@ -441,13 +450,15 @@ async function iniciarGeneracion(){
       do{next=iter.next()}while(!next.done&&performance.now()<hasta);
     }while(!next.done);
     if(run.cancelada)return;
-    S.gen=next.value;renderGen();
-    $('#gen-status').textContent=S.gen.trunc?txH('generador_limite'):'';
+    S.gen=next.value;run.resultado=next.value;renderGen();
+    $('#gen-status').textContent=S.gen.trunc?txH(run.limited&&run.presupuesto.clase==='baja'?'generador_limite_modesto':'generador_limite'):'';
     window.ENCUESTA?.marcar('gen');
   }catch(error){
+    run.error=error.name;
     if(!run.cancelada){S.gen=null;$('#genres').innerHTML='';$('#b-gen-clear').hidden=true;$('#gen-status').textContent=txH('generador_error');
       console.error('Generador de horarios: fallo', {error,nodos:run.nodes,ms:performance.now()-run.start,periodo:S.per,carrera:S.car})}
   }finally{
+    window.SateMedicion?.terminar(medida,{pasos:run.nodes,trunco:!!run.resultado?.trunc,cancelada:run.cancelada,error:run.error||null,opciones:run.resultado?.top?.length||0,presupuesto:run.presupuesto});
     if(generacion===run){generacion=null;boton.disabled=false;boton.textContent=txH('generar');$('#genres').removeAttribute('aria-busy')}
   }
 }

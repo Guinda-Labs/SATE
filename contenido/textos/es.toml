@@ -2,7 +2,7 @@
 # Textos de SATE (Sistema de Apoyo a la Trayectoria Escolar) en español de México, tuteo.
 # Reglas: claves a-z0-9_ con puntos; variables {nombre}; plurales {n, plural, one {# x} other {# xs}}.
 # Al cambiar un texto: sube `version` y valida con `python tools/contenido.py`.
-version = "2026.10.21"
+version = "2026.10.22"
 
 [sate.creditos]
 rotulo = "créditos"
@@ -696,6 +696,7 @@ pegado_manual = "No se pudo leer el portapapeles. Pega los datos en el recuadro.
 tactil = "Instalar en teléfono"
 
 [sate.horarios]
+generador_limite_modesto = "Para mantener ágil tu dispositivo, se recortó la búsqueda. Se muestran las opciones encontradas. Reduce las materias o ajusta los filtros para explorar otras opciones."
 generar = "Generar"
 generar_reiniciar = "Generar de nuevo"
 generando = "Buscando horarios… Puedes iniciar otra búsqueda."
@@ -962,3 +963,9 @@ dato_celular = "Celular"
 dato_telefono = "Teléfono"
 boleta_error = "La boleta debe tener exactamente 10 dígitos."
 correo_error = "Escribe un correo como nombre@ejemplo.mx."
+[sate.medicion]
+titulo = "Medición local"
+copiar = "Copiar resultados (JSON)"
+copiado = "Resultados copiados"
+error_copia = "No se pudo copiar. Consulta SateMedicion.resultados() en la consola."
+resumen = "FCP: {fcp} ms · Render: {render} ms · Generación: {generacion} ms · {nodos} nodos · {tareas} tareas largas"

@@ -229,7 +229,8 @@
       lista.appendChild(tarjeta);
     }box.appendChild(lista);
   }
-  function mostrar(r){
+  function mostrar(r){return globalThis.SateMedicion?globalThis.SateMedicion.render('ventanilla',()=>mostrarVista(r)):mostrarVista(r)}
+  function mostrarVista(r){
     activo?.destruir();activo=null;const box=document.getElementById('sate-tramites');
     if(r.tramite){
       const entrada=definiciones.get(r.tramite),def=typeof entrada==='function'?entrada():entrada;

@@ -130,7 +130,8 @@
       b.onkeydown=k=>{const i=botones.indexOf(b),saltos={ArrowRight:1,ArrowLeft:-1,ArrowDown:7,ArrowUp:-7,Home:-date(s).getDay(),End:6-date(s).getDay()};if(k.key in saltos){k.preventDefault();const dest=botones[Math.max(0,Math.min(botones.length-1,i+saltos[k.key]))];botones.forEach(n=>n.tabIndex=-1);dest.tabIndex=0;foco=dest.getAttribute('data-fecha');dest.focus()}};botones.push(b);dias.push({s,nodo:b});celda.appendChild(b);fechas.appendChild(celda);
     }grid.appendChild(fechas);contenido.appendChild(grid);
   }
-  function mostrar(){
+  function mostrar(){return globalThis.SateMedicion?globalThis.SateMedicion.render('calendario',mostrarVista):mostrarVista()}
+  function mostrarVista(){
     const box=document.getElementById('sate-calendario'),eventos=api.eventos(ampliar),opciones=[...new Set(eventos.map(e=>e.periodo))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));box.setAttribute('data-unidad',SATE_UNIDAD);marcas=[];dias=[];hover=null;enfocado=null;redibujarGrafico=null;box.replaceChildren();box.appendChild(el('h2',SATE.texto('sate.pestana.calendario.titulo')));if(!eventos.length){box.appendChild(el('p',tx('sin_eventos')));return}
     const base=typeof SATE_CONFIG==='undefined'?null:SATE_CONFIG.calendarioBase,local=typeof DATA==='undefined'?null:DATA.calendario;
     if(!opciones.includes(periodo)){
