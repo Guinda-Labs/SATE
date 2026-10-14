@@ -13,7 +13,7 @@ for(const e of [...base.eventos,...data.upiita.actividades,...data.upiita.evento
   assert.ok(e.desde<=e.hasta);assert.ok(e.titulo&&e.simbolo&&e.audiencia.length);
 }
 class Nodo{
-  constructor(tag){this.tagName=tag;this.children=[];this.attrs={};this.style={};this.listeners={}}
+  constructor(tag){this.tagName=tag;this.children=[];this.attrs={};this.style={};this.listeners={};this.scrollWidth=640;this.clientWidth=300;this.scrollLeft=0}
   appendChild(n){this.children.push(n);n.parent=this;return n}
   addEventListener(k,fn){this.listeners[k]=fn}
   querySelector(s){return this.all().find(n=>n.className?.split(' ').includes(s.slice(1)))||null}
@@ -259,13 +259,24 @@ assert.equal(nodos('calendario-carriles-meses')[0].getAttribute('role'),'img');
 assert.match(nodos('calendario-carriles-meses')[0].getAttribute('aria-label'),/en carriles de izquierda a derecha/);
 assert.equal(document.getElementById('cal-vista-carriles').getAttribute('aria-pressed'),'true');
 assert.deepEqual(escrituras.at(-1),['hu.cal.vista','"carriles"']);
+assert.equal(nodos('calendario-carriles-contenedor')[0].getAttribute('data-ampliado'),'false','Inicio con el periodo completo');
+assert.ok(nodos('calendario-carriles-scroll').every(n=>n.scrollLeft===0));
 assert.ok(nodos('calendario-carril-hoy').length>=5);
 const protocolo=nodos('calendario-carril-evento').find(n=>n.getAttribute('aria-label').includes('registro de protocolo'));
 assert.equal(protocolo.tagName,'button');protocolo.onclick();
 assert.equal(dias().filter(n=>n.getAttribute('aria-pressed')==='true').length,5,'Carril selecciona el mes');
 assert.equal(nodos('calendario-detalle-evento').length,1);
+document.getElementById('cal-carriles-zoom').onclick();
+assert.equal(nodos('calendario-carriles-contenedor')[0].getAttribute('data-ampliado'),'true');
+const desplazamientoHoy=nodos('calendario-carriles-scroll')[0].scrollLeft;
+assert.ok(desplazamientoHoy>=0&&desplazamientoHoy<=340,'Hoy visible al ampliar');
+assert.ok(nodos('calendario-carriles-scroll').every(n=>n.scrollLeft===desplazamientoHoy),'Franjas sincronizadas al abrir');
 nodos('calendario-carriles-scroll')[0].scrollLeft=123;dia('2026-10-19').onclick();
 assert.equal(nodos('calendario-carriles-scroll')[0].scrollLeft,123,'Seleccionar conserva el desplazamiento interno');
+const franja=nodos('calendario-carriles-scroll')[1];franja.scrollLeft=75;franja.onscroll();
+assert.ok(nodos('calendario-carriles-scroll').every(n=>n.scrollLeft===75),'Desplazar un carril sincroniza meses y marcas');
+document.getElementById('cal-carriles-zoom').onclick();
+assert.ok(nodos('calendario-carriles-scroll').every(n=>n.scrollLeft===0),'Ver periodo completo elimina el desplazamiento');
 assert.ok(nodos('calendario-carril-evento').filter(n=>n.getAttribute('aria-pressed')==='true').length>1,'Mes selecciona carriles');
 cambiarVista('semicirculo');
 assert.ok(nodos('calendario-arco').filter(n=>n.getAttribute('aria-pressed')==='true').length>1,'La selección sobrevive al cambio de geometría');
@@ -292,12 +303,36 @@ assert.equal(nodos('calendario-detalle')[0].getAttribute('role'),'dialog');
 document.getElementById('cal-cerrar').onclick();assert.equal(document.activeElement.id,tactil.id,'Cerrar devuelve el foco al carril');
 c.SATE_CONFIG={...config,calendarioBase:null};c.DATA.calendario=null;mostrar();
 assert.equal(box.getAttribute('data-estado'),'vacio');assert.equal(nodos('calendario-carril-hoy').length,0);assert.match(box.textContent,/Fechas por publicar/);
+assert.equal(nodos('calendario-carril').length,0,'Sin eventos no se dibujan carriles vacíos');
+// SEMI4: apilado real, altura por filas y resúmenes fuera de la franja desplazable.
+c.DATA.calendario={periodo:'27/1',eventos:[e('gestion','2026-10-01',{hasta:'2026-10-04'}),e('gestion','2026-10-02',{hasta:'2026-10-05'}),e('gestion','2026-10-20')]};
+api.hoy=()=> '2026-10-10';mostrar();
+assert.equal(nodos('calendario-carril').length,1,'Sólo se muestra el carril con eventos');
+const pistaPrueba=nodos('calendario-carril-pista')[0];
+assert.equal(pistaPrueba.getAttribute('data-filas'),'2','Solapamientos en dos filas, evento distante reutiliza fila');
+assert.equal(pistaPrueba.style.height,'calc(2 * var(--cal-fila) + 8px)');
+assert.deepEqual(nodos('calendario-carril-evento').map(n=>n.getAttribute('data-fila')),['0','1','0']);
+for(const n of nodos('calendario-carril-nombres'))assert.equal(n.parent.className,'calendario-carril','Resumen fuera de la franja');
+document.getElementById('cal-carriles-zoom').onclick();
+assert.equal(nodos('calendario-carriles-scroll')[0].scrollLeft,138,'Hoy centrado: 9/20 × 640 − 300/2');
+cambiarVista('semicirculo');cambiarVista('carriles');
+assert.equal(nodos('calendario-carriles-scroll')[0].scrollLeft,138,'Reabrir la vista ampliada centra hoy');
+document.getElementById('cal-carriles-zoom').onclick();
+c.DATA.calendario.eventos=[e('gestion','2026-10-01')];mostrar();
+assert.equal(nodos('calendario-carril-pista')[0].style.height,'calc(1 * var(--cal-fila) + 8px)');
 almacen.set('hu.cal.vista','"desconocida"');mostrar();assert.equal(nodos('calendario-semicirculo').length,1,'Valor inválido vuelve a la vista predeterminada');
-assert.match(css,/\.calendario-carriles-scroll\{[^}]*max-width:100%;overflow-x:auto/);
+assert.match(css,/\.calendario-carriles-scroll\{[^}]*max-width:100%;overflow-x:hidden/);
+assert.match(css,/\[data-ampliado=true\] \.calendario-carriles-scroll\{overflow-x:auto\}/);
+assert.match(css,/\.calendario-carriles\{min-width:0\}/);
+assert.match(css,/\.calendario-carriles-contenedor\{[^}]*--cal-fila:36px/);
+assert.match(css,/@media\(max-width:600px\)\{\.calendario-carriles-contenedor\{--cal-fila:28px\}/);
+assert.match(css,/\.calendario-carril-evento::before\{[^}]*44px/);
+for(const bloque of css.matchAll(/\.calendario-carril-nombres\{([^}]+)\}/g))assert.doesNotMatch(bloque[1],/white-space:nowrap|overflow:hidden/);
 assert.match(css,/\.calendario-carriles-contenedor\{[^}]*min-width:0;max-width:100%/);
 assert.doesNotMatch(codigo,/'(?:Semicírculo|Carriles|Inscripción|Evaluación|Otros trámites|Desplaza)[^']*'/);
 assert.doesNotMatch(document.getElementById('cal-periodo').textContent,/mitad/i);
 console.log('SEMI3 OK: selector y recuerdo IPNT por unidad, selección carriles ↔ mes ↔ arco, grupos, teclado, retorno de foco móvil y estados.');
+console.log('SEMI4 OK: filas de 28/36 px, carriles vacíos ocultos, resúmenes fuera del desplazamiento, periodo completo inicial y ampliación sincronizada con hoy visible.');
 console.log('SEMI2 OK: '+leyendas+' leyendas por unidad, periodo y audiencia; colores propios AA y tarjeta sin prefijos duplicados.');
 
 console.log('SEMI OK: datos y fusión, dos anillos, grupo ×N, selección arco ↔ mes, teclado, hoja móvil, vacío/antes/después, tres unidades y genérico, tokens claro/oscuro y textos por clave.');
