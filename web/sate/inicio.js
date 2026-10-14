@@ -266,7 +266,8 @@
       if(actual&&actual.pestana!==activa)activar(SateRutas.ruta('#/'+u+'/'+activa,u,config)).catch(error);
   }
   // Sin el parámetro no se descarga ni se ejecuta el módulo de diagnóstico.
-  const medicionLista = parametros.has('medir') ? script('medicion.js') : Promise.resolve();
+  // Medición interna: solo con ?medir en un servidor local (el archivo no se publica).
+  const medicionLista = parametros.has('medir') && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) ? script('medicion.js').catch(() => {}) : Promise.resolve();
   if (!u) { medicionLista.then(mostrarEntrada).catch(error); return; }
   const siglasUnidad = document.createElement('span'); siglasUnidad.className = 'sate-unidad'; siglasUnidad.textContent = cfg.siglas;
   document.getElementById('sate-titulo').replaceChildren(logoUnidad(u, cfg.nombre), texto('sate.siglas') + ' ', siglasUnidad);

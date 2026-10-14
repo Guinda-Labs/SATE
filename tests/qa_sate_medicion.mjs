@@ -45,5 +45,6 @@ vm.runInContext('globalThis.runBajo={start:10,nodes:60000,limited:false,presupue
 assert.equal(c.runBajo.limited,true);
 c.performance.measureUserAgentSpecificMemory=()=>{throw Object.assign(Error(),{name:'SecurityError'})};
 await c.SateMedicion.medirMemoria();assert.equal(c.SateMedicion.resultados().memoria.agente.noDisponible,'SecurityError');
-assert.match(readFileSync('web/sate/inicio.js','utf8'),/parametros.has\('medir'\) \? script\('medicion.js'\)/);
+assert.match(readFileSync('web/sate/inicio.js','utf8'),/parametros\.has\('medir'\) && \/\^\(localhost/);  // solo servidor local
+assert.match(readFileSync('tools/build_sate.py','utf8'),/SATE_MEDIR/);  // no se publica salvo compilación interna
 console.log('OK medición: opt-in, APIs opcionales, privacidad, renders, generación y presupuestos.');

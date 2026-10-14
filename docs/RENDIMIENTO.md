@@ -6,6 +6,9 @@ Análisis local de la rama `codex/sate-rendimiento`, sobre la base del generador
 
 El [inventario completo](rendimiento/pesos.md) registra cada HTML y script compilado, además de los JSON publicados, con bytes originales y gzip nivel 9 (`mtime=0`). Gzip es una estimación de compresión local: el servidor, la caché y los encabezados determinan la transferencia real. Los logos y las fuentes no están incluidos en ese inventario de código y datos. Las bibliotecas externas se medirán mediante Resource Timing al usarlas.
 
+**Herramienta interna (no se publica):** compilar con `SATE_MEDIR=1` (sin esa variable `medicion.js` no se copia a
+`web/dist`) y abrir solo desde un servidor local; `?medir` se ignora en cualquier otro dominio.
+
 Para repetir la medición de carga, servir `web/` con `python -m http.server 8080 --directory web` y abrir `/dist/sate/index.html?medir`. Conservar `?medir` antes del hash de navegación. El panel permanece plegado y permite copiar un JSON local. No contiene nombres, boletas, materias del perfil, valores ni claves completas de almacenamiento. Los recursos se identifican sin query ni fragmento.
 
 ## 2. Costos estimados, de mayor a menor
