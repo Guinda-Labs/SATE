@@ -1,7 +1,7 @@
 {
   "_fuente": "Qué pestañas y trámites muestra SATE en cada unidad (plan de la plataforma, secciones 1.2 y 5). Los textos van por clave en contenido/textos/es.toml (sate.pestana.<id>, sate.tramite.<id>); lo valida tools/contenido.py.",
-  "pestanasOcultas": ["calendario"],
-  "_pestanasOcultas": "Pestañas que no se muestran en ninguna unidad mientras se rediseñan (calendario: llega con el diseño de Claude Design).",
+  "pestanasOcultas": [],
+  "_pestanasOcultas": "Pestañas que no se muestran en ninguna unidad mientras se rediseñan.",
   "unidades": {
     "upiita": {
       "pestanas": [
