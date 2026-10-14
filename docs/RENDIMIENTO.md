@@ -155,3 +155,27 @@ Memoria y DOM son modestos; no son el problema.
 
 Siguiente: medir en un teléfono real de gama baja (el mismo `?medir` y «Copiar resultados») y, si se confirma, mover el
 generador a un Worker y diferir las estadísticas de Tu perfil.
+
+## 11. Perfil de Chrome con CPU 6x más lenta (grabado por el dueño, 2026-10-14)
+
+Grabación de 276 s en DevTools › Performance (CPU 6x slowdown), vista local de integración con perfil DEMO, recorriendo
+Tu perfil, Mapa, Horarios y Calendario. Analizada con un script local (traza fuera del repositorio).
+
+- 195 tareas de más de 50 ms; suman **50.6 s** de pantalla bloqueada. Peores: 1.9 s, 1.4 s, 1.3 s, 1.0 s.
+- Por disparador: **pasar el mouse por el mapa** (pointerover/out) 107 tareas · 27.4 s; clics (pointerup/down) 26 · 12.9 s;
+  carga de módulos 4 · 2.6 s.
+- Tiempo inclusivo: `conSim`/`conPlan` 21 s → `renderMap0` (mapa.js) **17.7 s**; `toggleBox` 4.7 s; `renderSide0` 3.0 s;
+  `drawCals` 2.9 s; `renderTray` 6.4 s.
+
+**Causa 1 (la mayor):** `nucleo.js` › `$('#map').addEventListener('pointerover', …)` llama a `renderMap()` completo para
+resaltar la materia y sus requisitos al pasar el mouse. Cada movimiento reconstruye todo el mapa (cajas, flechas, estilos,
+layout y pintado): 300–600 ms por evento con CPU 6x.
+**Causa 2:** cada clic en una materia (`toggleBox` → `conSim` limpia la caché `T` → `renderMap0` + `renderSide0` +
+`drawCals`) recalcula y redibuja todo: 0.6–1.9 s con CPU 6x.
+
+**Correcciones propuestas (orden):**
+1. Resaltado al pasar el mouse sin redibujar: alternar clases en las cajas y flechas ya dibujadas (mapa de dependencias
+   precalculado una vez por render), con `requestAnimationFrame` para agrupar eventos.
+2. Clic en materia: actualizar solo la caja tocada, sus dependientes y los paneles afectados; no vaciar toda la caché de
+   simulación si la simulación no cambió.
+3. Después, el resto: generador en Worker y diferir estadísticas de Tu perfil.
