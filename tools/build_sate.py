@@ -1000,9 +1000,17 @@ def escribir_sate(data):
     cupos = (ROOT / 'tools/cupos_saes.js').read_text(encoding='utf-8')
     (destino / 'cupos.js').write_text(cupos.split('/*__CUPOS_PANEL__*/')[0] + (fuente / 'cupos.js').read_text(encoding='utf-8'), encoding='utf-8')
     site_cupos = os.environ.get('UPIITA_SITE', '')
-    url_cupos = site_cupos + 'sate/index.html' if site_cupos else ''
+    url_cupos = site_cupos + 'sate/cupos.html' if site_cupos else ''
     import urllib.parse, html as html_escape
     textos_cupos = {k: v for k, v in contenido.objeto_t().items() if k.startswith('sate.cupos.')}
+    (destino / 'cupos-comun.js').write_text(cupos.split('/*__CUPOS_PANEL__*/')[0], encoding='utf-8')
+    shutil.copy(fuente / 'cupos-receptor.js', destino / 'cupos-receptor.js')
+    receptor_cfg = {'unidades': {u: {'saes': c['saes'], 'prefijo': 'hu.' if u == 'upiita' else 'hu.' + u + '.'}
+                                for u, c in cfg['unidades'].items() if c.get('cupos')}, 'textos': textos_cupos}
+    receptor = (fuente / 'cupos.html').read_text(encoding='utf-8')
+    receptor = receptor.replace('/*__CUPOS_CONFIG__*/', 'window.CUPOS_CONFIG=' + json.dumps(receptor_cfg, ensure_ascii=False) + ';')
+    receptor = cuenta.inject(receptor).replace("new URL('auth.html',location.href)", "new URL('../auth.html',location.href)")
+    (destino / 'cupos.html').write_text(receptor, encoding='utf-8')
     marcador = cupos.replace("'__CUPOS_URL__'", json.dumps(url_cupos)).replace('__CUPOS_TEXTOS__', json.dumps(textos_cupos, ensure_ascii=False))
     (dist / 'cupos.js').write_text(marcador, encoding='utf-8')
     enlace_cupos = ('javascript:(function(){var s=document.createElement("script");s.src=' + json.dumps(site_cupos + 'cupos.js?v=') + '+Date.now();document.head.appendChild(s)})()') if site_cupos else 'javascript:' + urllib.parse.quote(marcador, safe='')

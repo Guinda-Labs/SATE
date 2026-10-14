@@ -262,7 +262,9 @@ input[type=number]{width:5rem}
 .cal-l.saes::before{background:var(--ipn-cal-academico)}
 .cupos-ayuda{margin-bottom:12px;color:var(--ipn-tenue);font-size:.85rem}
 .cupos-insignia{display:inline-block;font-size:.7rem;line-height:1.35;border:1px solid var(--ipn-linea);border-radius:6px;padding:2px 5px;background:var(--ipn-superficie);color:var(--ipn-texto)}
-.cupos-vieja{opacity:.55}
+.cupos-vieja{opacity:.75}
+.cupos-antigua{color:var(--warn);font-weight:600}
+.cupos-cabecera{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.85rem;margin:8px 0}
 .cal-b{position:absolute;top:10px;right:10px;font-style:normal;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 8px;background:var(--accent);color:var(--accent-fg)}
 .cal-b.si{background:var(--surface);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .cal-det{margin:0;padding:10px 14px;border-radius:10px;background:var(--sunken);font-size:.86rem;line-height:1.5;max-width:100ch}
@@ -803,7 +805,7 @@ body.sate-flotante:has(.sate-barra) .plan-bandeja{bottom:calc(96px + env(safe-ar
 
   <!-- ============ PANTALLA 2: HORARIO ============ -->
   <section id="v-hor" data-view-panel="hor" role="tabpanel" aria-labelledby="t-hor" hidden>
-    <div class="cupos-ayuda"><a id="cupos-instalar" class="saes-bm" href="/*__CUPOS_MARCADOR__*/" draggable="true" onclick="event.preventDefault()"></a><p id="cupos-ayuda" role="status"></p></div>
+    <details class="cupos-ayuda" id="cupos-instrucciones"><summary>Instalar y usar Cupos</summary><p id="cupos-ayuda"></p><a id="cupos-instalar" class="saes-bm" href="/*__CUPOS_MARCADOR__*/" draggable="true" onclick="event.preventDefault()"></a></details>
     <div class="est-eqv" id="est-eqv" hidden></div>
     <section class="filters" aria-label="Filtros">
       <div class="field"><span>Turno</span><div class="chips" id="f-turno"></div></div>
@@ -856,7 +858,8 @@ body.sate-flotante:has(.sate-barra) .plan-bandeja{bottom:calc(96px + env(safe-ar
             <label class="field"><span>Priorizar profesor</span><input type="text" id="g-pref" list="proflist" autocomplete="off"></label>
             <datalist id="proflist"></datalist>
             <label class="check" title="Prioriza horarios con menos tiempo libre entre clases y menos días en la escuela"><input type="checkbox" id="g-compact" checked> Menos tiempo libre entre clases</label>
-            <label class="check"><input type="checkbox" id="cupos-omitir" disabled><span id="cupos-omitir-texto"></span></label>
+            <label class="check"><input type="checkbox" id="cupos-omitir" disabled aria-describedby="cupos-omitir-ayuda"><span id="cupos-omitir-texto"></span></label>
+            <small id="cupos-omitir-ayuda" class="cupos-antigua"></small>
             <button class="btn primary" id="b-gen">Generar</button>
           </div>
           <div class="gtime">
@@ -876,9 +879,12 @@ body.sate-flotante:has(.sate-barra) .plan-bandeja{bottom:calc(96px + env(safe-ar
           <div id="equiv-body"></div>
         </details>
         <div class="colhead"><h2 id="h-offer">Oferta</h2><span class="count" id="offer-count"></span></div>
+        <div class="cupos-cabecera"><span id="cupos-estado" role="status"></span><button class="link" type="button" data-cupos-ayuda></button></div>
         <div class="offer" id="offer"></div>
       </section>
       <section class="planner" aria-labelledby="h-plan">
+        <div class="cupos-cabecera"><span id="cupos-estado-horario"></span><button class="link" type="button" data-cupos-ayuda></button></div>
+        <p id="cupos-llenos" hidden><span id="cupos-llenos-texto"></span> <button class="link" type="button" id="cupos-alternativas"></button></p>
         <div class="colhead"><h2 id="h-plan">Mi horario</h2>
           <div class="actions">
             <div class="seg calview" role="group" aria-label="Vista del horario"><button type="button" data-cview="semana">Semana</button><button type="button" data-cview="dia">Por día</button></div>

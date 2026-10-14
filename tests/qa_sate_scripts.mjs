@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 const archivos=readdirSync('web/dist').filter(f=>/^horarios-.*\.html$/.test(f)).map(f=>'web/dist/'+f);
 archivos.push('web/dist/sate/index.html');
+archivos.push('web/dist/sate/cupos.html');
 let bloques=0;
 for(const f of archivos){
   for(const m of readFileSync(f,'utf8').matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){

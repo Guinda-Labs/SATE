@@ -40,7 +40,7 @@ for(const unidad of ['upiita','escom','upibi'])for(const activa of [true,false])
   });
   vm.runInContext(nucleo.slice(nucleo.indexOf('const ownAsClasses='),nucleo.indexOf('const slots=')),c);
   vm.runInContext(fuente.slice(fuente.indexOf('const GT='),fuente.indexOf('function renderGTime()')),c);
-  vm.runInContext(fuente.slice(fuente.indexOf('function generate()'),fuente.indexOf('function renderGen()')),c);
+  vm.runInContext(fuente.slice(fuente.indexOf('function generate('),fuente.indexOf('function renderGen()')),c);
   vm.runInContext(fuente.slice(fuente.indexOf('function breaksOk('),fuente.indexOf('function renderGPrefs(')),c);
   const ms=vm.runInContext('MS',c),gt=vm.runInContext('GT',c);
   const check=(nombre,fn)=>{try{fn()}catch(e){e.message=`${unidad}, activa=${activa}, ${nombre}: ${e.message}`;throw e}};

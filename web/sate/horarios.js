@@ -393,12 +393,12 @@ function breaksOk(cs){
 function renderGPrefs(){
   $('#gprefs').innerHTML=S.gpref.map((p,i)=>`<span class="pill"><i>${esc(txH('priorizar'))}</i>${esc(p)}<button data-ungp="${i}" aria-label="${esc(txH('quitar',{nombre:p}))}">×</button></span>`).join('');
 }
-function generate(){
+function generate(materias){
   // materias y grupos: los mismos que muestra la oferta con sus filtros (turno, nivel, búsqueda, materia, profesor, grupo,
   // «solo las elegidas», horario en la escuela, excluidos). «Solo lo que cabe» y la búsqueda de huecos no aplican aquí.
-  const todo=GT.src==='todo';   // «Todas las elegidas»: sin los filtros de la oferta
+  const todo=Array.isArray(materias)||GT.src==='todo';   // Las alternativas abarcan los grupos de las materias del horario armado.
   const pool=todo?classes().filter(c=>c[0]===S.car):(()=>{const f=S.fit,g=S.gap;S.fit=false;S.gap=null;try{return filtered()}finally{S.fit=f;S.gap=g}})();
-  let want=todo?(tr().want.length?tr().want.slice():[...new Set(S.chips.filter(x=>x.t==='m').map(x=>classes().find(c=>c[4]===x.v)?.[8]).filter(Boolean))]):[...new Set(pool.map(c=>c[8]))];
+  let want=Array.isArray(materias)?materias.slice():todo?(tr().want.length?tr().want.slice():[...new Set(S.chips.filter(x=>x.t==='m').map(x=>classes().find(c=>c[4]===x.v)?.[8]).filter(Boolean))]):[...new Set(pool.map(c=>c[8]))];
   if(!todo&&!S.onlyWant&&!S.chips.some(x=>x.t==='m')&&tr().want.length){const w=new Set(tr().want);want=want.filter(k=>w.has(k))}   // sin filtro de materias: las elegidas
   tr().oblig.forEach(k=>{if(!want.includes(k))want.unshift(k)});   // la desfasada siempre se considera
   {const ya=new Set([...tr().done,...tr().curso]);want=want.filter(k=>!ya.has(k))}   // ni acreditadas ni en curso
@@ -540,6 +540,7 @@ function renderGen(){
 
 
 function renderOffer(){
+  if(typeof CUPOS!=='undefined')CUPOS.pintar();
   renderMasFiltros();
   if(S.onlyWant&&!tr().want.length){
     $('#offer-count').textContent='';

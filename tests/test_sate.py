@@ -165,6 +165,7 @@ class SateBuild(unittest.TestCase):
                 rutas = set(re.findall(r'(?:src|href)="([^"#]+)"', html))
                 rutas = {r for r in rutas if not re.match(r'[a-z]+:', r)}
                 rutas.update(('nucleo.js', 'situacion.js', 'desempeno.js', 'mapa.js',
+                              'cupos.html', 'cupos.js', 'cupos-comun.js', 'cupos-receptor.js', '../cupos.js',
                               'horarios.js', 'exportacion.js', 'saes-dialogo.js', 'tramites.js',
                               '../tramites/pdf-comun.js', '../tramites/pdf-dictamen.js', '../tramites/pdf-electivas.js'))
                 config = json.loads(re.search(r'window.SATE_CONFIG=(.*?);</script>', html, re.S)[1])
