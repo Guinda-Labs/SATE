@@ -761,101 +761,126 @@
   ],
   "_fuente": "Calendario académico IPN 2026-2027 escolarizada. Fechas cotejadas visualmente con el PDF público de ESCOM-IPN. Los rangos de registro respetan los días coloreados, excluyendo los fines de semana sin relleno. La base no incorpora fechas desplazadas por paro.",
   "vista": {
+    "filas": ["tramites", "evaluaciones", "ets", "becas", "tt", "sin_clases", "dias_clave"],
     "categorias": {
       "becas": {
         "anillo": "exterior",
+        "fila": "becas",
         "puntual": false
       },
       "descanso": {
         "anillo": "interior",
+        "fila": "sin_clases",
         "puntual": false
       },
       "ets": {
         "anillo": "exterior",
+        "fila": "ets",
         "puntual": false
       },
       "extraordinaria": {
         "anillo": "exterior",
+        "fila": "evaluaciones",
         "puntual": false
       },
       "fin": {
         "anillo": "exterior",
+        "fila": "dias_clave",
         "puntual": true
       },
       "gestion": {
         "anillo": "exterior",
+        "fila": "tramites",
         "puntual": false
       },
       "grado_posgrado": {
         "anillo": "exterior",
+        "fila": "tramites",
         "puntual": false
       },
       "induccion": {
         "anillo": "exterior",
+        "fila": "tramites",
         "puntual": false
       },
       "induccion_nms": {
         "anillo": "exterior",
+        "fila": "tramites",
         "puntual": false
       },
       "inicio": {
         "anillo": "exterior",
+        "fila": "dias_clave",
         "puntual": true
       },
       "inicio_nms": {
         "anillo": "exterior",
+        "fila": "dias_clave",
         "puntual": true
       },
       "inscripcion": {
         "anillo": "exterior",
+        "fila": "tramites",
         "puntual": false
       },
       "inscripcion_ets": {
         "anillo": "exterior",
+        "fila": "ets",
         "puntual": false
       },
       "nivelacion": {
         "anillo": "exterior",
+        "fila": "tramites",
         "puntual": false
       },
       "ordinaria": {
         "anillo": "exterior",
+        "fila": "evaluaciones",
         "puntual": false
       },
       "planeacion": {
         "anillo": "exterior",
+        "fila": "tramites",
         "puntual": false
       },
       "politecnico": {
         "anillo": "exterior",
+        "fila": "dias_clave",
         "puntual": true
       },
       "posgrado": {
         "anillo": "exterior",
+        "fila": "tramites",
         "puntual": false
       },
       "reanudacion": {
         "anillo": "exterior",
+        "fila": "dias_clave",
         "puntual": true
       },
       "saberes": {
         "anillo": "exterior",
+        "fila": "evaluaciones",
         "puntual": false
       },
       "sindical": {
         "anillo": "exterior",
+        "fila": "sin_clases",
         "puntual": true
       },
       "suspension": {
         "anillo": "interior",
+        "fila": "sin_clases",
         "puntual": false
       },
       "tt": {
         "anillo": "exterior",
+        "fila": "tt",
         "puntual": false
       },
       "vacaciones": {
         "anillo": "interior",
+        "fila": "sin_clases",
         "puntual": false
       }
     }

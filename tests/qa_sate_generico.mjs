@@ -223,7 +223,7 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
   const buscar=(n,clase)=>n.children?.some(h=>h.className===clase||buscar(h,clase));
   assert.ok(buscar(document.getElementById('sate-calendario'),'calendario-mes'));
   document.getElementById('cal-vista-carriles').onclick();
-  assert.ok(buscar(document.getElementById('sate-calendario'),'calendario-carriles'));
+  assert.ok(buscar(document.getElementById('sate-calendario'),'calendario-linea'));
   assert.equal(c.SATE.almacen.get('cal.vista'),'carriles','Recuerdo también sin plan cargado');
   document.getElementById('cal-vista-semicirculo').onclick();
   assert.equal(c.SATE.calendario.eventos().filter(e=>e.audiencia.includes('nuevo_ingreso')).length,modo==='vacio'?7:0);
