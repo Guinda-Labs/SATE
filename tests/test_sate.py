@@ -15,6 +15,12 @@ sys.path.insert(0, str(ROOT / 'tools'))
 
 
 class SateBuild(unittest.TestCase):
+    def test_cupos(self):
+        """Consulta ficticia de ocupabilidad y puente de solo lectura, sin navegador ni red."""
+        resultado = subprocess.run([r'D:\Tools\nodejs\node.exe', 'tests/qa_sate_cupos.mjs'], cwd=ROOT,
+                                   capture_output=True, text=True, encoding='utf-8')
+        self.assertEqual(resultado.returncode, 0, resultado.stdout + resultado.stderr)
+
     def test_creditos_por_escala(self):
         from build_sate import creditos_materia
         self.assertEqual(creditos_materia('B', '09', 'B101', '7.50', '3', '1.5'),

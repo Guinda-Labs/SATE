@@ -997,6 +997,16 @@ def escribir_sate(data):
         raise ValueError("No se encontró el diálogo de exportación")
     html_exportacion = exportacion.group(0)
     html = html[:exportacion.start()] + html[exportacion.end():]
+    cupos = (ROOT / 'tools/cupos_saes.js').read_text(encoding='utf-8')
+    (destino / 'cupos.js').write_text(cupos.split('/*__CUPOS_PANEL__*/')[0] + (fuente / 'cupos.js').read_text(encoding='utf-8'), encoding='utf-8')
+    site_cupos = os.environ.get('UPIITA_SITE', '')
+    url_cupos = site_cupos + 'sate/index.html' if site_cupos else ''
+    import urllib.parse, html as html_escape
+    textos_cupos = {k: v for k, v in contenido.objeto_t().items() if k.startswith('sate.cupos.')}
+    marcador = cupos.replace("'__CUPOS_URL__'", json.dumps(url_cupos)).replace('__CUPOS_TEXTOS__', json.dumps(textos_cupos, ensure_ascii=False))
+    (dist / 'cupos.js').write_text(marcador, encoding='utf-8')
+    enlace_cupos = ('javascript:(function(){var s=document.createElement("script");s.src=' + json.dumps(site_cupos + 'cupos.js?v=') + '+Date.now();document.head.appendChild(s)})()') if site_cupos else 'javascript:' + urllib.parse.quote(marcador, safe='')
+    interior_hor = interior_hor.replace('/*__CUPOS_MARCADOR__*/', html_escape.escape(enlace_cupos, quote=True))
     (destino / "horarios.js").write_text("document.getElementById('v-hor').innerHTML=" + json.dumps(interior_hor, ensure_ascii=False) + ";\n" + (fuente / "horarios.js").read_text(encoding="utf-8"), encoding="utf-8")
     (destino / "exportacion.js").write_text("document.body.insertAdjacentHTML('beforeend'," + json.dumps(html_exportacion, ensure_ascii=False) + ");\n" + (fuente / "exportacion.js").read_text(encoding="utf-8"), encoding="utf-8")
     html = comun.inyectar(html)

@@ -1,4 +1,5 @@
 const txH=(clave,vars)=>SATE.texto('sate.horarios.'+clave,vars);
+if(typeof CUPOS!=='undefined')CUPOS.montar();
 $('#offer').addEventListener('click',e=>{
   if(e.target.closest('[data-oferta-mapa]'))SATE.ir('mapa');
   if(e.target.closest('[data-oferta-toda]')){S.onlyWant=false;store.set('onlyWant',false);renderHFilters();renderOffer()}
@@ -151,7 +152,7 @@ function optRow(c,sel,inGroup){
   const k=keyOf(c), on=plan().sel.includes(k), mk=ws().marks[k]||{};
   const clash=[...sel,...ownAsClasses()].filter(s=>(s.own||keyOf(s)!==k)&&overlaps(s,c));
   const same=sel.find(s=>s[4]===c[4]&&keyOf(s)!==k);
-  let tags='';
+  let tags=typeof CUPOS!=='undefined'?CUPOS.insignia(c):'';
   if(!on&&clash.length) tags+=`<span class="tag bad">${esc(txH('choca',{nombre:clash.map(s=>s.own?s.n:s[3]+' '+name(s).toLowerCase()).join(', ')}))}</span>`;
   if(!on&&same) tags+=`<span class="tag soft">${esc(txH('reemplaza',{grupo:same[3]}))}</span>`;
   const who=inGroup?`<b>${esc(name(c))}</b> <small>${c[8]} · ${esc(textoCreditos(c[8],c[7]))}</small><br>${esc(profs(c))}`:esc(profs(c));
@@ -404,7 +405,7 @@ function generate(){
   const marks=ws().marks, own=ownAsClasses();
   const pref=S.gpref.map(norm), avoid=S.gavoid.map(norm);
   const pscore=c=>c[5].reduce((s,i)=>s+(pref.some(p=>norm(DATA.prof[i]).includes(p))?4:0),0);
-  const bad=c=>marks[keyOf(c)]?.s==='no'||c[5].some(i=>avoid.some(p=>norm(DATA.prof[i]).includes(p)))||(S.gt!=='*'&&c[1]!==S.gt)||own.some(o=>overlaps(o,c))||outside(c);
+  const bad=c=>(typeof CUPOS!=='undefined'&&CUPOS.excluir(c))||marks[keyOf(c)]?.s==='no'||c[5].some(i=>avoid.some(p=>norm(DATA.prof[i]).includes(p)))||(S.gt!=='*'&&c[1]!==S.gt)||own.some(o=>overlaps(o,c))||outside(c);
   const ga=tmin(GT.a), gb=tmin(GT.b);
   function outside(c){return c[6].some(([d,a,b])=>(ga!=null&&a<ga)||(gb!=null&&b>gb))}
   const inPool=new Set(pool.map(keyOf));
@@ -595,18 +596,20 @@ function renderPlans(){
     `<button class="chip plan-new" data-newplan="1" title="${esc(txH('nuevo_ayuda'))}">${esc(txH('nuevo'))}</button><button class="link" data-dup style="margin-left:8px">${esc(txH('duplicar',{version:ws().plan}))}</button>`;
 }
 function renderCal(){
+  if(typeof CUPOS!=='undefined')CUPOS.pintar();
   renderSemana();
   const sel=selected(), own=ownAsClasses();
   const ghost=S.hover&&!plan().sel.includes(S.hover)?byKey(S.hover):null;
   const viajes=SEMANA_ACTIVA?semanaTraslados(sel).map(([d,a,b])=>({own:true,n:txH('semana_categoria_traslados'),h:[[d,Math.max(0,a),Math.min(1440,b)]]})):[];
   const all=[...sel,...own,...viajes,...(ghost?[ghost]:[])];
   const items=SateUI.cuadriculaHorario(all,{S,slots,START,BLOCK,SLOT,SLOTPX,$,DAYS,hm,esc,txH,hue,keyOf,name,profs,roomAt,ghost});
+  if(typeof CUPOS!=='undefined')for(const b of document.querySelectorAll('#cal .blk[data-k]')){const c=byKey(b.dataset.k);if(c)b.insertAdjacentHTML('beforeend',CUPOS.insignia(c))}
   const cv=cview();document.querySelectorAll('[data-cview]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cview===cv)));
   $('.calwrap').hidden=cv==='dia';$('#agenda').hidden=cv!=='dia';
   if(cv==='dia'){const by={};items.forEach(b=>(by[b.d]=by[b.d]||[]).push(b));
     $('#agenda').innerHTML=Object.keys(by).length?Object.keys(by).sort((a,b)=>a-b).map(d=>`<section class="ag-day"><h4>${DAYN[d]}</h4>`+by[d].sort((x,y)=>x.a-y.a).map(b=>b.c.own?
       `<div class="ag-it own${b.clash?' clash':''}"${b.c.i!=null?` data-own="${b.c.i}" tabindex="0" role="button" aria-label="${esc(txH('semana_abrir_bloque',{nombre:b.c.n}))}"`:''}><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(b.c.n)}</b><small>${esc(txH('actividad'))}${b.clash?' · '+esc(txH('traslape')):''}</small></span></div>`:
-      `<div class="ag-it${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)}"><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(name(b.c))}</b><small>${b.c[3]}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''} · ${esc(profs(b.c))}${b.ghost?' · '+esc(txH('vista_previa')):''}${b.clash?' · '+esc(txH('traslape')):''}</small></span></div>`).join('')+'</section>').join(''):
+      `<div class="ag-it${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)}"><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(name(b.c))}</b><small>${b.c[3]}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''} · ${esc(profs(b.c))}${b.ghost?' · '+esc(txH('vista_previa')):''}${b.clash?' · '+esc(txH('traslape')):''}</small>${typeof CUPOS!=='undefined'?CUPOS.insignia(b.c):''}</span></div>`).join('')+'</section>').join(''):
       `<p class="ag-empty">${esc(txH('horario_vacio'))}</p>`}
   const cr=sel.reduce((s,c)=>s+c[7],0);
   const mins=sel.reduce((s,c)=>s+c[6].reduce((t,b)=>t+b[2]-b[1],0),0);
@@ -632,7 +635,7 @@ function renderCal(){
     if(ci.ret)$('#load .load-note').appendChild(SateUI.ayuda('sate.horarios.carga_ayuda',{ret:fmtCr(ci.ret),nuevos:fmtCr(ci.nuevos),libre:fmtCr(ci.libre),tope:fmtCr(ci.tope)}));
   }else $('#load').innerHTML='';
   $('#sel').hidden=!both.length;
-  $('#sel').innerHTML=sel.map(c=>`<div><span class="sw" style="--h:${hue(c)}"></span><span class="grp">${c[3]}</span><span>${esc(pretty(name(c)))}<br><small>${esc(profs(c))}</small></span><span class="cr">${esc(textoCreditos(c[8],c[7]))} ${ayudaCreditos(c[8])}</span><button class="x" data-toggle="${keyOf(c)}" aria-label="${esc(txH('quitar',{nombre:name(c)}))}">×</button></div>`).join('')+
+  $('#sel').innerHTML=sel.map(c=>`<div><span class="sw" style="--h:${hue(c)}"></span><span class="grp">${c[3]}</span><span>${esc(pretty(name(c)))}<br><small>${esc(profs(c))}</small>${typeof CUPOS!=='undefined'?CUPOS.insignia(c):''}</span><span class="cr">${esc(textoCreditos(c[8],c[7]))} ${ayudaCreditos(c[8])}</span><button class="x" data-toggle="${keyOf(c)}" aria-label="${esc(txH('quitar',{nombre:name(c)}))}">×</button></div>`).join('')+
     own.map(o=>{const r=plan().own[o.i];return `<div><span class="sw own"></span><span class="grp">${esc(txH('extra'))}</span><span>${esc(o.n)}<br><small>${r.d.map(d=>DAYS[d]).join(' ')} ${hm(r.a)}–${hm(r.b)}</small></span><span></span><button class="x" data-unown="${o.i}" aria-label="${esc(txH('quitar',{nombre:o.n}))}">×</button></div>`}).join('');
   montarAyudasCreditos();
 }
