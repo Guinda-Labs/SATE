@@ -51,6 +51,11 @@ await C.consultar({fetch:pedir,parser:documento,url,carrera:'E',plan:'98',opcion
 await assert.rejects(C.consultar({fetch:async()=>({ok:true,url:'https://www.saes.upiita.ipn.mx/Login.aspx',text:async()=>fixture}),parser:documento,url,opciones(){}}),/sesion/);
 await assert.rejects(C.consultar({fetch:async()=>({type:'opaqueredirect',status:0}),parser:documento,url,opciones(){}}),/sesion/);
 await assert.rejects(C.consultar({fetch:pedir,parser:documento,url,carrera:'E',plan:'invalido',opciones(){}}),/plan/);
+// SAES real: la primera carga (GET) no trae carrera ni plan; aparecen tras elegir el periodo actual (sesión real, 2026-10-14).
+{const sinSelects=fixture.replace(/<select name="ctl00\$mainCopy\$dpdcarrera">[\s\S]*?<\/select>/,'').replace(/<select name="ctl00\$mainCopy\$dpdplan">[\s\S]*?<\/select>/,'');
+ assert.ok(!sinSelects.includes('dpdcarrera'));car='B';pl='09';
+ const real=async(u,o)=>o.method==='GET'?{ok:true,status:200,url,text:async()=>sinSelects}:pedir(u,o);
+ const r2=await C.consultar({fetch:real,parser:documento,url,carrera:'E',plan:'98',opciones(){}});assert.equal(r2.carrera,'E');assert.ok(r2.filas.length>0)}
 await assert.rejects(C.consultar({fetch:async()=>({ok:true,url,text:async()=>'<input type="password" name="clave">'}),parser:documento,url,opciones(){}}),/sesion/);
 let periodoLlamadas=0;
 await C.consultar({fetch:async(u,o)=>{periodoLlamadas++;if(o.body&&periodoLlamadas===2)assert.equal(new URLSearchParams(o.body).get('__EVENTTARGET'),'ctl00$mainCopy$rblEsquema$0');return {ok:true,url,text:async()=>periodoLlamadas===1?fixture.replace('value="1" checked','value="1"').replace('value="3">','value="3" checked>'):fixture}},parser:documento,url,opciones(){}});

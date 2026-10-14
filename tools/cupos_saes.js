@@ -63,8 +63,9 @@
       body.set('ctl00$mainCopy$rblEsquema','1');body.set('__EVENTTARGET','ctl00$mainCopy$'+target);body.set('__EVENTARGUMENT','');body.set('__LASTFOCUS','');
       if(target!=='rblEsquema$0')body.set('ctl00$mainCopy$'+target,val);doc=await leer(body);
     }
-    if(!select('dpdcarrera')||!select('dpdplan'))throw new Error('sesion');
+    // El SAES muestra carrera y plan solo después de elegir «Periodo Escolar Actual» (verificado con sesión real, 2026-10-14).
     await post('rblEsquema$0','1');
+    if(!select('dpdcarrera')||!select('dpdplan'))throw new Error('sesion');
     if(['Chkespecialidad','ChkSemestre','Chkgrupo','Chkmateria'].some(k=>doc.querySelector('[name="ctl00$mainCopy$'+k+'"]:checked')))await post('dpdcarrera',select('dpdcarrera').value);
     carrera=carrera||select('dpdcarrera').value;
     if(![...select('dpdcarrera').options].some(o=>o.value===carrera))throw new Error('seleccion');
