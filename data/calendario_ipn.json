@@ -32,7 +32,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "inscripcion"
     },
     {
       "periodo": "27/1",
@@ -54,7 +55,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/1",
@@ -65,7 +67,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/1",
@@ -76,7 +79,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/1",
@@ -87,7 +91,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/1",
@@ -98,7 +103,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/1",
@@ -142,7 +148,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ets"
     },
     {
       "periodo": "27/1",
@@ -165,7 +172,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "vacaciones"
     },
     {
       "periodo": "27/2",
@@ -176,7 +184,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "inscripcion"
     },
     {
       "periodo": "27/2",
@@ -199,7 +208,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/2",
@@ -210,7 +220,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/2",
@@ -221,7 +232,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/2",
@@ -232,7 +244,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/2",
@@ -243,7 +256,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ordinaria"
     },
     {
       "periodo": "27/2",
@@ -298,7 +312,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "ets"
     },
     {
       "periodo": "27/2",
@@ -320,7 +335,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "vacaciones"
     },
     {
       "periodo": "27/2",
@@ -331,7 +347,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "vacaciones"
     },
     {
       "periodo": "27/2",
@@ -353,7 +370,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "inscripcion"
     },
     {
       "periodo": "28/1",
@@ -375,7 +393,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "rayado"
+      "simbolo": "rayado",
+      "grupo": "descanso"
     },
     {
       "periodo": "27/1",
@@ -386,7 +405,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "rayado"
+      "simbolo": "rayado",
+      "grupo": "descanso"
     },
     {
       "periodo": "27/1",
@@ -397,7 +417,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "rayado"
+      "simbolo": "rayado",
+      "grupo": "descanso"
     },
     {
       "periodo": "27/1",
@@ -408,7 +429,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "rayado"
+      "simbolo": "rayado",
+      "grupo": "descanso"
     },
     {
       "periodo": "27/2",
@@ -419,7 +441,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "rayado"
+      "simbolo": "rayado",
+      "grupo": "descanso"
     },
     {
       "periodo": "27/2",
@@ -430,7 +453,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "rayado"
+      "simbolo": "rayado",
+      "grupo": "descanso"
     },
     {
       "periodo": "27/2",
@@ -441,7 +465,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "rayado"
+      "simbolo": "rayado",
+      "grupo": "descanso"
     },
     {
       "periodo": "27/2",
@@ -452,7 +477,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "rayado"
+      "simbolo": "rayado",
+      "grupo": "descanso"
     },
     {
       "periodo": "27/2",
@@ -463,7 +489,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "rayado"
+      "simbolo": "rayado",
+      "grupo": "descanso"
     },
     {
       "periodo": "27/1",
@@ -706,7 +733,8 @@
       "audiencia": [
         "alumnos"
       ],
-      "simbolo": "relleno"
+      "simbolo": "relleno",
+      "grupo": "vacaciones"
     },
     {
       "periodo": "27/1",
@@ -731,5 +759,105 @@
       "simbolo": "discontinuo"
     }
   ],
-  "_fuente": "Calendario académico IPN 2026-2027 escolarizada. Fechas cotejadas visualmente con el PDF público de ESCOM-IPN. Los rangos de registro respetan los días coloreados, excluyendo los fines de semana sin relleno. La base no incorpora fechas desplazadas por paro."
+  "_fuente": "Calendario académico IPN 2026-2027 escolarizada. Fechas cotejadas visualmente con el PDF público de ESCOM-IPN. Los rangos de registro respetan los días coloreados, excluyendo los fines de semana sin relleno. La base no incorpora fechas desplazadas por paro.",
+  "vista": {
+    "categorias": {
+      "becas": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "descanso": {
+        "anillo": "interior",
+        "puntual": false
+      },
+      "ets": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "extraordinaria": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "fin": {
+        "anillo": "exterior",
+        "puntual": true
+      },
+      "gestion": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "grado_posgrado": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "induccion": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "induccion_nms": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "inicio": {
+        "anillo": "exterior",
+        "puntual": true
+      },
+      "inicio_nms": {
+        "anillo": "exterior",
+        "puntual": true
+      },
+      "inscripcion": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "inscripcion_ets": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "nivelacion": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "ordinaria": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "planeacion": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "politecnico": {
+        "anillo": "exterior",
+        "puntual": true
+      },
+      "posgrado": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "reanudacion": {
+        "anillo": "exterior",
+        "puntual": true
+      },
+      "saberes": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "sindical": {
+        "anillo": "exterior",
+        "puntual": true
+      },
+      "suspension": {
+        "anillo": "interior",
+        "puntual": false
+      },
+      "tt": {
+        "anillo": "exterior",
+        "puntual": false
+      },
+      "vacaciones": {
+        "anillo": "interior",
+        "puntual": false
+      }
+    }
+  }
 }
