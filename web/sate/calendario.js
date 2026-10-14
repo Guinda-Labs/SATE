@@ -89,7 +89,7 @@
     }grid.appendChild(fechas);tarjeta.appendChild(grid);return tarjeta;
   }
 
-  // Un solo mes chico activo: si el de arriba sale de la vista, aparece su copia bajo el detalle.
+  // Un solo mes chico activo: si el de arriba sale de la vista, aparece su copia sobre el detalle (fija aunque el detalle cambie de altura).
   function aplicarCopia(){
     if(!tarjetaMes||!tarjetaCopia)return;
     const activa=!movil()&&!arribaVisible,id=document.activeElement?.id||'',delMes=/^cal-(dia-|anterior|proximo)/.test(id);
@@ -210,7 +210,7 @@
     // Acomodo común: arriba resumen y mes; abajo el bloque principal a todo lo ancho; luego agenda y detalle.
     const arriba=el('div',null,'calendario-arriba');tarjetaMes=bloqueMes();arriba.appendChild(bloqueResumen());arriba.appendChild(tarjetaMes);box.appendChild(arriba);
     const principal=el('div',null,'calendario-principal');if(vista()==='carriles')linea(principal);else semicirculo(principal);box.appendChild(principal);
-    const abajo=el('div',null,'calendario-abajo');abajo.appendChild(agenda());ladoNodo=el('div',null,'calendario-lado');panel=el('aside',null,'calendario-detalle');ladoNodo.appendChild(panel);tarjetaCopia=bloqueMes('-b');tarjetaCopia.hidden=true;ladoNodo.appendChild(tarjetaCopia);abajo.appendChild(ladoNodo);box.appendChild(abajo);
+    const abajo=el('div',null,'calendario-abajo');abajo.appendChild(agenda());ladoNodo=el('div',null,'calendario-lado');panel=el('aside',null,'calendario-detalle');tarjetaCopia=bloqueMes('-b');tarjetaCopia.hidden=true;ladoNodo.appendChild(tarjetaCopia);ladoNodo.appendChild(panel);abajo.appendChild(ladoNodo);box.appendChild(abajo);
     detalle();resaltar();observador?.disconnect?.();observador=null;if(typeof IntersectionObserver==='function'){observador=new IntersectionObserver(es=>{const ultimo=es.at(-1);if(ultimo&&ultimo.isIntersecting!==arribaVisible){arribaVisible=ultimo.isIntersecting;aplicarCopia()}},{threshold:0});observador.observe(tarjetaMes)}aplicarCopia();if(solicitado)document.getElementById('cal-detalle-titulo')?.focus();
   }
   SATE.pestana('calendario',{montar(){},mostrar,ocultar(){hoja=false}});

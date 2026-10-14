@@ -323,7 +323,7 @@ mostrar();cambiar('27/1');
 visible(true);const [mesArriba,mesAbajo]=nodos('calendario-mes-chico');
 assert.equal(observadores.at(-1).n,mesArriba,'Se observa el mes de arriba');
 assert.equal(mesAbajo.hidden,true);assert.equal(mesArriba.inert,false);assert.equal(mesArriba.getAttribute('aria-hidden'),'false');
-assert.equal(nodos('calendario-lado')[0].children.at(-1),mesAbajo,'La copia va debajo del detalle');assert.equal(nodos('calendario-lado')[0].children[0].className,'calendario-detalle');
+assert.equal(nodos('calendario-lado')[0].children[0],mesAbajo,'La copia va arriba del detalle (no salta cuando el detalle cambia de altura)');assert.equal(nodos('calendario-lado')[0].children.at(-1).className,'calendario-detalle');
 dia('2026-10-19').focus();
 visible(false);
 assert.equal(mesAbajo.hidden,false);assert.equal(mesArriba.inert,true);assert.equal(mesArriba.getAttribute('aria-hidden'),'true');assert.equal(nodos('calendario-lado')[0].getAttribute('data-copia'),'true');
