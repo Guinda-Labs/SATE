@@ -875,7 +875,7 @@ def main():
     idx = idx.replace('/*__SATE_ENTRADA_ABRIR__*/', contenido.objeto_t()['sate.entrada.abrir'])
     idx = idx.replace("/*__UNIDADES__*/[]", json.dumps(cuenta.config()['unidades'], ensure_ascii=False), 1)
     (ROOT / "web" / "dist" / "index.html").write_text(aplicar(idx, "index"), encoding="utf-8")   # página principal con inicio de sesión
-    for f in ("revision.html", "privacidad.html", "condiciones.html"):
+    for f in ("revision.html", "privacidad.html", "condiciones.html", "migrar.html"):
         shutil.copy(ROOT / "web" / f, ROOT / "web" / "dist" / f)
     ico = ROOT / "web" / "dist" / "assets" / "icono"
     ico.mkdir(parents=True, exist_ok=True)
