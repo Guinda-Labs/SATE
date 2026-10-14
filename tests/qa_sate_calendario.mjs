@@ -34,6 +34,12 @@ const SATE={modulos:{},texto:(k,v={})=>(config.textos[k]||k).replace(/\{(\w+)\}/
 const c=vm.createContext({SATE,DATA:{calendario:data.upiita},SATE_CONFIG:config,SATE_UNIDAD:'upiita',document,console,
   perMeta:()=>0,perName:()=> '27/1',isPersonal:()=>false,conSim:(_,fn)=>fn(),tr:()=>({fail:[]})});
 const nucleo=leer('web/dist/sate/nucleo.js');
+// El almacén real conserva la ruta IPNT.set; sólo el medio de almacenamiento es ficticio.
+const almacen=new Map(),escrituras=[];
+c.HU='hu.';c.DEMO=false;c.ALM={getItem:k=>almacen.get(k)??null};
+c.IPNT={set(k,v){escrituras.push([k,v]);almacen.set(k,v)}};
+vm.runInContext(nucleo.slice(nucleo.indexOf('const store='),nucleo.indexOf('\n',nucleo.indexOf('const store='))),c);
+SATE.almacen=vm.runInContext('store',c);
 vm.runInContext(nucleo.slice(nucleo.indexOf('SATE.calendario={'),nucleo.indexOf('let CALAP=')),c);
 const api=SATE.calendario;api.hoy=()=> '2026-10-20';
 const e=(categoria,desde,extra={})=>({categoria,desde,hasta:desde,periodo:'27/1',titulo:categoria,audiencia:['alumnos'],simbolo:'relleno',...extra});
@@ -242,6 +248,56 @@ for(const [hoy,p] of [['2026-10-26','27/1'],['2026-11-10','27/1'],['2026-01-01',
 }
 assert.equal(nodos('calendario-resumen-fila')[0].children[0].textContent,'Ahora');
 assert.equal(nodos('calendario-resumen-fila')[1].children[0].textContent,'Sigue');
+
+// SEMI3: dos geometrías, una selección, preferencia por unidad y datos compartidos.
+const cambiarVista=v=>document.getElementById('cal-vista-'+v).onclick();
+assert.equal(document.getElementById('cal-vista-semicirculo').getAttribute('aria-pressed'),'true');
+api.hoy=()=> '2026-10-20';cambiar('27/1');cambiarVista('carriles');
+assert.equal(nodos('calendario-semicirculo').length,0);
+assert.equal(nodos('calendario-carriles').length,1);
+assert.equal(nodos('calendario-carriles-meses')[0].getAttribute('role'),'img');
+assert.match(nodos('calendario-carriles-meses')[0].getAttribute('aria-label'),/en carriles de izquierda a derecha/);
+assert.equal(document.getElementById('cal-vista-carriles').getAttribute('aria-pressed'),'true');
+assert.deepEqual(escrituras.at(-1),['hu.cal.vista','"carriles"']);
+assert.ok(nodos('calendario-carril-hoy').length>=5);
+const protocolo=nodos('calendario-carril-evento').find(n=>n.getAttribute('aria-label').includes('registro de protocolo'));
+assert.equal(protocolo.tagName,'button');protocolo.onclick();
+assert.equal(dias().filter(n=>n.getAttribute('aria-pressed')==='true').length,5,'Carril selecciona el mes');
+assert.equal(nodos('calendario-detalle-evento').length,1);
+nodos('calendario-carriles-scroll')[0].scrollLeft=123;dia('2026-10-19').onclick();
+assert.equal(nodos('calendario-carriles-scroll')[0].scrollLeft,123,'Seleccionar conserva el desplazamiento interno');
+assert.ok(nodos('calendario-carril-evento').filter(n=>n.getAttribute('aria-pressed')==='true').length>1,'Mes selecciona carriles');
+cambiarVista('semicirculo');
+assert.ok(nodos('calendario-arco').filter(n=>n.getAttribute('aria-pressed')==='true').length>1,'La selección sobrevive al cambio de geometría');
+const tecla=nodos('calendario-arco')[0];assert.equal(tecla.getAttribute('role'),'button');assert.equal(tecla.getAttribute('tabindex'),'0');
+tecla.onkeydown({key:'Enter',preventDefault(){}});assert.ok(nodos('calendario-detalle-evento').length);
+cambiarVista('carriles');vm.runInContext(codigo,c);mostrar();
+assert.equal(nodos('calendario-carriles').length,1,'Recuerdo al volver a cargar el módulo');
+const grupoCarril=nodos('calendario-carril-evento').find(n=>n.getAttribute('data-grupo')==='g:ordinaria');grupoCarril.onclick();
+assert.equal(nodos('calendario-detalle-evento').length,3);assert.match(nodos('calendario-carril-nombres').map(n=>n.textContent).join(' '),/×3/);
+assert.equal(nodos('calendario-carril-evento').filter(n=>n.getAttribute('aria-pressed')==='true').length,3);
+for(const [hoy,p,estado] of [['2026-01-01','26/2','antes'],['2026-10-13','26/2','despues'],['2026-10-20','27/1','durante']]){
+ api.hoy=()=>hoy;cambiar(p);assert.equal(box.getAttribute('data-estado'),estado);
+ assert.equal(nodos('calendario-carril-hoy').length>0,estado==='durante');assert.ok(!box.textContent.includes('sate.calendario.'));
+}
+for(const unidad of ['escom','upibi']){
+ c.SATE_UNIDAD=unidad;c.HU='hu.'+unidad+'.';c.DATA.calendario=null;mostrar();
+ assert.equal(nodos('calendario-semicirculo').length,1,'Preferencia independiente: '+unidad);
+ cambiarVista('carriles');assert.deepEqual(escrituras.at(-1),['hu.'+unidad+'.cal.vista','"carriles"']);
+ mostrar();assert.equal(nodos('calendario-carriles').length,1);assert.ok(!box.textContent.includes('sate.calendario.'));
+}
+c.HU='hu.';c.SATE_UNIDAD='upiita';c.DATA.calendario=data.upiita;c.matchMedia=()=>({matches:true});mostrar();cambiar('27/1');
+const tactil=nodos('calendario-carril-evento')[0];tactil.onclick();
+assert.equal(nodos('calendario-detalle')[0].getAttribute('role'),'dialog');
+document.getElementById('cal-cerrar').onclick();assert.equal(document.activeElement.id,tactil.id,'Cerrar devuelve el foco al carril');
+c.SATE_CONFIG={...config,calendarioBase:null};c.DATA.calendario=null;mostrar();
+assert.equal(box.getAttribute('data-estado'),'vacio');assert.equal(nodos('calendario-carril-hoy').length,0);assert.match(box.textContent,/Fechas por publicar/);
+almacen.set('hu.cal.vista','"desconocida"');mostrar();assert.equal(nodos('calendario-semicirculo').length,1,'Valor inválido vuelve a la vista predeterminada');
+assert.match(css,/\.calendario-carriles-scroll\{[^}]*max-width:100%;overflow-x:auto/);
+assert.match(css,/\.calendario-carriles-contenedor\{[^}]*min-width:0;max-width:100%/);
+assert.doesNotMatch(codigo,/'(?:Semicírculo|Carriles|Inscripción|Evaluación|Otros trámites|Desplaza)[^']*'/);
+assert.doesNotMatch(document.getElementById('cal-periodo').textContent,/mitad/i);
+console.log('SEMI3 OK: selector y recuerdo IPNT por unidad, selección carriles ↔ mes ↔ arco, grupos, teclado, retorno de foco móvil y estados.');
 console.log('SEMI2 OK: '+leyendas+' leyendas por unidad, periodo y audiencia; colores propios AA y tarjeta sin prefijos duplicados.');
 
 console.log('SEMI OK: datos y fusión, dos anillos, grupo ×N, selección arco ↔ mes, teclado, hoja móvil, vacío/antes/después, tres unidades y genérico, tokens claro/oscuro y textos por clave.');

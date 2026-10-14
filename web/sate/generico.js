@@ -275,5 +275,5 @@ window.IPNT_UNIDAD = window.SATE_UNIDAD;
   SATE.alumno=()=>alumno;
   if(!esDemo)IPNT.set('ipnt.unidad',unidad);
   SATE.nucleoListo({personal:()=>!!alumno,estado:{},renderTop:estado,renderAviso(){},
-    store:{set:(k,v)=>IPNT.set('hu.'+unidad+'.'+k,JSON.stringify(v))}}).catch(SATE.error);
+    store:{get(k,d){try{const v=localStorage.getItem('hu.'+unidad+'.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set:(k,v)=>IPNT.set('hu.'+unidad+'.'+k,JSON.stringify(v))}}).catch(SATE.error);
 })();
