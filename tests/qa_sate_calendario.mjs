@@ -136,7 +136,7 @@ assert.equal(nodos('calendario-aguja').length,1);
 assert.equal(nodos('calendario-svg-mes').some(n=>n.getAttribute('data-mes')==='2026-10'),false);
 assert.equal(nodos('calendario-etiqueta-exterior').length,0);
 assert.equal(box.all().filter(n=>n.tagName==='textPath').length,0);
-assert.ok(document.getElementById('cal-periodo').textContent.includes('Ciclo 2026–2027 · primera mitad'));
+assert.ok(document.getElementById('cal-periodo').textContent.includes('Periodo 27/1'));assert.ok(!document.getElementById('cal-periodo').textContent.includes('mitad'));
 assert.equal(dias().filter(n=>n.getAttribute('data-fecha').startsWith('2026-10')).length,31);
 assert.equal(dias().filter(n=>n.tabIndex===0).length,1);
 const arco=nodos('calendario-arco').find(n=>n.getAttribute('aria-label').includes('registro de protocolo'));
