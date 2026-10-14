@@ -329,7 +329,7 @@ assert.match(css,/@media\(max-width:600px\)\{\.calendario-carriles-contenedor\{-
 assert.match(css,/\.calendario-carril-evento::before\{[^}]*44px/);
 for(const bloque of css.matchAll(/\.calendario-carril-nombres\{([^}]+)\}/g))assert.doesNotMatch(bloque[1],/white-space:nowrap|overflow:hidden/);
 assert.match(css,/\.calendario-carriles-contenedor\{[^}]*min-width:0;max-width:100%/);
-assert.doesNotMatch(codigo,/'(?:Semicírculo|Carriles|Inscripción|Evaluación|Otros trámites|Desplaza)[^']*'/);
+assert.doesNotMatch(codigo,/'(?:Semicírculo|Carriles|Compacto|Detallado|Inscripción|Evaluación|Otros trámites|Desplaza)[^']*'/);
 assert.doesNotMatch(document.getElementById('cal-periodo').textContent,/mitad/i);
 console.log('SEMI3 OK: selector y recuerdo IPNT por unidad, selección carriles ↔ mes ↔ arco, grupos, teclado, retorno de foco móvil y estados.');
 console.log('SEMI4 OK: filas de 28/36 px, carriles vacíos ocultos, resúmenes fuera del desplazamiento, periodo completo inicial y ampliación sincronizada con hoy visible.');
