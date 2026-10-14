@@ -967,7 +967,7 @@ function renderTray(){
   if(SATE.actual?.pestana==='trayectoria'){renderStats();return}
   if(SATE.modulos.mapa){renderMap();conSim(usaSim('mapa'),()=>conPlan(renderList))}renderSide();
 }
-function renderHor(){if(isPersonal())renderEqvHorario(ALUMNO);else $('#est-eqv').hidden=true;renderHFilters();renderOffer();renderPlans();renderCal();renderOwnForm();renderGen();renderEquiv();montarAyudasCreditos()}
+function renderHor(){cancelarGeneracion();if(isPersonal())renderEqvHorario(ALUMNO);else $('#est-eqv').hidden=true;renderHFilters();renderOffer();renderPlans();renderCal();renderOwnForm();renderGen();renderEquiv();montarAyudasCreditos()}
 /* Equivalencias con otras carreras de la misma unidad (tabla «Equivalencia de Materias» del SAES): solo consulta.
    Cada unidad decide cómo aplicarlas; no cambian el avance, la seriación ni el generador de horarios. */
 function renderEquiv(){
@@ -1003,7 +1003,7 @@ function renderEquiv(){
 function render(){return SATE.repintar()}
 // perfil del SAES de otra carrera: se avisa y se ofrece volver; nada del perfil se aplica aquí
 function renderAviso(){SAES.mismatch(S.car,k=>DATA.carreras[k],c=>{if(!DATA.carreras[c])return;S.car=c;store.set('car',c);S.chips=[];S.gen=null;ZOOM=null;render()},carreraPerfil)}
-function refresh(){save();renderOffer();renderPlans();renderCal();if(S.gen&&typeof generate==='function'){S.gen=generate();renderGen()}}
+function refresh(){save();renderOffer();renderPlans();renderCal();if((S.gen||typeof generacion!=='undefined'&&generacion)&&typeof iniciarGeneracion==='function')iniciarGeneracion()}
 function addClass(c){const pl=plan();pl.sel=pl.sel.filter(x=>byKey(x)?.[4]!==c[4]);pl.sel.push(keyOf(c))}
 function toggle(k){const pl=plan(),i=pl.sel.indexOf(k);if(i>=0)pl.sel.splice(i,1);else{const c=byKey(k);addClass(c);
     avisoOptativa(c[8],pl.sel.map(x=>byKey(x)?.[8]).filter(Boolean));

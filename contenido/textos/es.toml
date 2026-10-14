@@ -696,6 +696,14 @@ pegado_manual = "No se pudo leer el portapapeles. Pega los datos en el recuadro.
 tactil = "Instalar en teléfono"
 
 [sate.horarios]
+generar = "Generar"
+generar_reiniciar = "Generar de nuevo"
+generando = "Buscando horarios… Puedes iniciar otra búsqueda."
+generador_error = "No se pudo completar la búsqueda. Intenta generar de nuevo; si persiste, ajusta las materias o los filtros."
+generador_limite = "Se alcanzó el límite de tiempo (3 segundos) o de combinaciones. Se muestran las opciones encontradas, si las hay. Reduce las materias o ajusta los filtros y vuelve a generar."
+generador_borrar = "Borrar opciones generadas"
+horario_ver = "Ver horario"
+horario_cerrar = "Cerrar"
 exportacion_pie = "Generado con Horarios {unidad} · Oferta del SAES capturada el {captura}. Verifica cupo y horarios en el SAES antes de inscribirte."
 exportacion_titulo = "Horarios {unidad}"
 semana_titulo = "Extras"
