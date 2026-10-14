@@ -33,6 +33,13 @@
     filas:d.filas.map(({grupo,materia,cupo,inscritos,disponibles})=>({grupo,materia,cupo,inscritos,disponibles}))});
   const reciente=(a,b)=>validar(b)&&(!validar(a)||Date.parse(b.hora)>Date.parse(a.hora))?b:a;
   const fecha=d=>new Date(d.hora).toLocaleString('es-MX',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  function cambios(antes,despues,grupos){
+    if(!antes||antes.carrera!==despues.carrera||antes.plan!==despues.plan)return [];
+    const prev=new Map(antes.filas.map(f=>[clave(f),f.disponibles])),propios=new Set(grupos.map(clave));
+    return despues.filas.filter(f=>{const a=prev.get(clave(f)),n=f.disponibles;
+      return propios.has(clave(f))&&a!==undefined&&a!==n&&(a===0&&n>0||n===0||n<=3);
+    });
+  }
   function tarjetas(datos,seleccion,oferta){return seleccion.map(s=>({...s,fila:datos.filas.find(f=>clave(f)===clave(s)),alternativas:datos.filas.filter(f=>f.materia===s.materia&&f.grupo!==s.grupo&&f.disponibles>0).map(f=>{
     const o=oferta.find(o=>clave(o)===clave(f));
     return {...f,choque:!o?null:seleccion.some(t=>t.materia!==s.materia&&t.horas.some(a=>o.horas.some(b=>a[0]===b[0]&&a[1]<b[2]&&b[1]<a[2])))};
@@ -70,7 +77,7 @@
     if(select('dpdcarrera').value!==carrera||select('dpdplan').value!==plan||!doc.querySelector('[name="ctl00$mainCopy$rblEsquema"][value="1"]:checked'))throw new Error('seleccion');
     return {carrera,plan,filas:parsear(doc)};
   }
-  raiz.IPNCupos={origenSaes,origenSate,clave,parsear,validar,limpiar,antigua,reciente,fecha,tarjetas,consultar};
+  raiz.IPNCupos={origenSaes,origenSate,clave,parsear,validar,limpiar,antigua,reciente,fecha,tarjetas,consultar,cambios};
 })(typeof window==='undefined'?globalThis:window);
 
 /*__CUPOS_PANEL__*/
@@ -83,6 +90,8 @@
   const unidad=location.hostname.match(/saes\.([a-z0-9]+)\.ipn\.mx$/)[1],origin=URL_SATE?new URL(URL_SATE).origin:null;
   let sate=null,seleccion=[],oferta=[],datos=null,anterior=new Map(),busy=false,destruido=false,ultima=window.IPNCuposUltimaConsulta??null,conexion=null;
   const originales=new Map();
+  const titulo=document.title;
+  let automatico=false,hasta=0,reloj=null,audio=null,avisos=0;
   const panel=document.createElement('section');panel.id='ipnt-cupos';panel.tabIndex=-1;panel.setAttribute('aria-label',tx('titulo'));
   const estilo=document.createElement('style');estilo.id='ipnt-cupos-estilo';estilo.textContent=`
   #ipnt-cupos{--ipn-texto:#29252b;--ipn-superficie:#fff;--ipn-linea:#ded8dc;--ipn-acento:#71334c;position:fixed;z-index:2147483646;right:12px;bottom:12px;width:min(620px,calc(100vw - 24px));max-height:85vh;overflow:auto;background:var(--ipn-superficie);color:var(--ipn-texto);border:1px solid var(--ipn-linea);border-radius:16px;padding:18px;box-shadow:0 8px 32px #0003;font:14px/1.5 system-ui;box-sizing:border-box}
@@ -93,6 +102,11 @@
   panel.innerHTML=`<header><h2>${esc(tx('titulo'))}</h2><button data-c="cerrar" aria-label="${esc(tx('cerrar'))}">×</button></header><p>${esc(tx('limites'))}</p>
   <label>${esc(tx('carrera'))} <select data-c="carrera"></select></label><label>${esc(tx('plan'))} <select data-c="plan"></select></label>
   <p><button data-c="actualizar">${esc(tx('consultar'))}</button></p>
+  <label><input type="checkbox" data-c="auto"> ${esc(tx('auto'))}</label>
+  <label><input type="checkbox" data-c="sonido"> ${esc(tx('sonido'))}</label>
+  <label><input type="checkbox" data-c="notificacion"> ${esc(tx('notificacion'))}</label>
+  <p data-c="automatico" role="status" aria-live="polite"></p><button data-c="seguir" hidden>${esc(tx('seguir'))}</button>
+  <p data-c="aviso" role="status" aria-live="polite"></p>
   <p data-c="estado" role="status" aria-live="polite">${esc(tx('inicio'))}</p><div data-c="tarjetas"></div>
   <label>${esc(tx('filtro'))} <input type="search" data-c="filtro"></label><label>${esc(tx('nivel'))} <select data-c="nivel"><option value="">${esc(tx('todos_niveles'))}</option></select></label>
   <label>${esc(tx('orden'))} <select data-c="orden"><option value="desc">${esc(tx('orden_mas'))}</option><option value="asc">${esc(tx('orden_menos'))}</option></select></label><div class="tabla" data-c="tabla"></div>`;
@@ -100,6 +114,25 @@
   function opciones(doc){for(const k of ['carrera','plan']){const s=doc.querySelector('[name="ctl00$mainCopy$dpd'+k+'"]');if(s){el(k).innerHTML=[...s.options].map(o=>`<option value="${esc(o.value)}">${esc(o.textContent)}</option>`).join('');el(k).value=s.value}}}
   opciones(document);
   function enviar(d){if(sate&&!sate.closed)sate.postMessage(d,origin)}
+  function preferencias(){enviar({tipo:'ipnt.cupos.avisos',v:1,unidad,hasta:automatico?hasta:0,notificacion:el('notificacion').checked===true})}
+  function sonido(){if(!automatico||!el('sonido').checked||!audio||audio.state!=='running')return;
+    try{const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;
+      o.frequency.value=660;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.18);
+      o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.2);
+    }catch(e){console.warn('IPN Cupos: sonido no disponible',e)}}
+  function detener(vencido=false){automatico=false;el('auto').checked=false;clearInterval(reloj);reloj=null;preferencias();
+    el('automatico').textContent=tx(vencido?'auto_fin':'auto_apagada');el('seguir').hidden=!vencido}
+  function pulso(){if(!automatico)return;if(Date.now()>=hasta){detener(true);return}
+    el('automatico').textContent=tx(document.hidden?'auto_pausa':'auto_activa');
+    if(!document.hidden&&(ultima===null||Date.now()-ultima>=60000))return actualizar();
+  }
+  function activar(){automatico=true;hasta=Date.now()+30*60000;el('auto').checked=true;
+    el('sonido').checked=true;el('notificacion').checked=true;el('seguir').hidden=true;
+    // El contexto se crea y reanuda exclusivamente dentro del clic de activación.
+    try{const Audio=window.AudioContext||window.webkitAudioContext;if(Audio){audio=audio||new Audio();audio.resume().catch(e=>console.warn('IPN Cupos: audio suspendido',e))}}
+    catch(e){console.warn('IPN Cupos: audio no disponible',e)}
+    if(!sate||sate.closed)abrir();preferencias();clearInterval(reloj);reloj=setInterval(pulso,60000);pulso();
+  }
   function abrir(){if(!URL_SATE)return;const url=new URL(URL_SATE);url.searchParams.set('unidad',unidad);
     sate=window.open(url.href,'sate-cupos','width=420,height=560');
     if(!sate){el('estado').textContent=tx('ventana');return}
@@ -132,14 +165,17 @@
     const carrera=el('carrera').value,plan=el('plan').value;
     try{const r=await C.consultar({fetch:window.fetch.bind(window),parser:s=>new DOMParser().parseFromString(s,'text/html'),url:location.origin+'/Academica/Ocupabilidad_grupos.aspx',carrera,plan,opciones});if(destruido)return;
       anterior=new Map(datos&&datos.carrera===r.carrera&&datos.plan===r.plan?datos.filas.map(f=>[C.clave(f),f.disponibles]):[]);
-      datos={tipo:'ipnt.cupos.datos',v:1,unidad,...r,hora:new Date().toISOString()};el('estado').textContent=tx('ultima',{hora:C.fecha(datos)});
+      const nuevos={tipo:'ipnt.cupos.datos',v:1,unidad,...r,hora:new Date().toISOString()},cambios=C.cambios(datos,nuevos,seleccion);
+      datos=nuevos;el('estado').textContent=tx('ultima',{hora:C.fecha(datos)});
+      if(automatico&&Date.now()<hasta&&cambios.length){avisos+=cambios.length;el('aviso').textContent=cambios.map(f=>tx('aviso',{...f,n:f.disponibles})).join(' · ');document.title=tx('titulo_avisos',{n:avisos});sonido()}
       el('nivel').innerHTML=`<option value="">${esc(tx('todos_niveles'))}</option>`+[...new Set(r.filas.map(f=>f.nivel))].map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');pintar();enviarDatos();
     }catch(e){console.warn('IPN Cupos: consulta fallida',{unidad,carrera,plan,codigo:e.message,etapa:e.etapa,estado:e.estado,pila:e.stack});el('estado').textContent=tx('error_'+(textos['sate.cupos.error_'+e.message]?e.message:'red'))}
     finally{busy=false;if(!destruido)el('actualizar').disabled=false}
   }
   function enviarDatos(){if(datos)enviar({...datos,filas:datos.filas.map(({grupo,materia,cupo,inscritos,disponibles})=>({grupo,materia,cupo,inscritos,disponibles}))})}
   function mensaje(e){if(!C.origenSate(e.origin,URL_SATE)||e.source!==sate)return;const d=e.data;
-    if(d?.tipo==='ipnt.cupos.hola'){clearInterval(conexion);enviarDatos()}
+    if(d?.tipo==='ipnt.cupos.hola'){clearInterval(conexion);preferencias();enviarDatos()}
+    if(d?.tipo==='ipnt.cupos.permiso'&&d.v===1)el('aviso').textContent=tx(d.permiso==='granted'?'permiso_listo':'permiso_panel');
     if(d?.tipo==='ipnt.cupos.seleccion'&&d.v===1&&Array.isArray(d.grupos)&&Array.isArray(d.oferta)&&d.grupos.length<=500&&d.oferta.length<=10000){
       const valida=g=>typeof g.grupo==='string'&&typeof g.materia==='string'&&Array.isArray(g.horas)&&g.horas.every(h=>Array.isArray(h)&&h.length===3&&h.every(Number.isFinite));
       if(!d.grupos.every(valida)||!d.oferta.every(valida))return;seleccion=d.grupos;oferta=d.oferta;
@@ -147,8 +183,10 @@
     }
   }
   window.addEventListener('message',mensaje);el('actualizar').onclick=actualizar;for(const k of ['filtro','nivel','orden'])el(k).oninput=pintar;
+  el('auto').onchange=()=>el('auto').checked?activar():detener();el('seguir').onclick=activar;
+  el('notificacion').onchange=preferencias;document.addEventListener('visibilitychange',pulso);
   el('carrera').onchange=()=>{el('plan').innerHTML=''};
-  function cerrar(){destruido=true;clearInterval(conexion);window.removeEventListener('message',mensaje);panel.remove();estilo.remove();
+  function cerrar(){detener();destruido=true;clearInterval(conexion);document.removeEventListener('visibilitychange',pulso);window.removeEventListener('message',mensaje);document.title=titulo;if(audio)audio.close().catch(e=>console.warn('IPN Cupos: cierre de audio',e));panel.remove();estilo.remove();
     for(const [r,o] of originales){r.hidden=o.hidden;r.classList.remove('ipnt-elegido');o.celdas.forEach((html,i)=>r.children[4+i].innerHTML=html);o.padre.appendChild(r)}
   }
   el('cerrar').onclick=cerrar;panel.addEventListener('keydown',e=>{if(e.key==='Escape')cerrar()});

@@ -9,6 +9,25 @@
   const origen=new URL(conf.saes).origin,clave=conf.prefijo+'cupos';
   const canal=typeof BroadcastChannel==='function'?new BroadcastChannel('ipnt-cupos'):null;
   let datos=null,conectado=false,cola=Promise.resolve();
+  let hasta=0,notificacion=false,avisos=0;
+  const permitir=document.getElementById('cupos-permitir'),aviso=document.getElementById('cupos-aviso');
+  permitir.textContent=tx('permitir');
+  function permiso(){const p=typeof Notification==='function'?Notification.permission:'denied';
+    permitir.hidden=!notificacion||Date.now()>=hasta||p!=='default';
+    if(notificacion&&p!=='default'){aviso.textContent=tx(p==='granted'?'permiso_listo':'permiso_panel');window.opener?.postMessage({tipo:'ipnt.cupos.permiso',v:1,permiso:p},origen)}
+  }
+  permitir.onclick=async()=>{if(!notificacion||Date.now()>=hasta)return;try{if(typeof Notification==='function')await Notification.requestPermission();permiso()}
+    catch(e){console.warn('SATE Cupos: permiso de notificación fallido',e);aviso.textContent=tx('permiso_panel')}};
+  function alertar(antes,d){if(Date.now()>=hasta)return;let ctx;
+    try{ctx=JSON.parse(localStorage.getItem(conf.prefijo+'cuposContexto'))}catch(e){}
+    if(!ctx||ctx.carrera!==d.carrera||ctx.plan&&ctx.plan!==d.plan||!Array.isArray(ctx.grupos))return;
+    const cambios=C.cambios(antes,d,ctx.grupos);if(!cambios.length)return;
+    avisos+=cambios.length;document.title=tx('titulo_avisos',{n:avisos});aviso.textContent=cambios.map(f=>tx('aviso',{...f,n:f.disponibles})).join(' · ');
+    if(!notificacion||typeof Notification!=='function'||Notification.permission!=='granted')return;
+    for(const f of cambios)try{const n=new Notification(tx('titulo'),{body:tx('aviso',{...f,n:f.disponibles}),tag:u+'|'+C.clave(f)});
+      n.onclick=()=>{try{if(window.opener&&!window.opener.closed)window.opener.focus();else window.focus()}catch(e){window.focus()}n.close()};
+    }catch(e){console.warn('SATE Cupos: notificación no disponible',{unidad:u,error:e.message});aviso.textContent=tx('permiso_panel')}
+  }
   function pintar(){resumen.textContent=datos?tx('ultima',{hora:C.fecha(datos)})+' · '+tx('grupos',{n:datos.filas.length}):tx('esperando')}
   function guardar(d){if(!C.validar(d)||d.unidad!==u)return false;const nueva=C.reciente(datos,d);if(nueva===datos)return false;
     datos=C.limpiar(nueva);IPNT.set(clave,JSON.stringify(datos));canal?.postMessage({tipo:'consulta',unidad:u});pintar();return true}
@@ -23,7 +42,9 @@
     if(!C.origenSaes(e.origin)||e.origin!==origen||e.source!==window.opener)return;
     const d=e.data;if(d?.unidad!==u)return;
     if(d.tipo==='ipnt.cupos.hola'){conectado=true;window.opener.postMessage({tipo:'ipnt.cupos.hola',v:1},origen);seleccion()}
-    else if(C.validar(d)){conectado=true;guardar(d);seleccion();nube()}
+    else if(d.tipo==='ipnt.cupos.avisos'&&d.v===1&&Number.isFinite(d.hasta)&&typeof d.notificacion==='boolean'){
+      hasta=Math.min(d.hasta,Date.now()+30*60000);notificacion=d.notificacion;permiso()}
+    else if(C.validar(d)){conectado=true;const antes=datos;if(guardar(d))alertar(antes,d);seleccion();nube()}
   });
   window.addEventListener('storage',e=>{if(e.key===conf.prefijo+'cuposContexto')seleccion();if(e.key===clave){try{guardar(JSON.parse(e.newValue))}catch(err){}}});
   window.addEventListener('ipnt-sincronizado',nube);
