@@ -30,13 +30,13 @@
   function cerrar(){hoja=false;if(!movil())elegidos.clear();mostrar();const n=document.getElementById(retorno)||dias.find(d=>d.s===retorno)?.n;(n||document.getElementById('cal-hoy'))?.focus()}
   function volver(){elegidos.clear();tituloElegido='';hoja=false;mes=api.hoy().slice(0,7);redibujar('cal-hoy')}
   function conectar(n,es,titulo){n.setAttribute('data-categoria',es[0].categoria);n.setAttribute('aria-label',es.map(e=>tx('evento_aria',{titulo:e.titulo,fechas:rango(e)})).join('; '));n.onclick=()=>elegir(es,titulo,n);marcas.push({n,es})}
-  function resumen(){
+  function resumen(sinEtiqueta=false){
     const hoy=api.hoy(),actual=eventos.find(e=>e.desde<=hoy&&e.hasta>=hoy),proximo=[...eventos].sort((a,b)=>a.desde.localeCompare(b.desde)).find(e=>e.desde>hoy),dentro=hoy>=limites.desde&&hoy<=limites.hasta;
     const [anio,mitad]=String(periodo||'').split('/'),siguiente=mitad==='1'?anio+'/2':String(Number(anio)+1)+'/1';
     return {actual,proximo,dentro,arriba:tx('hoy_fecha',{fecha:date(hoy).toLocaleDateString('es-MX',{weekday:'short',day:'numeric',month:'short'})}),
       grande:!eventos.length?tx('vacio'):hoy<limites.desde?tx('faltan_dias',{dias:numero(limites.desde)-numero(hoy)}):hoy>limites.hasta?tx('cerrado'):tx('semana_actual',{semana:Math.floor((numero(hoy)-numero(limites.desde))/7)+1,total:Math.ceil((numero(limites.hasta)-numero(limites.desde)+1)/7)}),
-      ahora:!eventos.length?tx('vacio_mensaje'):hoy>limites.hasta?tx('termino',{fecha:breve(limites.hasta)}):hoy<limites.desde?tx('inicia',{fecha:breve(limites.desde)}):actual?tx('ahora_evento',{nombre:actual.titulo}):tx('ahora_clases'),
-      sigue:hoy>limites.hasta?tx(periodosDisponibles.includes(siguiente)?'siguiente_publicado':'siguiente_pendiente',{periodo:siguiente}):proximo?tx('sigue_evento',{nombre:proximo.titulo,dias:numero(proximo.desde)-numero(hoy)}):tx('sin_proximo')};
+      ahora:!eventos.length?tx('vacio_mensaje'):hoy>limites.hasta?tx('termino',{fecha:breve(limites.hasta)}):hoy<limites.desde?tx('inicia',{fecha:breve(limites.desde)}):actual?tx(sinEtiqueta?'tarjeta_ahora_evento':'ahora_evento',{nombre:actual.titulo}):tx(sinEtiqueta?'tarjeta_ahora_clases':'ahora_clases'),
+      sigue:hoy>limites.hasta?tx(periodosDisponibles.includes(siguiente)?'siguiente_publicado':'siguiente_pendiente',{periodo:siguiente}):proximo?tx(sinEtiqueta?'tarjeta_sigue_evento':'sigue_evento',{nombre:proximo.titulo,dias:numero(proximo.desde)-numero(hoy)}):tx('sin_proximo')};
   }
   function meses(a,b){const salida=[];let m=a.slice(0,7);while(m<=b.slice(0,7)){salida.push(m);const d=date(m+'-01');d.setMonth(d.getMonth()+1);m=iso(d).slice(0,7)}return salida}
   function grafico(contenido){
@@ -61,7 +61,7 @@
     dibujo.appendChild(svg('line',{x1:70,y1:342,x2:610,y2:342,class:'calendario-tick'}));[[96,desde,'extremo_inicio'],[584,hasta,'extremo_fin']].forEach(([x,s,k])=>{const t=svg('text',{x,y:365,'text-anchor':'middle',class:'calendario-svg-extremo'});t.textContent=eventos.length?tx(k,{fecha:breve(s)}):'';dibujo.appendChild(t)});
     const wrap=el('div',null,'calendario-arco-contenedor');wrap.appendChild(dibujo);const centro=el('div',null,'calendario-centro');centro.setAttribute('aria-live','polite');const es=eventos.filter(seleccionado);
     centro.appendChild(el('span',es.length?categoria(es[0]):r.arriba,'calendario-centro-etiqueta'));centro.appendChild(el('strong',es.length?tituloElegido:r.grande));const largo=el('div',null,'calendario-centro-largo');largo.appendChild(el('span',es.length?es.map(e=>e.desde===e.hasta?breve(e.desde):tx('rango',{desde:breve(e.desde),hasta:breve(e.hasta)})).join(' · '):r.ahora));if(!es.length)largo.appendChild(el('span',r.sigue));centro.appendChild(largo);if(es.length)centro.appendChild(boton(tx('volver_hoy'),volver,'cal-volver'));wrap.appendChild(centro);contenido.appendChild(wrap);
-    const tarjeta=el('div',null,'calendario-resumen');[[r.actual,'ahora',r.ahora],[r.proximo,'sigue',r.sigue]].forEach(([e,k,texto])=>{const b=boton(null,()=>{});b.className='calendario-resumen-fila';b.appendChild(el('small',tx(k)));b.appendChild(el('span',texto));if(e)conectar(b,[e],e.titulo);else b.disabled=true;tarjeta.appendChild(b)});contenido.appendChild(tarjeta);
+    const t=resumen(true),tarjeta=el('div',null,'calendario-resumen');[[t.actual,'ahora',t.ahora],[t.proximo,'sigue',t.sigue]].forEach(([e,k,texto])=>{const b=boton(null,()=>{});b.className='calendario-resumen-fila';b.appendChild(el('small',tx(k)));b.appendChild(el('span',texto));if(e)conectar(b,[e],e.titulo);else b.disabled=true;tarjeta.appendChild(b)});contenido.appendChild(tarjeta);
   }
   function mesGrafico(contenido){
     const disponibles=meses(desde,hasta);if(!disponibles.includes(mes))mes=disponibles.includes(api.hoy().slice(0,7))?api.hoy().slice(0,7):disponibles[0];

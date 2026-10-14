@@ -195,6 +195,7 @@ for(const categoria of api.categorias){assert.ok(css.includes('--ipn-cal-'+categ
 assert.match(css,/\[data-theme=dark\] #sate-calendario\{/);assert.match(css,/@media\(prefers-color-scheme:dark\)/);
 assert.match(css,/grid-template-columns:repeat\(7,minmax\(0,1fr\)\)/);assert.match(css,/\.calendario-layout\{display:grid;grid-template-columns:minmax\(0,1fr\)/);
 assert.match(css,/\.calendario-centro\{bottom:16%/);assert.match(css,/\.calendario-centro-largo\{display:none\}/);assert.match(css,/\.calendario-svg-mes,\.calendario-svg-extremo\{font-size:21px\}/);
+for(const bloque of css.matchAll(/\.calendario-centro\{([^}]+)\}/g))assert.doesNotMatch(bloque[1],/overflow\s*:\s*(auto|scroll)|max-height/,'El centro crece como en la maqueta, sin barra de desplazamiento');
 
 // Las tintas de lectura permanecen AA sobre superficie y mezcla del mes.
 const rgb=hex=>hex.match(/[a-f\d]{2}/gi).map(v=>parseInt(v,16)/255);
@@ -202,9 +203,45 @@ const lum=c=>c.map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,i)=>s
 const contraste=(a,b)=>(Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05);
 const temas=[{fondo:'#ffffff',texto:'#18181b',tenue:'#52525b',acento:'#7a1f45'},{fondo:'#18181b',texto:'#fafafa',tenue:'#a1a1aa',acento:'#f0a3c4'}];
 for(const tema of temas){for(const tinta of ['texto','tenue','acento'])assert.ok(contraste(rgb(tema[tinta]),rgb(tema.fondo))>=4.5,tinta+' AA');for(const color of css.matchAll(/--ipn-cal-[\w]+:(#[a-f\d]{6})/gi)){const mezcla=rgb(color[1]).map((v,i)=>v*.15+rgb(tema.fondo)[i]*.85);assert.ok(contraste(rgb(tema.texto),mezcla)>=4.5,'Número sobre '+color[1])}}
+const paletas=css.split('\n').filter(l=>l.includes('--ipn-cal-academico:')).map((l,i)=>Object.fromEntries([...l.matchAll(/--ipn-cal-(\w+):([^;]+);/g)].map(([,k,v])=>[k,(v.startsWith('var(')?temas[0].acento:v).toLowerCase()])));
+assert.equal(paletas.length,3,'Claro, oscuro explícito y oscuro del sistema');
+assert.deepEqual(paletas[1],paletas[2],'Misma paleta en ambos modos oscuros');
+for(const [i,paleta] of paletas.entries()){
+ assert.equal(new Set(Object.values(paleta)).size,api.categorias.length,'Todas las categorías tienen color propio: tema '+i);
+ for(const categoria of api.categorias)assert.ok(contraste(rgb(paleta[categoria]),rgb(temas[i?1:0].fondo))>=4.5,'Color AA: '+categoria+', tema '+i);
+}
 c.SATE_CONFIG=config;c.SATE_UNIDAD='upiita';c.DATA.calendario=data.upiita;api.hoy=()=> '2026-09-10';mostrar();cambiar('26/2');
 assert.ok(dia('2026-09-11').className.includes('calendario-suspension'));assert.ok(!dia('2026-09-12').className.includes('calendario-suspension'));
 dia('2026-09-16').onclick();assert.equal(nodos('calendario-detalle-evento').filter(n=>n.getAttribute('data-categoria')==='descanso').length,6,'Descanso del mes selecciona su grupo íntegro');
 assert.ok(!config.pestanasOcultas.includes('calendario'));
+
+// Integración de las leyendas reales y la tarjeta: todos los meses, periodos y audiencias.
+c.isPersonal=()=>false;c.matchMedia=()=>({matches:false});
+let leyendas=0;
+for(const unidad of ['upiita','escom','upibi']){
+ c.SATE_UNIDAD=unidad;c.DATA.calendario=data[unidad]||null;mostrar();
+ for(const ampliar of [false,true]){
+  const check=document.getElementById('cal-audiencia');check.checked=ampliar;check.onchange();
+  const periodos=document.getElementById('cal-periodo').children.map(n=>n.value);
+  for(const p of periodos){
+   cambiar(p);while(!document.getElementById('cal-anterior').disabled)document.getElementById('cal-anterior').onclick();
+   do{
+    const categorias=nodos('calendario-categorias')[0].children.map(n=>n.getAttribute('data-categoria'));
+    for(const [i,paleta] of paletas.entries())assert.equal(new Set(categorias.map(k=>paleta[k])).size,categorias.length,'Leyenda sin colores repetidos: '+unidad+', '+p+', '+document.getElementById('cal-mes').textContent+', tema '+i);
+    for(const fila of nodos('calendario-resumen-fila'))assert.doesNotMatch(fila.children[1].textContent,/^(Ahora|Sigue)\s*:/,'Prefijo único en la tarjeta: '+fila.textContent);
+    leyendas++;if(document.getElementById('cal-proximo').disabled)break;document.getElementById('cal-proximo').onclick();
+   }while(true);
+  }
+ }
+}
+c.SATE_UNIDAD='upiita';c.DATA.calendario=data.upiita;
+const check=document.getElementById('cal-audiencia');check.checked=false;check.onchange();
+for(const [hoy,p] of [['2026-10-26','27/1'],['2026-11-10','27/1'],['2026-01-01','26/2'],['2026-10-13','26/2']]){
+ api.hoy=()=>hoy;mostrar();cambiar(p);
+ for(const fila of nodos('calendario-resumen-fila'))assert.doesNotMatch(fila.children[1].textContent,/^(Ahora|Sigue)\s*:/,'Tarjeta sin prefijos, fecha '+hoy);
+}
+assert.equal(nodos('calendario-resumen-fila')[0].children[0].textContent,'Ahora');
+assert.equal(nodos('calendario-resumen-fila')[1].children[0].textContent,'Sigue');
+console.log('SEMI2 OK: '+leyendas+' leyendas por unidad, periodo y audiencia; colores propios AA y tarjeta sin prefijos duplicados.');
 
 console.log('SEMI OK: datos y fusión, dos anillos, grupo ×N, selección arco ↔ mes, teclado, hoja móvil, vacío/antes/después, tres unidades y genérico, tokens claro/oscuro y textos por clave.');
