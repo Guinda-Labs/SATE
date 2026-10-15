@@ -84,7 +84,7 @@ assert.equal(C.limpiar({...payload,identidad:'dato inventado'}).identidad,undefi
 for(const unidad of ['upiita','escom','upibi']){
   const prefix=unidad==='upiita'?'hu.':'hu.'+unidad+'.',origin=new URL(config.unidades[unidad].saes).origin;
   const eventos={},storage=new Map(),difundidos=[],enviados=[],graph=[],nodos=new Map(),modales=[];
-  const nuevo=tag=>({tagName:tag?.toUpperCase(),hijos:[],appendChild(n){this.hijos.push(n)},removeAttribute(){},cloneNode(){return nuevo(this.tagName)}});
+  const nuevo=tag=>({tagName:tag?.toUpperCase(),hijos:[],appendChild(n){this.hijos.push(n)},closest(){return this},removeAttribute(){},cloneNode(){return nuevo(this.tagName)}});
   const nodo=id=>{if(!nodos.has(id))nodos.set(id,{...nuevo(),value:'',checked:true,innerHTML:'',querySelector:nodo,textContent:'',classList:{toggle(){}},focus(){},scrollIntoView(){throw Error('Cupos no debe desplazar la página')}});return nodos.get(id)};
   const opener={postMessage:(d,o)=>enviados.push({d,o})};let sesion=false,nube=null;
   const ipnt={get cuenta(){return sesion?{}:null},get proveedor(){return sesion?'ms':null},set:(k,v)=>storage.set(k,v),cupos:async(u,d)=>{graph.push({u,d});if(d)nube=d;return nube}};
@@ -103,11 +103,11 @@ for(const unidad of ['upiita','escom','upibi']){
   storage.set(prefix+'cuposContexto',JSON.stringify({carrera:'B',plan:'09',grupos:seleccion,oferta}));
   mensaje(origin,opener,d);await new Promise(ok=>setImmediate(ok));
   assert.equal(JSON.parse(storage.get(prefix+'cupos')).hora,d.hora);assert.equal(difundidos.length,1);
-  assert.equal(graph.length,0);assert.match(nodo('cupos-resumen').textContent,/Última consulta:.*3 grupos/);
-  assert.match(nodo('cupos-tabla').innerHTML,/<table/);assert.match(nodo('cupos-tarjetas').innerHTML,/Tu horario/);
-  assert.match(nodo('cupos-tarjetas').innerHTML,/Docente ficticio/);
-  assert.ok(nodo('cupos-tarjetas').innerHTML.includes(nombreLargo));
-  nodo('cupos-tarjetas').onclick({target:{closest:()=>({dataset:{grupo:'1BM4|B105'}})}});
+  assert.equal(graph.length,0);assert.match(nodo('cupos-resumen').textContent,/Última consulta:.*conectado al SAES/);
+  assert.match(nodo('cupos-tabla').innerHTML,/<table/);
+  assert.match(nodo('cupos-tabla').innerHTML,/Docente ficticio/);
+  assert.ok(nodo('cupos-tabla').innerHTML.includes(nombreLargo));
+  nodo('cupos-tabla').onclick({target:{closest:()=>({dataset:{grupo:'1BM4|B105'}})}});
   assert.match(modales.at(-1)[1],/Docente ficticio.*09:00/);
   nodo('[data-r="filtro"]').value='B205';nodo('[data-r="filtro"]').oninput();assert.doesNotMatch(nodo('cupos-tabla').innerHTML,/1BM3/);
   nodo('[data-r="filtro"]').value='';nodo('[data-r="filtro"]').oninput();
@@ -328,7 +328,7 @@ c.Notification=class{static permission='granted';constructor(){throw Error('No a
 assert.match(fuente,/width:calc\(100% - 16px\)/);assert.match(fuente,/minmax\(0,1fr\) 7rem/);
 assert.match(fuente,/max-width:100%;overflow:auto/);assert.match(fuente,/prefers-color-scheme:dark/);
 assert.match(fuente,/max-height:calc\(100dvh - 16px\)/);assert.match(fuente,/min-height:44px/);
-const htmlCupos=leer('web/sate/cupos.html');assert.match(htmlCupos,/box-sizing:border-box/);assert.match(htmlCupos,/position:sticky;right:0/);assert.match(htmlCupos,/minmax\(min\(100%,300px\),1fr\)/);
+const htmlCupos=leer('web/sate/cupos.html');assert.match(htmlCupos,/location.replace\(destino.href\)/);assert.match(htmlCupos,/destino.hash=location.hash/);assert.match(htmlCupos,/searchParams.set\('vista','cupos'\)/);
 assert.doesNotMatch(fuente,/alert\(|ipnt-elegido|originales/);
 assert.doesNotMatch(fuente+leer('web/sate/cupos-receptor.js'),/postMessage\([^\n]*['"]\*['"]/);
 for(const p of ['web/dist/sate.js','web/dist/lector.js','web/dist/cupos.js','web/dist/sate/cupos.js','web/dist/sate/cupos-receptor.js'])assert.doesNotThrow(()=>new Function(leer(p)));

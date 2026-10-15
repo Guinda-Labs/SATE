@@ -464,16 +464,17 @@ async function iniciarGeneracion(){
   }
 }
 // La API síncrona se conserva para las invariantes del motor; consume el mismo algoritmo.
-function generate(materias){const iter=generarPasos({start:performance.now(),nodes:0,limited:false},materias);let r;do{r=iter.next()}while(!r.done);return r.value}
-function* generarPasos(run,materias){
+function generate(materias,rescate=false){const iter=generarPasos({start:performance.now(),nodes:0,limited:false},materias,rescate);let r;do{r=iter.next()}while(!r.done);return r.value}
+function* generarPasos(run,materias,rescate=false){
   // materias y grupos: los mismos que muestra la oferta con sus filtros (turno, nivel, búsqueda, materia, profesor, grupo,
   // «solo las elegidas», horario en la escuela, excluidos). «Solo lo que cabe» y la búsqueda de huecos no aplican aquí.
   const todo=Array.isArray(materias)||GT.src==='todo';   // Las alternativas abarcan los grupos de las materias del horario armado.
   const pool=todo?classes().filter(c=>c[0]===S.car):(()=>{const f=S.fit,g=S.gap;S.fit=false;S.gap=null;try{return filtered()}finally{S.fit=f;S.gap=g}})();
   let want=Array.isArray(materias)?materias.slice():todo?(tr().want.length?tr().want.slice():[...new Set(S.chips.filter(x=>x.t==='m').map(x=>classes().find(c=>c[4]===x.v)?.[8]).filter(Boolean))]):[...new Set(pool.map(c=>c[8]))];
   if(!todo&&!S.onlyWant&&!S.chips.some(x=>x.t==='m')&&tr().want.length){const w=new Set(tr().want);want=want.filter(k=>w.has(k))}   // sin filtro de materias: las elegidas
-  tr().oblig.forEach(k=>{if(!want.includes(k))want.unshift(k)});   // la desfasada siempre se considera
-  {const ya=new Set([...tr().done,...tr().curso]);want=want.filter(k=>!ya.has(k))}   // ni acreditadas ni en curso
+  // El rescate conserva exactamente las materias del horario, incluidas las inscritas.
+  if(!rescate){tr().oblig.forEach(k=>{if(!want.includes(k))want.unshift(k)});
+    const ya=new Set([...tr().done,...tr().curso]);want=want.filter(k=>!ya.has(k))}
   const marks=ws().marks, own=ownAsClasses();
   const pref=S.gpref.map(norm), avoid=S.gavoid.map(norm);
   const pscore=c=>c[5].reduce((s,i)=>s+(pref.some(p=>norm(DATA.prof[i]).includes(p))?4:0),0);
@@ -669,6 +670,12 @@ function renderPlans(){
     return `<span class="plan-tab"><button class="chip" data-plan="${p}" aria-pressed="${ws().plan===p}">${esc(txH('horario',{version:p}))}<small>${pl.sel.length?fmtCr(cr)+' créditos':esc(txH('vacio'))}</small></button>${ids.length>1&&ws().plan===p?`<button class="x" data-delplan="${p}" aria-label="${esc(txH('eliminar_horario',{version:p}))}" title="${esc(txH('eliminar_horario',{version:p}))}">×</button>`:''}</span>`}).join('')+
     `<button class="chip plan-new" data-newplan="1" title="${esc(txH('nuevo_ayuda'))}">${esc(txH('nuevo'))}</button><button class="link" data-dup style="margin-left:8px">${esc(txH('duplicar',{version:ws().plan}))}</button>`;
 }
+function agendaHorario(items,soloLectura=false){const by={};items.forEach(b=>(by[b.d]=by[b.d]||[]).push(b));
+  return Object.keys(by).length?Object.keys(by).sort((a,b)=>a-b).map(d=>`<section class="ag-day"><h4>${DAYN[d]}</h4>`+by[d].sort((x,y)=>x.a-y.a).map(b=>b.c.own?
+      `<div class="ag-it own${b.clash?' clash':''}"${!soloLectura&&b.c.i!=null?` data-own="${b.c.i}" tabindex="0" role="button" aria-label="${esc(txH('semana_abrir_bloque',{nombre:b.c.n}))}"`:''}><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(b.c.n)}</b><small>${esc(txH('actividad'))}${b.clash?' · '+esc(txH('traslape')):''}</small></span></div>`:
+      `<div class="ag-it${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)}"><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(name(b.c))}</b><small>${b.c[3]}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''} · ${esc(profs(b.c))}${b.ghost?' · '+esc(txH('vista_previa')):''}${b.clash?' · '+esc(txH('traslape')):''}</small>${typeof CUPOS!=='undefined'?CUPOS.insignia(b.c):''}</span></div>`).join('')+'</section>').join(''):
+      `<p class="ag-empty">${esc(txH('horario_vacio'))}</p>`;
+}
 function renderCal(){
   if(typeof CUPOS!=='undefined')CUPOS.pintar();
   renderSemana();
@@ -676,15 +683,12 @@ function renderCal(){
   const ghost=S.hover&&!plan().sel.includes(S.hover)?byKey(S.hover):null;
   const viajes=SEMANA_ACTIVA?semanaTraslados(sel).map(([d,a,b])=>({own:true,n:txH('semana_categoria_traslados'),h:[[d,Math.max(0,a),Math.min(1440,b)]]})):[];
   const all=[...sel,...own,...viajes,...(ghost?[ghost]:[])];
-  const items=SateUI.cuadriculaHorario(all,{S,slots,START,BLOCK,SLOT,SLOTPX,$,DAYS,hm,esc,txH,hue,keyOf,name,profs,roomAt,ghost});
+  const reducida=document.documentElement.dataset.vista==='cupos';
+  const items=SateUI.cuadriculaHorario(all,{S,slots,START,BLOCK,SLOT,SLOTPX,$,DAYS,hm,esc,txH,hue,keyOf,name,profs,roomAt,ghost,soloLectura:reducida,insignia:reducida?CUPOS.insignia:null});
   if(typeof CUPOS!=='undefined')for(const b of document.querySelectorAll('#cal .blk[data-k]')){const c=byKey(b.dataset.k);if(c)b.insertAdjacentHTML('beforeend',CUPOS.insignia(c))}
-  const cv=cview();document.querySelectorAll('[data-cview]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cview===cv)));
+  const cv=reducida&&MQ_PHONE.matches?'dia':cview();document.querySelectorAll('[data-cview]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cview===cv)));
   $('.calwrap').hidden=cv==='dia';$('#agenda').hidden=cv!=='dia';
-  if(cv==='dia'){const by={};items.forEach(b=>(by[b.d]=by[b.d]||[]).push(b));
-    $('#agenda').innerHTML=Object.keys(by).length?Object.keys(by).sort((a,b)=>a-b).map(d=>`<section class="ag-day"><h4>${DAYN[d]}</h4>`+by[d].sort((x,y)=>x.a-y.a).map(b=>b.c.own?
-      `<div class="ag-it own${b.clash?' clash':''}"${b.c.i!=null?` data-own="${b.c.i}" tabindex="0" role="button" aria-label="${esc(txH('semana_abrir_bloque',{nombre:b.c.n}))}"`:''}><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(b.c.n)}</b><small>${esc(txH('actividad'))}${b.clash?' · '+esc(txH('traslape')):''}</small></span></div>`:
-      `<div class="ag-it${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)}"><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(name(b.c))}</b><small>${b.c[3]}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''} · ${esc(profs(b.c))}${b.ghost?' · '+esc(txH('vista_previa')):''}${b.clash?' · '+esc(txH('traslape')):''}</small>${typeof CUPOS!=='undefined'?CUPOS.insignia(b.c):''}</span></div>`).join('')+'</section>').join(''):
-      `<p class="ag-empty">${esc(txH('horario_vacio'))}</p>`}
+  if(cv==='dia')$('#agenda').innerHTML=agendaHorario(items,reducida);
   const cr=sel.reduce((s,c)=>s+c[7],0);
   const mins=sel.reduce((s,c)=>s+c[6].reduce((t,b)=>t+b[2]-b[1],0),0);
   const both=[...sel,...own];let clashes=0;
@@ -712,6 +716,7 @@ function renderCal(){
   $('#sel').innerHTML=sel.map(c=>`<div><span class="sw" style="--h:${hue(c)}"></span><span class="grp">${c[3]}</span><span>${esc(pretty(name(c)))}<br><small>${esc(profs(c))}</small>${typeof CUPOS!=='undefined'?CUPOS.insignia(c):''}</span><span class="cr">${esc(textoCreditos(c[8],c[7]))} ${ayudaCreditos(c[8])}</span><button class="x" data-toggle="${keyOf(c)}" aria-label="${esc(txH('quitar',{nombre:name(c)}))}">×</button></div>`).join('')+
     own.map(o=>{const r=plan().own[o.i];return `<div><span class="sw own"></span><span class="grp">${esc(txH('extra'))}</span><span>${esc(o.n)}<br><small>${r.d.map(d=>DAYS[d]).join(' ')} ${hm(r.a)}–${hm(r.b)}</small></span><span></span><button class="x" data-unown="${o.i}" aria-label="${esc(txH('quitar',{nombre:o.n}))}">×</button></div>`}).join('');
   montarAyudasCreditos();
+  window.SateCuposVista?.pintar();
 }
 function renderOwnForm(){$('#own-d').innerHTML=DAYS.map((d,i)=>`<button type="button" class="chip" data-oday="${i}" aria-pressed="${S.ownDays.includes(i)}">${d}</button>`).join('')}
 

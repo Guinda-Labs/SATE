@@ -1,0 +1,12 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Revisión CUP8</title>
+<style>body{font:16px/1.5 system-ui;margin:16px}a{padding:12px;display:inline-block}iframe{width:100%;height:85vh;border:1px solid #888}label{display:inline-block;padding:12px}</style>
+<h1>Revisión local de cupos</h1><p>Datos ficticios: cinco materias, dos grupos llenos y uno con dos lugares. No consulta el SAES. La primera materia requiere cambiar otras materias para evitar choques.</p>
+<label>Unidad <select id="unidad"><option>upiita</option><option>escom</option><option>upibi</option></select></label>
+<label>Ancho <select id="ancho"><option>375</option><option>768</option><option>1024</option><option selected>1440</option></select> px</label>
+<a id="abrir" target="_blank">Abrir revisión</a><iframe title="SATE reducido con datos ficticios" id="vista"></iframe>
+<script>
+const vista=document.getElementById('vista'),unidad=document.getElementById('unidad'),ancho=document.getElementById('ancho');
+function cargar(){const url='dist/sate/index.html?vista=cupos&revisionCupos=1&sateUnidad='+unidad.value+'#demo';vista.src=url;document.getElementById('abrir').href=url}
+function medir(){vista.style.width=ancho.value+'px';vista.style.maxWidth='none'}
+unidad.onchange=cargar;ancho.onchange=medir;cargar();medir();
+</script></html>

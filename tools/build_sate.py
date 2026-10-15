@@ -1005,11 +1005,12 @@ def escribir_sate(data):
     cupos = (ROOT / 'tools/cupos_saes.js').read_text(encoding='utf-8')
     (destino / 'cupos.js').write_text(cupos.split('/*__CUPOS_PANEL__*/')[0] + (fuente / 'cupos.js').read_text(encoding='utf-8'), encoding='utf-8')
     site_cupos = os.environ.get('UPIITA_SITE', '')
-    url_cupos = site_cupos + 'sate/cupos.html' if site_cupos else ''
+    url_cupos = site_cupos + 'sate/index.html?vista=cupos' if site_cupos else ''
     import urllib.parse, html as html_escape
     textos_cupos = {k: v for k, v in contenido.objeto_t().items() if k.startswith(('sate.cupos.', 'componentes.'))}
     (destino / 'cupos-comun.js').write_text(cupos.split('/*__CUPOS_PANEL__*/')[0], encoding='utf-8')
     shutil.copy(fuente / 'cupos-receptor.js', destino / 'cupos-receptor.js')
+    shutil.copy(fuente / 'cupos-vista.js', destino / 'cupos-vista.js')
     shutil.copy(fuente / 'componentes.css', destino / 'componentes.css')
     receptor_cfg = {'unidades': {u: {'saes': c['saes'], 'prefijo': 'hu.' if u == 'upiita' else 'hu.' + u + '.'}
                                 for u, c in cfg['unidades'].items() if c.get('cupos')}, 'textos': textos_cupos}
@@ -1027,6 +1028,7 @@ def escribir_sate(data):
     revision = revision.replace('/*__REVISION_COMPONENTES__*/', marcador.split('/*__CUPOS_INICIO__*/')[0])
     revision = revision.replace('__REVISION_TEXTOS__', json.dumps(textos_cupos, ensure_ascii=False)).replace('/*__REVISION_MENU__*/', revision_menu)
     (ROOT / 'web/qa-cupos-hoja.html').write_text(revision, encoding='utf-8')
+    (ROOT / 'web/qa-cupos-vista.html').write_text((ROOT / 'tools/qa_cupos_vista.template.html').read_text(encoding='utf-8'), encoding='utf-8')
     sate = (ROOT / 'tools/sate_saes.js').read_text(encoding='utf-8')
     sate = sate.replace('__CUPOS_TEXTOS__', json.dumps(textos_cupos, ensure_ascii=False))
     sate = sate.replace('/*__SATE_LECTOR__*/', saes.lector_js(site_cupos + 'horarios-upiita.html'))

@@ -722,6 +722,41 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);color:v
 .plan-bandeja .plan-resumen span{white-space:normal}
 body.sate-flotante:has(.sate-barra) .plan-bandeja{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 @media(max-width:720px){#legend{display:none}.maptools{gap:4px}.maptools .seg button{padding:7px 5px;font-size:.7rem}#map-ayuda{font-size:.7rem}.plan-bandeja{bottom:calc(96px + env(safe-area-inset-bottom,0px))}.plan-bandeja .actions{gap:4px}.plan-bandeja .btn{padding:6px;font-size:.75rem}}
+/* La vista reducida monta los mismos componentes sobre el cascarón. */
+html[data-vista=cupos] .sate-navegacion,html[data-vista=cupos] .sate-barra,
+html[data-vista=cupos] .bar-top,html[data-vista=cupos] .sate-fila-avisos,
+html[data-vista=cupos] #sate-nombre,html[data-vista=cupos] #v-hor,
+html[data-vista=cupos] .inst{display:none!important}
+html[data-vista=cupos] body{padding-bottom:24px}
+html[data-vista=cupos] .wrap{max-width:1100px}
+html[data-vista=cupos] header.top{padding-block:14px 10px}
+html[data-vista=cupos] .brand h1{font-size:1.5rem}
+#cupos-vista{display:grid;gap:16px;padding-block:20px;min-width:0}
+#cupos-vista h3{font-size:1rem;margin:0 0 8px}
+#cupos-vista p{margin:6px 0;overflow-wrap:anywhere}
+#cupos-vista .box2{padding:16px;background:var(--surface)}
+#cupos-vista summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+#cupos-vista button,#cupos-vista input,#cupos-vista select,#cupos-vista .btn{min-height:44px}
+#cupos-vista .btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+#cupos-vista .cupos-alternativa{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-block:12px}
+#cupos-vista .cupos-alternativa>div{min-width:0}
+#cupos-vista .cupos-alternativa button{flex-shrink:0}
+#cupos-controles,#cupos-avisos-controles{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding-block:12px}
+#cupos-controles label,#cupos-avisos-controles label{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0;min-height:44px}
+.cupos-tabla{overflow:auto;max-width:100%}
+.cupos-tabla table{width:100%;border-collapse:collapse;font-size:.9rem}
+.cupos-tabla th,.cupos-tabla td{padding:10px;text-align:left;border-bottom:1px solid var(--line)}
+.cupos-tabla td:last-child,.cupos-tabla th:last-child{position:sticky;right:0;background:var(--surface)}
+.cupos-lleno{color:var(--bad);background:var(--bad-soft)}
+.cupos-pocos{color:var(--warn);background:var(--warn-soft)}
+.cupos-lugar{color:var(--ok);background:var(--ok-soft)}
+.cupos-sin-dato{color:var(--muted)}
+#cupos-opciones{display:grid;gap:16px}
+.cupos-mini{min-width:600px}
+.cupos-mini .blk b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cupos-mini-agenda{display:none}
+#cupos-calendario .blk{cursor:default}
+@media(max-width:720px){#cupos-vista .cupos-alternativa{align-items:stretch;flex-direction:column}#cupos-vista .colhead{align-items:stretch;flex-direction:column}#cupos-opciones .calwrap{display:none}.cupos-mini-agenda{display:block}#cupos-vista .box2{padding:12px}}
 </style>
 
 <!--__INST_HEADER__-->

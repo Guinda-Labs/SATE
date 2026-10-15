@@ -6,13 +6,13 @@ const CUPOS=(()=>{
   function contexto(){return DATA.opciones_plan?.[S.car]||{carrera:S.car,plan:null}}
   function compatible(){const c=contexto();return datos&&datos.carrera===c.carrera&&(!c.plan||datos.plan===c.plan)}
   function fila(c){return compatible()&&c[0]===S.car?datos.filas.find(f=>f.grupo===c[3]&&f.materia===c[8]):null}
-  function insignia(c){const f=fila(c);return f?`<span class="cupos-insignia${C.antigua(datos)?' cupos-vieja':''}">${esc(tx(f.disponibles===0?'lleno':'lugares',{n:f.disponibles}))}</span>`:''}
+  function insignia(c){const f=fila(c),reducida=document.documentElement?.dataset?.vista==='cupos';return f||reducida?`<span class="cupos-insignia cupos-${!f?'sin-dato':f.disponibles===0?'lleno':f.disponibles<=3?'pocos':'lugar'}${C.antigua(datos)?' cupos-vieja':''}">${esc(tx(!f?'sin_dato':f.disponibles===0?'lleno':'lugares',{n:f?.disponibles}))}</span>`:''}
   function excluir(c){return omitir&&fila(c)?.disponibles===0}
   function seleccion(){
     const simple=c=>({grupo:c[3],materia:c[8],horas:c[6],nombre:name(c),profesor:profs(c),horario:c[6].map(([d,a,b])=>DAYS[d]+' '+hm(a)+'–'+hm(b)).join(' · ')});
     const tokens={};for(const k of ['texto','superficie','linea','acento'])tokens[k]=getComputedStyle(document.documentElement).getPropertyValue('--ipn-'+k).trim();
     const ctx={...contexto(),periodo:S.per,grupos:selected().map(simple),oferta:classes().filter(c=>c[0]===S.car).map(simple),tokens};
-    const s=JSON.stringify(ctx);if(s!==ultimoContexto){ultimoContexto=s;IPNT.set(HU+'cuposContexto',s);canal?.postMessage({tipo:'contexto',unidad:UNIDAD})}
+    const s=JSON.stringify(ctx);if(s!==ultimoContexto){ultimoContexto=s;IPNT.set(HU+'cuposContexto',s);canal?.postMessage({tipo:'contexto',unidad:UNIDAD});if(window.dispatchEvent)window.dispatchEvent(new Event('sate-cupos-seleccion'))}
   }
   function pintar(){const ayuda=$('#cupos-ayuda'),op=$('#cupos-omitir');if(!ayuda||!op)return;
     const hay=compatible(),vieja=C.antigua(datos),v=hay?datos.hora:'';
@@ -29,7 +29,7 @@ const CUPOS=(()=>{
   function aceptar(d){if(!C.validar(d)||d.unidad!==UNIDAD)return;const nueva=C.reciente(datos,d);if(nueva===datos)return;datos=C.limpiar(nueva);IPNT.set(HU+'cupos',JSON.stringify(datos));
     if($('#cupos-ayuda')){pintar();if(S.gen){S.gen=generate();renderGen()}renderOffer();renderCal()}}
   function leer(){try{aceptar(JSON.parse(localStorage.getItem(HU+'cupos')))}catch(e){console.warn('SATE Cupos: no se pudo leer la consulta local',e)}}
-  async function nube(){try{aceptar(await IPNT.cupos(UNIDAD))}catch(e){console.warn('SATE Cupos: lectura OneDrive fallida',{unidad:UNIDAD,error:e.message})}}
+  async function nube(){if(typeof DEMO!=='undefined'&&DEMO)return;try{aceptar(await IPNT.cupos(UNIDAD))}catch(e){console.warn('SATE Cupos: lectura OneDrive fallida',{unidad:UNIDAD,error:e.message})}}
   window.addEventListener('storage',e=>{if(e.key===HU+'cupos')leer()});
   window.addEventListener('ipnt-sincronizado',nube);
   window.addEventListener('ipnt-cuenta',nube);
@@ -50,5 +50,5 @@ const CUPOS=(()=>{
   }
   leer();
   setInterval(()=>{if(!document.hidden&&$('#cupos-ayuda')){const antes=omitir;pintar();if(antes!==omitir&&S.gen){S.gen=generate();renderGen()}renderOffer();renderCal()}},60000);
-  return {insignia,excluir,pintar,montar};
+  return {insignia,excluir,pintar,montar,fila,recibir:aceptar,omitirLlenos(){omitir=true},get datos(){return datos}};
 })();

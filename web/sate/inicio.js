@@ -11,10 +11,12 @@
   let api, actual, tabs, barra, version = 0, recalcularPestanas=()=>{};
   const leer = k => { try { return localStorage.getItem(k); } catch { return null; } };
   const parametros = new URLSearchParams(location.search), entrada = parametros.get('sateEntrada') === '1';
+  const cuposReducida = parametros.get('vista') === 'cupos' || /\/cupos(?:\?|$)/.test(location.hash);
+  if(cuposReducida) document.documentElement.dataset.vista='cupos';
   let alumnoUnidad;
   try { alumnoUnidad = JSON.parse(leer('saes.alumno'))?.unidad; } catch {}
   const recordada = leer('ipnt.unidad');
-  const solicitada = entrada ? null : location.hash.match(/^#\/([a-z0-9-]+)\//)?.[1] || parametros.getAll('sateUnidad').at(-1) || alumnoUnidad || recordada;
+  const solicitada = entrada ? null : location.hash.match(/^#\/([a-z0-9-]+)\//)?.[1] || parametros.getAll('sateUnidad').at(-1) || (cuposReducida?parametros.get('unidad'):null) || alumnoUnidad || recordada;
   if (solicitada && /^[a-z0-9-]+$/.test(solicitada) && !config[solicitada]) {
     const identidad = SATE_CONFIG.identidadUnidades?.[solicitada] || Object.values(SATE_CONFIG.identidadUnidades || {}).find(c=>c.alias?.includes(solicitada));
     const siglas = identidad?.siglas || solicitada.toUpperCase();
@@ -243,7 +245,7 @@
   window.SATE = {texto, modulos, error, script, identidadSaes, get actual(){return actual}, get almacen(){return api?.store}, pestana(id, m) { modulos[id] = m; }, ir, elegirUnidad, repintar, cargarOferta,
     async nucleoListo(a) {
       api = a; if (!cfg.generica) await script('situacion.js'); SateUI.usarAlmacen({leer,guardar:(k,v)=>IPNT.set(k,v)});
-      const r = SateRutas.ruta(location.hash==='#cupos'&&cfg.cupos?'#/'+u+'/horarios':location.hash, u, config) ||
+      const r = SateRutas.ruta((cuposReducida||location.hash==='#cupos')&&cfg.cupos?'#/'+u+'/horarios':location.hash, u, config) ||
         SateRutas.ruta('#/' + u + '/' + (api.personal() && cfg.pestanas.includes('trayectoria') ? 'trayectoria' : 'mapa'), u, config);
       actualizarPestanas(r.pestana);
       adaptarPestanas();
@@ -251,6 +253,7 @@
       // Un hash ajeno pertenece a cuenta/tema/demo: nunca se reemplaza por una ruta SATE.
       if (!location.hash) history.replaceState(null,'',location.pathname+location.search+r.hash);
       await activar(r);
+      if(cuposReducida&&cfg.cupos){await script('cupos-vista.js');await SateCuposVista.montar();await script('cupos-receptor.js')}
     }, actualizarPestanas
   };
   function actualizarPestanas(activa=actual?.pestana){

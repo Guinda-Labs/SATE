@@ -392,7 +392,7 @@ function lanes(items){
   return out;
 }
 function cuadriculaHorario(all,op){
-  const {S,slots,START,BLOCK,SLOT,SLOTPX,$,DAYS,hm,esc,txH,hue,keyOf,name,profs,roomAt,ghost,soloLectura=false}=op;
+  const {S,slots,START,BLOCK,SLOT,SLOTPX,$,DAYS,hm,esc,txH,hue,keyOf,name,profs,roomAt,ghost,soloLectura=false,insignia}=op;
   // Las actividades de solo horas no ocupan celdas ni amplían el rango visible.
   all=all.filter(c=>!c.own||!c.oculto);
   const maxDay=Math.max(4,...all.flatMap(c=>slots(c).map(b=>b[0])));
@@ -416,6 +416,7 @@ function cuadriculaHorario(all,op){
       const top=(b.a-lo)/SLOT*SLOTPX, ht=(b.b-b.a)/SLOT*SLOTPX-2, w=100/b.n, pos=`top:${top}px;height:${ht}px;left:calc(${b.lane*w}% + 2px);width:calc(${w}% - 4px)`;
       if(b.c.own) html+=`<div class="blk own${b.clash?' clash':''}"${b.c.tipo?` data-tipo="${esc(b.c.tipo)}"`:""}${!soloLectura&&b.c.i!=null?` data-own="${b.c.i}" tabindex="0" role="button" aria-label="${esc(txH('semana_abrir_bloque',{nombre:b.c.n}))}"`:''} style="${pos}" title="${esc(b.c.n)} · ${hm(b.a)}–${hm(b.b)}"><b>${esc(b.c.n)}</b><span class="t">${hm(b.a)}</span></div>`;
       else html+=`<div class="blk${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)};${pos}"${soloLectura?'':` data-k="${keyOf(b.c)}"`} title="${esc(b.c[3])} · ${esc(name(b.c))} · ${esc(profs(b.c))} · ${hm(b.a)}–${hm(b.b)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}"><b>${esc(name(b.c))}</b><span class="t">${esc(b.c[3])} · ${hm(b.a)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}</span></div>`;
+      if(insignia&&!b.c.own)html=html.replace(/<\/div>$/,insignia(b.c)+'</div>');
     });
     html+='</div>';
   }
