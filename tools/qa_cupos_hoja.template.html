@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>__REVISION_TITULO__</title>
+<style>
+body{margin:0;padding:16px;background:#f4f1f3;color:#29252b;font:15px/1.5 system-ui}h1{font-size:18px}nav{display:flex;flex-wrap:wrap;gap:8px}nav button{font:inherit;padding:8px;border:1px solid #aaa;border-radius:8px;min-height:44px;background:Canvas;color:CanvasText}
+body[data-oscuro="true"]{background:#161416;color:#eee}
+body[data-oscuro="true"] #ipnt-cupos,body[data-oscuro="true"] #ipnt-sate-menu{--ipn-texto:#eee8eb;--ipn-superficie:#211e22;--ipn-linea:#61565e;--ipn-acento:#efb7ce;color-scheme:dark}
+body[data-oscuro="false"] #ipnt-cupos,body[data-oscuro="false"] #ipnt-sate-menu{--ipn-texto:#29252b;--ipn-superficie:#fff;--ipn-linea:#ded8dc;--ipn-acento:#71334c;color-scheme:light}
+</style>
+<h1>__REVISION_TITULO__</h1><nav id="revision"></nav>
+<template id="fixture">__REVISION_FIXTURE__</template>
+<script>
+/*__REVISION_COMPONENTES__*/
+const textos=__REVISION_TEXTOS__,tx=k=>IPNCupos.texto(textos,k);
+const doc=new DOMParser().parseFromString(document.getElementById('fixture').innerHTML,'text/html');
+const datos={tipo:'ipnt.cupos.datos',v:1,unidad:'demo',carrera:'B',plan:'09',hora:new Date().toISOString(),filas:IPNCupos.parsear(doc)};
+const seleccion={carrera:'B',plan:'09',grupos:[datos.filas[1],datos.filas[2],{materia:'B305',grupo:'3BM1',nombre:'MATERIA FICTICIA TRES'}].map(({materia,grupo,nombre})=>({materia,grupo,nombre}))};
+const opciones={};for(const k of ['carrera','plan'])opciones[k]=[...doc.querySelector('[name="ctl00$mainCopy$dpd'+k+'"]').options].map(o=>({valor:o.value,texto:o.textContent}));
+function montar(plegada=false,sinContexto=false){document.querySelector('#ipnt-cupos [data-c="cerrar"]')?.click();document.getElementById('ipnt-sate-menu')?.remove();IPNCuposMontar({datos,seleccion:sinContexto?null:seleccion,opciones,plegada})}
+window.revisionHoja=()=>montar();
+/*__REVISION_MENU__*/
+for(const [k,accion] of [['revision_menu',()=>{document.querySelector('#ipnt-cupos [data-c="cerrar"]')?.click();IPNTSate()}],['revision_hoja',()=>montar()],['revision_plegada',()=>montar(true)],['revision_contexto',()=>montar(false,true)],['revision_tema',()=>{document.body.dataset.oscuro=String(document.body.dataset.oscuro!=='true')}]]){const b=document.createElement('button');b.textContent=tx(k);b.onclick=accion;document.getElementById('revision').appendChild(b)}
+document.body.dataset.oscuro=String(matchMedia('(prefers-color-scheme:dark)').matches);
+</script></html>
