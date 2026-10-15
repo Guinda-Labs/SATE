@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Traer tus datos · SATE</title>
+<style>
+:root{--fondo:#fafafa;--texto:#18181b;--tenue:#71717a;--linea:#e4e4e7;--acento:#7a1f45}
+@media (prefers-color-scheme:dark){:root{--fondo:#18181b;--texto:#fafafa;--tenue:#a1a1aa;--linea:#3f3f46;--acento:#f0a3c4}}
+body{margin:0;background:var(--fondo);color:var(--texto);font:16px/1.5 system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;padding:16px;box-sizing:border-box}
+main{max-width:460px;border:1px solid var(--linea);border-radius:16px;padding:24px}
+h1{font-size:1.2rem;margin:0 0 8px}p{color:var(--tenue);margin:8px 0}a{color:var(--acento)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Trayendo tus datos a SATE</h1>
+  <p id="estado" role="status" aria-live="polite">Esperando los datos de la dirección anterior…</p>
+  <p><a id="seguir" href="sate/index.html">Ir a SATE</a></p>
+</main>
+<script>
+/* Recibe, solo de la dirección anterior (silver-vs.github.io/upiita) y solo de la pestaña que abrió esta página, los datos
+   que el alumno tenía guardados en su navegador. No se envían a ningún servidor: pasan de una pestaña a otra en su equipo.
+   Las claves que ya existen aquí no se sobrescriben. */
+(function(){
+  'use strict';
+  const ANTES='https://silver-vs.github.io', PREFIJOS=['hu.','ue.','saes.','ipnt.'];
+  const estado=document.getElementById('estado'), seguir=document.getElementById('seguir');
+  const p=new URLSearchParams(location.search), destinoCrudo=p.get('destino')||'sate/index.html';
+  // Solo rutas relativas de este mismo sitio.
+  const destino=/^[a-z0-9][a-z0-9._\/-]*(\?[^#]*)?(#.*)?$/i.test(destinoCrudo)&&!destinoCrudo.includes('..')?destinoCrudo:'sate/index.html';
+  seguir.href=destino;
+  if(!window.opener){estado.textContent='Abre esta página desde la dirección anterior para traer tus datos.';return}
+  let listo=false;
+  window.addEventListener('message',e=>{
+    if(e.origin!==ANTES||e.source!==window.opener||listo)return;
+    const d=e.data;
+    if(!d||d.tipo!=='ipnt.migrar.datos'||d.v!==1||typeof d.datos!=='object'||d.datos===null)return;
+    listo=true;let nuevos=0,conservados=0;
+    try{
+      for(const [k,v] of Object.entries(d.datos)){
+        if(typeof k!=='string'||typeof v!=='string'||k.length>200||!PREFIJOS.some(x=>k.startsWith(x)))continue;
+        if(localStorage.getItem(k)!==null){conservados++;continue}
+        localStorage.setItem(k,v);nuevos++;
+      }
+      localStorage.setItem('ipnt.migrado',new Date().toISOString());
+      estado.textContent='Listo: '+nuevos+' datos traídos'+(conservados?' ('+conservados+' ya existían aquí y se conservaron)':'')+'.';
+      window.opener.postMessage({tipo:'ipnt.migrar.hecho',v:1,nuevos},ANTES);
+    }catch(error){
+      estado.textContent='No se pudieron guardar tus datos en este navegador. Puedes volver a cargarlos con el Lector del SAES.';
+      console.error('Migración: fallo al guardar',error);
+    }
+    setTimeout(()=>location.replace(destino),900);
+  });
+  window.opener.postMessage({tipo:'ipnt.migrar.listo',v:1},ANTES);
+})();
+</script>
+</body>
+</html>
