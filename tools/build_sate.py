@@ -1022,7 +1022,7 @@ def escribir_sate(data):
     # Revisión sin red: mismo componente, sin ejecutar la entrada del marcador real.
     revision = (ROOT / 'tools/qa_cupos_hoja.template.html').read_text(encoding='utf-8')
     revision_menu = (ROOT / 'tools/sate_saes.js').read_text(encoding='utf-8').replace('__CUPOS_TEXTOS__', json.dumps(textos_cupos, ensure_ascii=False))
-    revision_menu = revision_menu.replace('/*__SATE_LECTOR__*/', '').replace('/*__SATE_CUPOS__*/', 'window.revisionHoja();')
+    revision_menu = revision_menu.replace('/*__SATE_LECTOR__*/', "window.IPNTSateResultado(window.revisionAlumno, '#sate-ficticio', 'DEMO');").replace('/*__SATE_CUPOS__*/', 'window.revisionHoja();')
     revision = revision.replace('__REVISION_TITULO__', html_escape.escape(textos_cupos['sate.cupos.revision_titulo']))
     revision = revision.replace('__REVISION_FIXTURE__', (ROOT / 'tests/fixtures/ocupabilidad_ficticio.html').read_text(encoding='utf-8'))
     revision = revision.replace('/*__REVISION_COMPONENTES__*/', marcador.split('/*__CUPOS_INICIO__*/')[0])

@@ -72,14 +72,16 @@ for(const unidad of ['esimez','upiita','escom','upibi']){
     '/Alumnos/Informacion_semestral/Horario_Alumno.aspx':documento(leer('tests/fixtures/horario_generico.html')),
     '/Academica/agenda_escolar.aspx':documento()
   };
-  const c=vm.createContext({document,location:{hostname:'saes.'+unidad+'.ipn.mx'},navigator:{clipboard:{async writeText(t){copiado=t}}},
+  const c=vm.createContext({console,document,location:{hostname:'saes.'+unidad+'.ipn.mx'},navigator:{clipboard:{async writeText(t){copiado=t}}},
     DOMParser:class {parseFromString(t){return docs[t]}},alert(t){throw new Error(t)},
     fetch:async(path,op)=>{assert.equal(op.credentials,'same-origin');assert.equal(op.method,undefined);solicitudes.push(path);return {text:async()=>path}}});
-  const fuente=lector.replace('__TOOL_URL__','https://ejemplo.invalid/upiita/horarios.html').replace('__LECTOR_VERSION__','version-ficticia')
+  let destino,siglas;
+  c.window=c;c.IPNTSateResultado=(d,url,sig)=>{copiado=JSON.stringify(d);destino=url;siglas=sig};
+  const fuente=lector.replaceAll('__TOOL_URL__','https://ejemplo.invalid/upiita/horarios.html').replace('__LECTOR_VERSION__','version-ficticia')
     .replace('__LECTOR_UNIDADES__',JSON.stringify(Object.keys(config.unidades))).replace('__LECTOR_NOMBRES__',JSON.stringify(config.nombresUnidades));
   await vm.runInContext(fuente,c);
-  assert.equal(typeof nodo('ul-copy').onclick,'function',nodo('lector').innerHTML);
-  await nodo('ul-copy').onclick();const d=JSON.parse(copiado);
+  const d=JSON.parse(copiado);
+  assert.match(destino,/https:\/\/ejemplo.invalid\//);assert.ok(siglas);
   assert.deepEqual(d.materias.Z101,['Álgebra ficticia',1]);
   assert.deepEqual(d.materias.Z301,['Control ficticio',3]);
   assert.deepEqual(d.materias.Z501,['Materia pendiente ficticia',5]);
@@ -329,6 +331,17 @@ assert.match(css,/\[data-sate-generico\] #v-tray[^}]*min-width:0;max-width:100%/
 assert.match(css,/\[data-sate-generico\] \.mapwrap[^}]*max-width:100%;min-width:0/);
 assert.match(shell,/\.mapwrap\{[^}]*overflow:auto/);
 assert.match(shell,/\.calwrap\{overflow-x:auto/);
+// Sesión cerrada o lectura fallida: devuelve ausencia de datos a la ventana común.
+for(const codigo of ['sesion','fallo-ficticio']){
+  const resultados=[],avisos=[];
+  const c=vm.createContext({location:{hostname:'saes.demo.ipn.mx'},console:{warn:(...a)=>avisos.push(a)},
+    fetch:async()=>{throw Error(codigo)}});
+  c.window=c;c.IPNTSateResultado=d=>resultados.push(d);
+  const fuente=lector.replaceAll('__TOOL_URL__','https://sate.invalid/horarios.html').replace('__LECTOR_UNIDADES__','[]').replace('__LECTOR_NOMBRES__','{}');
+  await vm.runInContext(fuente,c);
+  assert.equal(resultados.length,2);assert.equal(resultados[0],undefined);assert.equal(resultados[1],null);
+  assert.equal(avisos.length,1);assert.equal(avisos[0][1].codigo,codigo==='sesion'?'sesion':'lectura');
+}
 // Destino del Lector: contrato de los tres enlaces existentes y la unidad genérica.
 const destino=lector.slice(lector.indexOf('  if (TOOL) TOOL ='),lector.indexOf('  // claves:'));
 for(const u of ['upiita','escom','upibi','esimez']){

@@ -198,27 +198,11 @@ vm.runInContext('function* generateBank(s){return s}',generador);  // doble: el 
 vm.runInContext(horarios.slice(horarios.indexOf('function* pasoGen('),horarios.indexOf('function* generateBank(')),generador);
 assert.equal(generador.generate()[0].opts.length,0);generador.CUPOS.excluir=()=>false;assert.equal(generador.generate()[0].opts.length,1);
 generador.tr=()=>({want:[],oblig:[],done:[],curso:[]});assert.equal(generador.generate(['B105'])[0].opts.length,1);
-// CUP4: menú único y entradas antiguas; sin navegador ni red.
+// Textos de cupos y entradas antiguas; sin navegador ni red.
 assert.equal(C.texto(config.textos,'lugares',{n:1}),'1 lugar');
 assert.equal(C.texto(config.textos,'lugares',{n:2}),'2 lugares');
 assert.equal(C.texto(config.textos,'lugares',{n:0}),'Sin lugares');
 assert.match(C.texto(config.textos,'aviso',{n:1,materia:'B105',grupo:'1BM3'}),/1 lugar$/);
-let accion='',menu,botones=[];
-const crearMenu=tag=>({tag,style:{},atributos:{},setAttribute(k,v){this.atributos[k]=v},appendChild(b){if(b.tag==='button')botones.push(b)},querySelector:()=>({focus(){}}),remove(){menu=null}});
-const menuCtx=vm.createContext({document:{getElementById:()=>null,createElement:crearMenu,body:{appendChild(m){menu=m}}}});
-menuCtx.window=menuCtx;menuCtx.elegir=v=>accion=v;
-const menuSrc=leer('tools/sate_saes.js').replace('__CUPOS_TEXTOS__',JSON.stringify(config.textos)).replace('/*__SATE_LECTOR__*/',"window.elegir('lector');").replace('/*__SATE_CUPOS__*/',"window.elegir('cupos');");
-vm.runInContext(menuSrc,menuCtx);
-assert.deepEqual(botones.map(b=>b.textContent),['Traer mis datos del SAES','Consultar cupos','En esta pestaña','En otra ventana']);
-assert.equal(botones[2].atributos['aria-pressed'],'true');assert.equal(botones[3].atributos['aria-pressed'],'false');
-assert.doesNotMatch(menuSrc,/Cerrar menú|cerrar_menu/);
-botones[0].onclick();assert.equal(accion,'lector');
-menuCtx.IPNTSate();botones.at(-3).onclick();assert.equal(accion,'cupos');
-let modoManual;menuCtx.localStorage={setItem:(k,v)=>{assert.equal(k,'ipnt.cupos.modo');modoManual=v}};
-menuCtx.IPNCuposCambiarModo=m=>assert.equal(m,'saes');botones.at(-2).onclick();assert.equal(modoManual,'saes');
-menuCtx.matchMedia=()=>({matches:true});menuCtx.localStorage.getItem=()=>null;menuCtx.IPNTSate();
-assert.equal(botones.at(-2).atributos['aria-pressed'],'false');assert.equal(botones.at(-1).atributos['aria-pressed'],'true');
-menuCtx.localStorage.getItem=()=>'saes';menuCtx.IPNTSate();assert.equal(botones.at(-2).atributos['aria-pressed'],'true');
 for(const archivo of ['lector','cupos'])assert.match(leer('web/dist/'+archivo+'.js'),/sate\.js\?v=/);
 // Barra real ejecutada desde Inicio.aspx, sin selects ni tabla en la página visible.
 let panelMessage,peticionesPanel=0,tiempo=Date.now(),intervalos=[],visibilidad,aperturas=0;
@@ -314,6 +298,14 @@ node('[data-c="plegar"]').onclick();assert.equal(node('[data-c="hoja"]').hidden,
 node('[data-c="plegar"]').onclick();assert.equal(node('[data-c="hoja"]').hidden,false);
 node('[data-c="cerrar"]').onclick();
 const revision=leer('web/qa-cupos-hoja.html');
+// CUP9: el mismo panel se monta en la raíz aislada de la ventana, con su CSS y limpieza.
+let panelIntegrado,estiloIntegrado;
+mc.IPNTSateContenedor={appendChild:p=>{panelIntegrado=p},getRootNode:()=>({appendChild:e=>{estiloIntegrado=e}})};
+mc.IPNCuposMontar({datos:{...payload,carrera:'B',plan:'09',filas},seleccion:null,opciones:{carrera:[],plan:[]}});
+assert.equal(panelIntegrado,panel);assert.match(estiloIntegrado.textContent,/#ipnt-sate #ipnt-cupos\{position:static/);
+assert.equal(peticionesPanel,peticionesRevision);assert.equal(aperturas,aperturasRevision);
+assert.equal(mc.IPNTSateContenedor,undefined);assert.equal(typeof mc.IPNCuposCerrar,'function');
+mc.IPNCuposCerrar();assert.equal(mc.IPNCuposCerrar,undefined);assert.equal(mc.IPNCuposCambiarModo,undefined);
 assert.doesNotMatch(revision,/__REVISION_|__CUPOS_URL__|__CUPOS_TEXTOS__|<script[^>]*src=/);
 assert.match(revision,/connect-src 'none'/);
 for(const bloque of revision.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))assert.doesNotThrow(()=>new Function(bloque[1]));
@@ -333,4 +325,4 @@ assert.doesNotMatch(fuente,/alert\(|ipnt-elegido|originales/);
 assert.doesNotMatch(fuente+leer('web/sate/cupos-receptor.js'),/postMessage\([^\n]*['"]\*['"]/);
 for(const p of ['web/dist/sate.js','web/dist/lector.js','web/dist/cupos.js','web/dist/sate/cupos.js','web/dist/sate/cupos-receptor.js'])assert.doesNotThrow(()=>new Function(leer(p)));
 assert.doesNotMatch(leer('web/dist/sate.js'),/__CUPOS_URL__|__CUPOS_TEXTOS__|__SATE_LECTOR__|__SATE_CUPOS__/);
-console.log('OK CUP7: menú y aria-pressed, resumen plegado, revisión sin red; compatibilidad CUP4–CUP6, contratos CSS a 375 px. Sin navegador ni red.');
+console.log('Cupos: resumen plegado, revisión sin red, compatibilidad y contratos CSS a 375 px. Sin navegador ni red.');

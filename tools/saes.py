@@ -31,7 +31,15 @@ def lector_js(tool_url=""):
 
 
 def bookmarklet(tool_url=""):
-    return "javascript:" + urllib.parse.quote(lector_js(tool_url), safe="")
+    import contenido
+    textos = {k: v for k, v in contenido.objeto_t().items() if k.startswith('sate.cupos.')}
+    cupos = (ROOT / 'tools/cupos_saes.js').read_text(encoding='utf-8')
+    url = tool_url.rsplit('/', 1)[0] + '/sate/index.html?vista=cupos' if tool_url else ''
+    cupos = cupos.replace("'__CUPOS_URL__'", json.dumps(url)).replace('__CUPOS_TEXTOS__', json.dumps(textos, ensure_ascii=False))
+    js = (ROOT / 'tools/sate_saes.js').read_text(encoding='utf-8')
+    js = js.replace('__CUPOS_TEXTOS__', json.dumps(textos, ensure_ascii=False))
+    js = js.replace('/*__SATE_LECTOR__*/', lector_js(tool_url)).replace('/*__SATE_CUPOS__*/', cupos)
+    return "javascript:" + urllib.parse.quote(js, safe="")
 
 
 def loader(base):

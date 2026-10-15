@@ -15,11 +15,23 @@ sys.path.insert(0, str(ROOT / 'tools'))
 
 
 class SateBuild(unittest.TestCase):
+    def test_marcador_completo_sin_descarga(self):
+        """La instalación sin cargador también incluye ventana, lector y cupos."""
+        import saes
+        from urllib.parse import unquote
+        fuente = unquote(saes.bookmarklet('https://sate.invalid/horarios-upiita.html')[11:])
+        self.assertIn("attachShadow({mode:'open'})", fuente)
+        self.assertIn('window.IPNCuposMontar', fuente)
+        self.assertIn("var resultado = window.IPNTSateResultado", fuente)
+        self.assertNotRegex(fuente, r'__SATE_(?:LECTOR|CUPOS)__|__CUPOS_(?:URL|TEXTOS)__|__LECTOR_|__TOOL_URL__|ipnt-sate-menu')
+
     def test_cupos(self):
         """Consulta ficticia de ocupabilidad y puente de solo lectura, sin navegador ni red."""
-        resultado = subprocess.run([r'D:\Tools\nodejs\node.exe', 'tests/qa_sate_cupos.mjs'], cwd=ROOT,
-                                   capture_output=True, text=True, encoding='utf-8')
-        self.assertEqual(resultado.returncode, 0, resultado.stdout + resultado.stderr)
+        for archivo in ('qa_sate_cupos.mjs', 'qa_sate_marcador.mjs'):
+            with self.subTest(archivo=archivo):
+                resultado = subprocess.run([r'D:\Tools\nodejs\node.exe', 'tests/' + archivo], cwd=ROOT,
+                                           capture_output=True, text=True, encoding='utf-8')
+                self.assertEqual(resultado.returncode, 0, resultado.stdout + resultado.stderr)
 
     def test_creditos_por_escala(self):
         from build_sate import creditos_materia

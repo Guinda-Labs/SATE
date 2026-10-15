@@ -7,9 +7,10 @@
    tools/saes.py lo convierte en un enlace javascript: y sustituye __TOOL_URL__. */
 (async function () {
   var TOOL = '__TOOL_URL__';
+  var resultado = window.IPNTSateResultado;
   var UM = location.hostname.match(/(?:^|\.)saes\.([a-z0-9-]+)\.ipn\.mx$/i);
   if (!UM) {
-    alert('Abre este marcador dentro del SAES de tu unidad (por ejemplo, saes.upiita.ipn.mx), con tu sesión iniciada.');
+    resultado(null, TOOL, '');
     return;
   }
   var UNIDAD = UM[1].toLowerCase();
@@ -18,8 +19,6 @@
   // claves: letra + 3 dígitos (B101) o con letras (optativas de la ESCOM); siempre con al menos un dígito
   var CLAVE = /^(?=[A-Z0-9]*\d)[A-Z][A-Z0-9]{2,6}$/i;
   var byId = function (d, id) { return d.querySelector('[id$="mainCopy_' + id + '"]'); };
-  var old = document.getElementById('upiita-lector');
-  if (old) old.remove();
   var clean = function (s) { return String(s || '').replace(/\s+/g, ' ').trim(); };
   var num = function (s) { var m = clean(s).replace(/,/g, '').match(/-?\d+(\.\d+)?/); return m ? +m[0] : null; };
   var getRaw = async function (path) {
@@ -54,14 +53,7 @@
     return null;
   };
 
-  var box = document.createElement('div');
-  box.id = 'upiita-lector';
-  box.setAttribute('role', 'dialog');
-  box.setAttribute('aria-label', 'SATE · ' + SIG);
-  box.style.cssText = 'position:fixed;z-index:2147483647;right:16px;top:16px;width:min(420px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;background:#fff;color:#18181b;border:1px solid #d9d9de;border-radius:12px;box-shadow:0 18px 50px -12px rgba(0,0,0,.35);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;padding:16px';
-  box.innerHTML = '<b style="font-size:16px">SATE · ' + SIG + '</b><p style="margin:6px 0 0;color:#52525b">Leyendo tu Kárdex y tu Cita de reinscripción (solo lectura)…</p>';
-  document.body.appendChild(box);
-
+  resultado(undefined, TOOL, SIG);
   try {
     var cita = await get('/Alumnos/Reinscripciones/fichas_reinscripcion.aspx');
     var kx = await get('/Alumnos/boleta/kardex.aspx');
@@ -230,31 +222,9 @@
       agenda: agenda,   /* [evento, inicio, fin] de la Agenda escolar: de aquí sale el periodo que sigue */
       lector: '__LECTOR_VERSION__'   /* versión del marcador SATE (huella del código), para atribuir errores a una versión */
     };
-    var json = JSON.stringify(data);
-    var row = function (k, v) { return '<tr><td style="color:#52525b;padding:2px 12px 2px 0">' + k + '</td><td style="font-weight:600">' + (v == null || v === '' ? '—' : v) + '</td></tr>'; };
-    box.innerHTML = '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b style="font-size:16px">SATE · ' + SIG + '</b><button id="ul-x" style="border:0;background:none;font-size:20px;cursor:pointer" aria-label="Cerrar">×</button></div>' +
-      '<p style="margin:4px 0 10px;color:#52525b">Resumen de la información consultada en el SAES. No se envió a ningún servidor.</p>' +
-      '<table style="border-collapse:collapse;font-size:13px">' +
-      row('Boleta', data.boleta) + row('Carrera', data.carrera_nombre + (data.plan ? ' (plan ' + data.plan + ')' : '')) +
-      row('Promedio', data.promedio) + row('Materias acreditadas', acred.length) + row('Materias en curso', curso ? curso.length : null) +
-      row('Créditos obtenidos', data.avance.obtenidos) + row('Periodos cursados', data.avance.cursados) +
-      row('Carga autorizada', data.avance.autorizada) + row('Reprobadas', repro.length ? repro.map(function (r) { return r[0].toLowerCase(); }).join(', ') : 'ninguna') +
-      row('Cita de reinscripción', data.cita.inicio) + '</table>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">' +
-      '<button id="ul-copy" style="background:#750946;color:#fff;border:0;border-radius:999px;padding:8px 16px;font-weight:600;cursor:pointer">Copiar mis datos</button>' +
-      (TOOL ? '<a id="ul-open" href="' + TOOL + '" target="_blank" rel="noopener" style="border:1px solid #d9d9de;border-radius:999px;padding:8px 16px;color:#18181b;text-decoration:none;font-weight:500">Abrir SATE ' + SIG + '</a>' : '') + '</div>' +
-      '<p id="ul-msg" style="margin:10px 0 0;color:#52525b;font-size:13px">Después, en la herramienta, pulsa <b>Traer mis datos del SAES</b> y pega con Ctrl+V.</p>' +
-      '<textarea id="ul-txt" readonly style="position:absolute;left:-9999px;width:1px;height:1px"></textarea>';
-    document.getElementById('ul-x').onclick = function () { box.remove(); };
-    document.getElementById('ul-copy').onclick = async function () {
-      var msg = document.getElementById('ul-msg');
-      try { await navigator.clipboard.writeText(json); }
-      catch (e) { var t = document.getElementById('ul-txt'); t.value = json; t.select(); document.execCommand('copy'); }
-      msg.innerHTML = '<b style="color:#15803d">Copiado.</b> Ahora abre la herramienta, pulsa <b>Traer mis datos del SAES</b> y pega con Ctrl+V.';
-    };
+    resultado(data, TOOL, SIG);
   } catch (e) {
-    box.innerHTML = '<b style="font-size:16px">SATE · ' + SIG + '</b><p style="margin:6px 0 0">' +
-      (e.message === 'sesion' ? 'No se detectó una sesión activa del SAES. Inicia sesión y ejecuta nuevamente el marcador.' : 'No fue posible leer la información: ' + e.message) +
-      '</p><button onclick="this.parentNode.remove()" style="margin-top:10px;border:1px solid #d9d9de;background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer">Cerrar</button>';
+    console.warn('SATE: lectura no disponible', {unidad: UNIDAD, codigo: e.message === 'sesion' ? 'sesion' : 'lectura'});
+    resultado(null, TOOL, SIG);
   }
 })();
