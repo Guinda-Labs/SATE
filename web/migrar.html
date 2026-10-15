@@ -2,6 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; script-src-attr 'none'; base-uri 'self'; form-action 'self'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'none'; frame-src 'none';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if(window.top!==window.self){let propio=false;try{propio=window.top.location.origin===location.origin}catch(e){}if(!propio){document.documentElement.hidden=true;document.documentElement.style.setProperty('display','none','important')}}</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Traer tus datos · SATE</title>
@@ -37,16 +41,16 @@ h1{font-size:1.2rem;margin:0 0 8px}p{color:var(--tenue);margin:8px 0}a{color:var
     if(e.origin!==ANTES||e.source!==window.opener||listo)return;
     const d=e.data;
     if(!d||d.tipo!=='ipnt.migrar.datos'||d.v!==1||typeof d.datos!=='object'||d.datos===null)return;
-    listo=true;let nuevos=0,conservados=0;
+    listo=true;let nuevos=0,conservados=0,omitidos=0;
     try{
       for(const [k,v] of Object.entries(d.datos)){
-        if(typeof k!=='string'||typeof v!=='string'||k.length>200||!PREFIJOS.some(x=>k.startsWith(x)))continue;
+        if(typeof k!=='string'||typeof v!=='string'||k.length>200||v.length>500000||!PREFIJOS.some(x=>k.startsWith(x))){omitidos++;continue}
         if(localStorage.getItem(k)!==null){conservados++;continue}
         localStorage.setItem(k,v);nuevos++;
       }
       localStorage.setItem('ipnt.migrado',new Date().toISOString());
-      estado.textContent='Listo: '+nuevos+' datos traídos'+(conservados?' ('+conservados+' ya existían aquí y se conservaron)':'')+'.';
-      window.opener.postMessage({tipo:'ipnt.migrar.hecho',v:1,nuevos},ANTES);
+      estado.textContent='Listo: '+nuevos+' datos traídos'+(conservados?' ('+conservados+' ya existían aquí y se conservaron)':'')+(omitidos?'; '+omitidos+' omitidos por tamaño o formato':'')+'.';
+      window.opener.postMessage({tipo:'ipnt.migrar.hecho',v:1,nuevos,omitidos},ANTES);
     }catch(error){
       estado.textContent='No se pudieron guardar tus datos en este navegador. Puedes volver a cargarlos con el marcador SATE del SAES.';
       console.error('Migración: fallo al guardar',error);

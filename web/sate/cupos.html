@@ -1,4 +1,8 @@
-<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SATE</title>
+<!doctype html><html lang="es"><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; script-src-attr 'none'; base-uri 'self'; form-action 'self'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'none'; frame-src 'none';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if(window.top!==window.self){let propio=false;try{propio=window.top.location.origin===location.origin}catch(e){}if(!propio){document.documentElement.hidden=true;document.documentElement.style.setProperty('display','none','important')}}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>SATE</title>
 <script>
 // replace conserva opener, nombre de ventana y el retorno de autenticación.
 const destino=new URL('index.html',location.href),parametros=new URLSearchParams(location.search);

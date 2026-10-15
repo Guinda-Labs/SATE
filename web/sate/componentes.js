@@ -12,11 +12,11 @@
   function usarAlmacen(o) { guardar = o.guardar; leer = o.leer; }
   function almGuardar(k, v) {
     if (guardar) return guardar(k, v);
-    try { if (raiz.IPNT && raiz.IPNT.set) raiz.IPNT.set(k, v); else localStorage.setItem(k, v); } catch (e) {}
+    try { if (raiz.IPNT && raiz.IPNT.set) raiz.IPNT.set(k, v); else (window.IPNT?.almacen||localStorage).setItem(k, v); } catch (e) {}
   }
   function almLeer(k) {
     if (leer) return leer(k);
-    try { return localStorage.getItem(k); } catch (e) { return null; }
+    try { return (window.IPNT?.almacen||localStorage).getItem(k); } catch (e) { return null; }
   }
 
   function el(tag, attrs, hijos) {
@@ -179,6 +179,7 @@
   function cerrarGlobo() { if (globoAbierto) { globoAbierto(); globoAbierto = null; } }
   /* ayuda(clave, vars?) → elemento. Escritorio: globo (hover, foco, clic). Teléfono/táctil: modal pequeño. */
   function ayuda(clave, vars) {
+    vars = Object.fromEntries(Object.entries(vars || {}).map(([k,v]) => [k,String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))]));
     var env = el('span', { class: 'sate-ayuda' });
     var b = el('button', { type: 'button', class: 'sate-ayuda__btn', 'aria-label': traducir('componentes.ayuda.boton'), texto: 'ⓘ' });
     var gid = id('globo');
@@ -378,7 +379,7 @@ function cajaMateria(ctx,k,x,y,w,h,sc,want,off,hot,sem,req){
   const el=isElec(k);
   const cls=`box ${st}${el?' elec':''}${MARK.avail.has(k)?' avail':''}${MARK.sug.has(k)?' sug':''}${paso!=null?' want plan-'+(paso+1)+(PLAN_DOS_PERIODOS&&paso!==S.planPaso?' plan-otra':''):req&&req.has(k)?' req':''}${resalteCaja(hot,k,S.mapHover,S.reqHover)}${off.has(k)||el?'':' offered-no'}`;
   const tip=`${k} · ${n} · ${ctx.textoCreditos?ctx.textoCreditos(k,cr,true):fmtCr(cr)+' créditos'} · nivel ${niv}${sem&&!porNiveles()?` · semestre propuesto ${sem}`:''}${el?' · consulta su acreditación con Gestión Escolar':off.has(k)?'':' · sin grupos este periodo'}${st.startsWith('late fail')?' · desfasada (SAES): inscripción obligatoria':st.startsWith('fail')?' · reprobada: por recursar':st==='curso'?' · en curso':st.startsWith('late')?' · atrasada según el semestre propuesto':st.includes('far')?' · más de un año adelante de tu semestre de referencia: aún no puedes inscribirla':st.includes('lock')?' · le faltan requisitos':MARK.avail.has(k)?' · puedes cursarla el siguiente periodo':''}${MARK.sug.has(k)?' · sugerida para tu carga':''}${req&&req.has(k)?' · conviene cursarla antes que una materia elegida':''}`;
-  return `<div class="${cls}" data-box="${k}" role="button" tabindex="0" aria-pressed="${paso===S.planPaso}" aria-label="${esc(tip+(paso==null?'':' · '+SATE.texto('sate.planeacion.periodo_elegido',{marca:paso+1,periodo:planEtiqueta(paso)})))}" style="--nv:var(--n${niv});left:${x*sc}px;top:${y*sc}px;width:${w*sc}px;height:${h*sc}px;font-size:${Math.max(5.5,(n.length>34?9:10.5)*sc)}px" title="${esc(tip)}">${esc(n)}${paso==null||!PLAN_DOS_PERIODOS?'':`<span class="plan-marca" aria-hidden="true">${paso===0&&S.planPaso===1?'en ':''}${esc(planEtiqueta(paso))}</span>`}</div>`;
+  return `<div class="${cls}" data-box="${esc(k)}" role="button" tabindex="0" aria-pressed="${paso===S.planPaso}" aria-label="${esc(tip+(paso==null?'':' · '+SATE.texto('sate.planeacion.periodo_elegido',{marca:paso+1,periodo:planEtiqueta(paso)})))}" style="--nv:var(--n${niv});left:${x*sc}px;top:${y*sc}px;width:${w*sc}px;height:${h*sc}px;font-size:${Math.max(5.5,(n.length>34?9:10.5)*sc)}px" title="${esc(tip)}">${esc(n)}${paso==null||!PLAN_DOS_PERIODOS?'':`<span class="plan-marca" aria-hidden="true">${paso===0&&S.planPaso===1?'en ':''}${esc(planEtiqueta(paso))}</span>`}</div>`;
 }
 function lanes(items){
   const out=[];
@@ -415,7 +416,7 @@ function cuadriculaHorario(all,op){
     items.filter(b=>b.d===d).forEach(b=>{
       const top=(b.a-lo)/SLOT*SLOTPX, ht=(b.b-b.a)/SLOT*SLOTPX-2, w=100/b.n, pos=`top:${top}px;height:${ht}px;left:calc(${b.lane*w}% + 2px);width:calc(${w}% - 4px)`;
       if(b.c.own) html+=`<div class="blk own${b.clash?' clash':''}"${b.c.tipo?` data-tipo="${esc(b.c.tipo)}"`:""}${!soloLectura&&b.c.i!=null?` data-own="${b.c.i}" tabindex="0" role="button" aria-label="${esc(txH('semana_abrir_bloque',{nombre:b.c.n}))}"`:''} style="${pos}" title="${esc(b.c.n)} · ${hm(b.a)}–${hm(b.b)}"><b>${esc(b.c.n)}</b><span class="t">${hm(b.a)}</span></div>`;
-      else html+=`<div class="blk${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)};${pos}"${soloLectura?'':` data-k="${keyOf(b.c)}"`} title="${esc(b.c[3])} · ${esc(name(b.c))} · ${esc(profs(b.c))} · ${hm(b.a)}–${hm(b.b)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}"><b>${esc(name(b.c))}</b><span class="t">${esc(b.c[3])} · ${hm(b.a)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}</span></div>`;
+      else html+=`<div class="blk${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)};${pos}"${soloLectura?'':` data-k="${esc(keyOf(b.c))}"`} title="${esc(b.c[3])} · ${esc(name(b.c))} · ${esc(profs(b.c))} · ${hm(b.a)}–${hm(b.b)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}"><b>${esc(name(b.c))}</b><span class="t">${esc(b.c[3])} · ${hm(b.a)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}</span></div>`;
       if(insignia&&!b.c.own)html=html.replace(/<\/div>$/,insignia(b.c)+'</div>');
     });
     html+='</div>';

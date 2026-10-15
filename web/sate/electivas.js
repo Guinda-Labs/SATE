@@ -1,13 +1,13 @@
 /* Captura de Electivas: catálogo y cálculo compartidos; estampado oficial sin cambios. */
 (function(raiz){
   const R=ElectivasReglas,CARN=R.CARN;
-  const leer=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null}};
+  const leer=k=>{try{return JSON.parse((window.IPNT?.almacen||localStorage).getItem(k)||'null')}catch{return null}};
   const nodo=(t,s,clase)=>{const n=document.createElement(t);if(s!=null)n.textContent=s;if(clase)n.className=clase;return n};
   const boton=(s,fn)=>{const b=nodo('button',s,'sate-btn');b.type='button';b.onclick=fn;return b};
   const compartidos=()=>leer('hu.tramite.datos');
   const identidad=()=>compartidos()?.confirmado?compartidos().datos:null;
   const carrera=()=>{const d=identidad();return Object.keys(CARN).find(k=>k===d?.carrera||R.norm(CARN[k])===R.norm(d?.carrera||''))};
-  const alumno=()=>{const a=(window.SATE?.alumno?window.SATE.alumno():(()=>{try{return JSON.parse(localStorage.getItem('saes.alumno')||'null')}catch{return null}})());return a?.upiita_saes===1&&(a.unidad||SATE_CONFIG.unidadPredeterminada)===SATE_UNIDAD?a:null};
+  const alumno=()=>{const a=(window.SATE?.alumno?window.SATE.alumno():(()=>{try{return JSON.parse((window.IPNT?.almacen||localStorage).getItem('saes.alumno')||'null')}catch{return null}})());return a?.upiita_saes===1&&(a.unidad||SATE_CONFIG.unidadPredeterminada)===SATE_UNIDAD?a:null};
   let fuente,recursos,carga;
   async function preparar(){
     if(!carga)carga=(async()=>{

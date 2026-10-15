@@ -1,4 +1,8 @@
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; script-src-attr 'none'; base-uri 'self'; form-action 'self'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com; connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com https://*.files.1drv.com https://*.sharepoint.com https://*.storage.live.com https://www.googleapis.com https://accounts.google.com https://script.google.com https://script.googleusercontent.com; frame-src 'self' blob: https://login.microsoftonline.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; worker-src 'none';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if(window.top!==window.self){let propio=false;try{propio=window.top.location.origin===location.origin}catch(e){}if(!propio){document.documentElement.hidden=true;document.documentElement.style.setProperty('display','none','important')}}</script>
+
 <title>Horarios UPIITA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -848,7 +852,7 @@ const fmtCr=n=>Number.isInteger(+n)?String(+n):(+n).toFixed(2).replace(/0$/,'');
 if(location.hash==='#demo'){try{sessionStorage.setItem('ipnt.demo',UNIDAD)}catch(e){}history.replaceState(null,'',location.pathname+location.search)}
 const DEMO=(()=>{try{return sessionStorage.getItem('ipnt.demo')===UNIDAD}catch(e){return false}})();
 const HU=DEMO?'hu.demo.'+UNIDAD+'.':UNIDAD==='upiita'?'hu.':'hu.'+UNIDAD+'.';
-const ALM=DEMO?sessionStorage:localStorage;
+const ALM=DEMO?sessionStorage:(window.IPNT?.almacen||localStorage);
 const store={get(k,d){try{const v=ALM.getItem(HU+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){if(DEMO){try{ALM.setItem(HU+k,JSON.stringify(v))}catch(e){}}else IPNT.set(HU+k,JSON.stringify(v))}};   // IPNT: perfil sincronizable (tools/cuenta.py)
 
 const S={tab:store.get('tab','tray'),per:store.get('per','proximo'),car:store.get('car','B'),tur:store.get('tur','*'),niv:store.get('niv','*'),q:'',view:store.get('view','materia'),
@@ -879,7 +883,7 @@ let ALUMNO=DEMO?null:SAES.load();   // en modo demostración se genera después 
 // El perfil conserva los ids del SAES; la vista distingue los planes que reutilizan claves.
 const carreraPerfil=d=>d?(Object.entries(DATA.opciones_plan||{}).find(([,v])=>v.carrera===d.carrera&&v.plan===d.plan)?.[0]||
   (Object.values(DATA.opciones_plan||{}).some(v=>v.carrera===d.carrera)?null:d.carrera)):null;
-try{localStorage.setItem('ipnt.unidad',UNIDAD)}catch(e){}   // horarios.html e inicio: abrir directo esta unidad
+try{(window.IPNT?.almacen||localStorage).setItem('ipnt.unidad',UNIDAD)}catch(e){}   // horarios.html e inicio: abrir directo esta unidad
 const isPersonal=()=>!!ALUMNO&&carreraPerfil(ALUMNO)===S.car;
 const T={}; // por carrera: elegidas y, con datos del SAES, acreditadas y reprobadas
 /* Simulación de fin de semestre (solo exploración, nunca toca los datos del SAES):
@@ -1119,7 +1123,7 @@ function levelStats(){
 function levelOpen(niv){                        // ¿cumple la seriación recomendada para cursar ese nivel?
   const r=MAP().reglas[niv];if(!r) return {ok:true,miss:[]};
   const st=levelStats(), miss=[];
-  Object.entries(r).forEach(([k,f])=>{const s=st[k];if(s&&s.ok/s.tot<f-1e-9)miss.push(`N${k} ${Math.round(f*100)} %`)});
+  Object.entries(r).forEach(([k,f])=>{const s=st[k];if(s&&s.ok/s.tot<f-1e-9)miss.push(`N${esc(k)} ${Math.round(f*100)} %`)});
   return {ok:!miss.length,miss};
 }
 // periodo escolar que se planea = "Periodos escolares que cursaste" (Cita del SAES) + 1. En los planes por niveles
@@ -1427,8 +1431,8 @@ function boxHtml(k,x,y,w,h,sc,want,off,hot,sem,req){
   const st=statusOf(k);
   const el=isElec(k);
   const cls=`box ${st}${el?' elec':''}${MARK.avail.has(k)?' avail':''}${MARK.sug.has(k)?' sug':''}${want.has(k)?' want':req&&req.has(k)?' req':''}${hot?(hot.has(k)?(k===S.mapHover?' hot':hot.pre?.has(k)?' hpre':hot.post?.has(k)?' hpost':''):' dim'):''}${off.has(k)||el?'':' offered-no'}`;
-  const tip=`${k} · ${n} · ${fmtCr(cr)} créditos · nivel ${niv}${sem&&!porNiveles()?` · semestre propuesto ${sem}`:''}${el?' · consulta su acreditación con Gestión Escolar':off.has(k)?'':' · sin grupos este periodo'}${st.startsWith('late fail')?' · desfasada (SAES): inscripción obligatoria':st.startsWith('fail')?' · reprobada: por recursar':st==='curso'?' · en curso':st.startsWith('late')?' · atrasada según el semestre propuesto':st.includes('far')?' · más de un año adelante de tu semestre de referencia: aún no puedes inscribirla':st.includes('lock')?' · le faltan requisitos':MARK.avail.has(k)?' · puedes cursarla el siguiente periodo':''}${MARK.sug.has(k)?' · sugerida para tu carga':''}${req&&req.has(k)?' · conviene cursarla antes que una materia elegida':''}`;
-  return `<div class="${cls}" data-box="${k}" role="button" tabindex="0" aria-pressed="${want.has(k)}" style="--nv:var(--n${niv});left:${x*sc}px;top:${y*sc}px;width:${w*sc}px;height:${h*sc}px;font-size:${Math.max(5.5,(n.length>34?9:10.5)*sc)}px" title="${esc(tip)}">${esc(n)}</div>`;
+  const tip=`${esc(k)} · ${n} · ${fmtCr(cr)} créditos · nivel ${niv}${sem&&!porNiveles()?` · semestre propuesto ${sem}`:''}${el?' · consulta su acreditación con Gestión Escolar':off.has(k)?'':' · sin grupos este periodo'}${st.startsWith('late fail')?' · desfasada (SAES): inscripción obligatoria':st.startsWith('fail')?' · reprobada: por recursar':st==='curso'?' · en curso':st.startsWith('late')?' · atrasada según el semestre propuesto':st.includes('far')?' · más de un año adelante de tu semestre de referencia: aún no puedes inscribirla':st.includes('lock')?' · le faltan requisitos':MARK.avail.has(k)?' · puedes cursarla el siguiente periodo':''}${MARK.sug.has(k)?' · sugerida para tu carga':''}${req&&req.has(k)?' · conviene cursarla antes que una materia elegida':''}`;
+  return `<div class="${cls}" data-box="${esc(k)}" role="button" tabindex="0" aria-pressed="${want.has(k)}" style="--nv:var(--n${niv});left:${x*sc}px;top:${y*sc}px;width:${w*sc}px;height:${h*sc}px;font-size:${Math.max(5.5,(n.length>34?9:10.5)*sc)}px" title="${esc(tip)}">${esc(n)}</div>`;
 }
 
 function inspParts(k){
@@ -1436,7 +1440,7 @@ function inspParts(k){
   const all=ancestors([k]), sem=semOf()[k], off=offeredClaves().has(k);
   const nm=x=>esc(pretty(c[x][0]));
   const meta=`${fmtCr(cr)} créditos · nivel ${niv}${sem&&!porNiveles()?' · semestre propuesto '+sem:''}`;
-  const l1=`<b>${esc(n)}</b> <span class="mono">${k}</span><span class="insp-meta">${meta}</span>`;
+  const l1=`<b>${esc(n)}</b> <span class="mono">${esc(k)}</span><span class="insp-meta">${meta}</span>`;
   // con datos del SAES: su estado y qué le falta (en lugar de marcarlo en el mapa)
   let st='';
   if(isPersonal()){const s0=statusOf(k),dn=new Set([...tr().done,...tr().curso]);
@@ -1470,7 +1474,7 @@ function renderInsp(){
     'Toca una materia para ver sus requisitos (antes) y las materias que desbloquea (después). Tócala de nuevo o usa «Quiero cursarla» para agregarla a tu plan.':
     'Coloca el cursor sobre una materia para ver sus requisitos (antes) y las materias que desbloquea (después). Selecciónala para agregarla a tu plan.')+'</p>';return}
   const {l1,l2}=inspParts(k), w=tr().want.includes(k), ob=tr().oblig.includes(k), done=statusOf(k)==='done';
-  el.innerHTML=`<div class="insp-t">${l1}</div><div class="insp-b">${l2}</div>`+(S.mapFocus?`<div class="insp-act">${ob||done||isElec(k)?'':`<button class="btn primary" type="button" data-fwant="${k}">${w?'Quitar de mi plan':'Quiero cursarla'}</button>`}<button class="btn" type="button" data-fclose="1">Cerrar</button></div>`:'');
+  el.innerHTML=`<div class="insp-t">${l1}</div><div class="insp-b">${l2}</div>`+(S.mapFocus?`<div class="insp-act">${ob||done||isElec(k)?'':`<button class="btn primary" type="button" data-fwant="${esc(k)}">${w?'Quitar de mi plan':'Quiero cursarla'}</button>`}<button class="btn" type="button" data-fclose="1">Cerrar</button></div>`:'');
 }
 function renderLegend(){
   // franja de color a la izquierda de cada materia = nivel
@@ -1491,7 +1495,7 @@ function renderSide0(){
   const c=cur(), want=tr().want.filter(k=>c[k]), credWant=want.reduce((s,k)=>s+c[k][1],0), off=offeredClaves();
   const req=[...ancestors(want)].filter(k=>!want.includes(k)&&!tr().done.includes(k));
   $('#chosen-help').textContent=want.length?`${want.length} ${want.length>1?'materias':'materia'} · ${fmtCr(credWant)} créditos`:'Selecciona en el mapa las materias que deseas cursar; después consulta sus grupos para organizar tu horario.';
-  $('#chosen').innerHTML=want.sort((a,b)=>(semOf()[a]||99)-(semOf()[b]||99)).map(k=>`<span class="wchip"><span class="dot" style="background:var(--n${c[k][2]})"></span><span class="grp">${k}</span>${esc(pretty(c[k][0]))}${off.has(k)?'':' <small>(sin grupos)</small>'}${tr().oblig.includes(k)?'<span class="tag bad" title="Obligatoria: al estar desfasada, el SAES no permite la reinscripción sin ella">obligatoria</span>':`<button class="x" data-unwant="${k}" aria-label="Quitar ${esc(c[k][0])}">×</button>`}</span>`).join('');
+  $('#chosen').innerHTML=want.sort((a,b)=>(semOf()[a]||99)-(semOf()[b]||99)).map(k=>`<span class="wchip"><span class="dot" style="background:var(--n${c[k][2]})"></span><span class="grp">${esc(k)}</span>${esc(pretty(c[k][0]))}${off.has(k)?'':' <small>(sin grupos)</small>'}${tr().oblig.includes(k)?'<span class="tag bad" title="Obligatoria: al estar desfasada, el SAES no permite la reinscripción sin ella">obligatoria</span>':`<button class="x" data-unwant="${esc(k)}" aria-label="Quitar ${esc(c[k][0])}">×</button>`}</span>`).join('');
   $('#chosen-req').textContent=req.length&&!isPersonal()?`Según la seriación, conviene haber cursado antes: ${req.map(k=>c[k][0].toLowerCase()).join(', ')}.`:'';
   document.querySelectorAll('[data-personal]').forEach(e=>e.hidden=!isPersonal());
   if(isPersonal()){
@@ -1553,15 +1557,15 @@ function renderSide0(){
     {const m=avisoActualizar(A),el=$('#est-act');el.hidden=!m;el.innerHTML=m?m+' <button class="link" type="button" data-saes-open>Actualizar mis datos</button>':''}
     renderEqvHorario(A);
     const ec=tr().enCurso, pr=tr().pendRep;$('#est-sim').hidden=!ec.length&&!pr.length;$('#sim-tag').hidden=!tr().sim;
-    const calSel=(k,attr,v,esc_=[10,9,8,7,6])=>`<select data-${attr}="${k}" aria-label="Calificación"${SIM.on?'':' disabled'}>${esc_.map(n=>`<option${+v===n?' selected':''}>${n}</option>`).join('')}</select>`;
+    const calSel=(k,attr,v,esc_=[10,9,8,7,6])=>`<select data-${attr}="${esc(k)}" aria-label="Calificación"${SIM.on?'':' disabled'}>${esc_.map(n=>`<option${+v===n?' selected':''}>${n}</option>`).join('')}</select>`;
     $('#est-sim').innerHTML=ec.length||pr.length?`<label class="tgl" title="Simulación: no modifica tus datos del SAES"><input type="checkbox" id="sim-on"${SIM.on?' checked':''}><span class="tgl-ui" aria-hidden="true"></span><span>Simular fin de semestre</span></label>`+(SIM.on&&(Object.keys(SIM.res).length||Object.keys(SIM.rec).length||Object.keys(SIMBLK).length)?`<button type="button" class="link sim-reset" id="sim-reset" title="Regresa todas las materias a su valor inicial (en curso aprobadas con 8 y reprobadas pendientes) y todos los bloques a mostrar la simulación">Reiniciar simulación</button>`:'')+
       `<span class="sim-hint">${SIM.on?'El mapa, las sugeridas y las estadísticas se recalculan con tu simulación; tus datos del SAES no cambian.':'Prueba qué pasaría con tus materias en curso y tus reprobadas: aprobar con cierta calificación, reprobar o acreditar por ETS, recurse o extraordinario.'}</span>`+
       `<div class="simrows${SIM.on?'':' off'}">`+
       ec.map(k=>{const r=SIM.res[k]||{},ok=r.ok!==false;return `<div class="simrow"><span class="sim-n">${esc(pretty(c[k][0]))}<small>${tr().encEqv?.includes(k)?'En curso por equivalencia':'En curso'}</small></span>`+
-        `<div class="seg sm" role="group"><button type="button" data-simok="${k}" aria-pressed="${ok}"${SIM.on?'':' disabled'}>Aprobada</button><button type="button" data-simko="${k}" aria-pressed="${!ok}"${SIM.on?'':' disabled'}>Reprobada</button></div>`+
+        `<div class="seg sm" role="group"><button type="button" data-simok="${esc(k)}" aria-pressed="${ok}"${SIM.on?'':' disabled'}>Aprobada</button><button type="button" data-simko="${esc(k)}" aria-pressed="${!ok}"${SIM.on?'':' disabled'}>Reprobada</button></div>`+
         (ok?calSel(k,'simcal',r.cal??8):calSel(k,'simcalr',r.calR??5,[5,4,3,2,1,0])+'<span class="sim-x">pasa a recursar</span>')+`</div>`}).join('')+
       pr.map(k=>{const r=SIM.rec[k]||{};return `<div class="simrow"><span class="sim-n">${esc(pretty(c[k][0]))}<small class="bad">Reprobada</small></span>`+
-        `<select data-simrec="${k}" aria-label="Cómo se acredita"${SIM.on?'':' disabled'}><option value="">Sigue pendiente</option>${['ETS','REC','EXT'].map(f=>`<option value="${f}"${r.forma===f?' selected':''}>Acreditada por ${FORMAS[f].toLowerCase()}</option>`).join('')}</select>`+
+        `<select data-simrec="${esc(k)}" aria-label="Cómo se acredita"${SIM.on?'':' disabled'}><option value="">Sigue pendiente</option>${['ETS','REC','EXT'].map(f=>`<option value="${f}"${r.forma===f?' selected':''}>Acreditada por ${FORMAS[f].toLowerCase()}</option>`).join('')}</select>`+
         (r.forma?calSel(k,'simreccal',r.cal??7):'')+`</div>`}).join('')+`</div>`:'';
     $('#h-sugg').innerHTML=esc(meta!=null?'Sugeridas para '+perName(meta):'Sugeridas')+' '+simTag('sugg');
     const st=levelStats(), R=MAP().reglas;
@@ -1570,10 +1574,10 @@ function renderSide0(){
     $('#lvls').innerHTML=`<p class="lvl-intro">Avance por nivel y porcentaje recomendado de los niveles previos para cursar cada uno.</p>`+
       Object.keys(st).sort((a,b)=>a-b).map(n=>{const s=st[n], rq=Object.entries(R[n]||{});
       const req=rq.length?`<div class="lvl-req">Para cursarlo se recomienda: ${rq.map(([k,f])=>{const ok=pct(k)>=Math.round(f*100);
-          return `<span class="${ok?'ok':'warn'}">${ok?'✓':'·'} Nivel ${k} al ${Math.round(f*100)} %${ok?'':` (llevas ${pct(k)} %)`}</span>`}).join(' ')}</div>`:'';
+          return `<span class="${ok?'ok':'warn'}">${ok?'✓':'·'} Nivel ${esc(k)} al ${Math.round(f*100)} %${ok?'':` (llevas ${pct(k)} %)`}</span>`}).join(' ')}</div>`:'';
       return `<div class="lvl"><div class="lvl-top"><b>Nivel ${n}</b><span class="minibar"><i style="width:${s.ok/s.tot*100}%;background:var(--n${n})"></i></span><span class="lvl-num">${s.ok} de ${s.tot}</span></div>${req}</div>`}).join('');
     const sg=suggestions(), color={late:'var(--st-late)',fail:'var(--warn)',prev:'var(--line)',now:'var(--st-now)',rest:'var(--line)'};
-    $('#sugg').innerHTML=sg.list.map(k=>`<label><span class="dot" style="background:${color[statusOf(k).split(' ')[0]]}"></span><span class="grp">${k}</span><span>${esc(pretty(c[k][0]))}</span><span class="cr">${fmtCr(c[k][1])}</span></label>`).join('')+
+    $('#sugg').innerHTML=sg.list.map(k=>`<label><span class="dot" style="background:${color[statusOf(k).split(' ')[0]]}"></span><span class="grp">${esc(k)}</span><span>${esc(pretty(c[k][0]))}</span><span class="cr">${fmtCr(c[k][1])}</span></label>`).join('')+
       `<small>${fmtCr(sg.cr)} de ${fmtCr(sg.target)} créditos nuevos${sg.ret?` (además de ${fmtCr(sg.ret)} retenidos por reprobadas, que no se vuelven a contar al recursarlas)`:''}; orden: desfasadas y reprobadas; después las que ya puedes cursar de cualquier semestre, primero las que desbloquean más materias.${curso.length?' No incluye las materias en curso.':''}</small>`;
   }
   renderLegend();renderLineas();
@@ -1593,7 +1597,7 @@ function renderLineas(){
     const byNiv={};g.forEach(x=>(byNiv[x.niv]=byNiv[x.niv]||[]).push(x));
     const rows=Object.keys(byNiv).sort((a,b)=>a-b).map(n=>`<div class="ol-row"><span class="ol-niv">Nivel ${n}</span><div class="ol-boxes">${byNiv[n].map(x=>{
       const k=x.keys.find(k=>off.has(k))||x.keys[0];
-      return `<button class="obox${x.want?' want':''}${x.done?' done':''}${x.off?'':' offno'}" data-obox="${k}" aria-pressed="${x.want}" title="${esc(x.n)} · ${fmtCr(x.cr)} créditos${x.off?'':' · sin grupos este periodo'}">${esc(x.n.replace(/\s*\(([^()]*)\)$/,(m,g)=>norm(g)===norm(l.linea)?'':m).toLowerCase())}</button>`}).join('')}</div></div>`).join('');
+      return `<button class="obox${x.want?' want':''}${x.done?' done':''}${x.off?'':' offno'}" data-obox="${esc(k)}" aria-pressed="${x.want}" title="${esc(x.n)} · ${fmtCr(x.cr)} créditos${x.off?'':' · sin grupos este periodo'}">${esc(x.n.replace(/\s*\(([^()]*)\)$/,(m,g)=>norm(g)===norm(l.linea)?'':m).toLowerCase())}</button>`}).join('')}</div></div>`).join('');
     return `<article class="ol-card" style="--area:${color}">
       <header><span class="ol-area">${esc(l.area)}</span><h4>${esc(l.linea!==l.area?l.linea:l.area)}</h4>
         <span class="ol-stat">${nOff} de ${g.length} con grupos${nWant?` · <b>${nWant} elegida${nWant>1?'s':''}</b>`:''}${best>0&&score[i]===best?' · <span class="tag good">línea con mayor avance</span>':''}</span></header>
@@ -1620,7 +1624,7 @@ function suggest(q){
   const cs=classes().filter(c=>c[0]===S.car), out=[], seen=new Set();
   const hit=s=>norm(s).includes(q);
   const push=(t,v,label,right)=>{const k=t+v;if(seen.has(k)||S.chips.some(x=>x.t===t&&x.v===v))return;seen.add(k);out.push({t,v,label,right})};
-  cs.forEach(c=>{if(hit(name(c))||hit(c[8]))push('m',c[4],name(c),`${c[8]} · ${fmtCr(c[7])} cr`)});
+  cs.forEach(c=>{if(hit(name(c))||hit(c[8]))push('m',c[4],name(c),`${esc(c[8])} · ${fmtCr(c[7])} cr`)});
   cs.forEach(c=>c[5].forEach(i=>{if(hit(DATA.prof[i]))push('p',i,DATA.prof[i],'')}));
   cs.forEach(c=>{if(hit(c[3]))push('g',c[3],c[3],TURNOS[c[1]]||'')});
   const rank=x=>(norm(x.label).startsWith(q)?0:1);
@@ -1654,10 +1658,10 @@ function renderHFilters(){
   const mine=classes().filter(c=>c[0]===S.car);
   const turs=[...new Set(mine.map(c=>c[1]))].sort();
   if(S.tur!=='*'&&!turs.includes(S.tur)) S.tur='*';
-  $('#f-turno').innerHTML=[['*','Todos'],...turs.map(t=>[t,TURNOS[t]||t])].map(([v,l])=>`<button class="chip" data-tur="${v}" aria-pressed="${v===S.tur}">${l}</button>`).join('');
+  $('#f-turno').innerHTML=[['*','Todos'],...turs.map(t=>[t,TURNOS[t]||t])].map(([v,l])=>`<button class="chip" data-tur="${esc(v)}" aria-pressed="${v===S.tur}">${esc(l)}</button>`).join('');
   const nivs=[...new Set(mine.map(c=>c[2]))].sort((a,b)=>a-b);
   if(S.niv!=='*'&&!nivs.includes(S.niv)) S.niv='*';
-  $('#f-nivel').innerHTML=[['*','Todos'],...nivs.map(n=>[n,n])].map(([v,l])=>`<button class="chip" data-niv="${v}" aria-pressed="${v===S.niv}">${l}</button>`).join('');
+  $('#f-nivel').innerHTML=[['*','Todos'],...nivs.map(n=>[n,n])].map(([v,l])=>`<button class="chip" data-niv="${esc(v)}" aria-pressed="${v===S.niv}">${esc(l)}</button>`).join('');
   $('#proflist').innerHTML=[...new Set(mine.flatMap(c=>c[5]))].map(i=>`<option value="${esc(DATA.prof[i])}">`).join('');
   renderActive();renderGPrefs();
 }
@@ -1677,14 +1681,14 @@ function optRow(c,sel,inGroup){
   let tags='';
   if(!on&&clash.length) tags+=`<span class="tag bad">Choca con ${clash.map(s=>s.own?esc(s.n):s[3]+' '+name(s).toLowerCase()).join(', ')}</span>`;
   if(!on&&same) tags+=`<span class="tag soft">Reemplaza ${same[3]}</span>`;
-  const who=inGroup?`<b>${esc(name(c))}</b> <small>${c[8]} · ${fmtCr(c[7])} cr</small><br>${esc(profs(c))}`:esc(profs(c));
+  const who=inGroup?`<b>${esc(name(c))}</b> <small>${esc(c[8])} · ${fmtCr(c[7])} cr</small><br>${esc(profs(c))}`:esc(profs(c));
   if(isExcl(c)) tags+='<span class="tag soft">profesor excluido</span>';
-  return `<div class="opt${mk.s==='no'||isExcl(c)?' no':''}" data-k="${k}"><span class="grp">${inGroup?'':c[3]}</span><span class="who">${who}</span>
-    <div class="right"><button class="add" data-toggle="${k}" aria-pressed="${on}">${on?'Quitar':'Agregar'}</button>
-      <span class="marks" role="group" aria-label="Marcar opción"${isExcl(c)?' title="Profesor excluido: se trata como «No». Quítalo de «Excluir profesores» para marcar este grupo."':''}>${[['si','Sí'],['quiza','Quizá'],['no','No']].map(([m,l])=>isExcl(c)?`<button disabled data-m="${m}" aria-pressed="${m==='no'}">${l}</button>`:`<button data-mark="${m}" data-m="${m}" data-k="${k}" aria-pressed="${mk.s===m}">${l}</button>`).join('')}</span></div>
+  return `<div class="opt${mk.s==='no'||isExcl(c)?' no':''}" data-k="${esc(k)}"><span class="grp">${inGroup?'':esc(c[3])}</span><span class="who">${who}</span>
+    <div class="right"><button class="add" data-toggle="${esc(k)}" aria-pressed="${on}">${on?'Quitar':'Agregar'}</button>
+      <span class="marks" role="group" aria-label="Marcar opción"${isExcl(c)?' title="Profesor excluido: se trata como «No». Quítalo de «Excluir profesores» para marcar este grupo."':''}>${[['si','Sí'],['quiza','Quizá'],['no','No']].map(([m,l])=>isExcl(c)?`<button disabled data-m="${m}" aria-pressed="${m==='no'}">${esc(l)}</button>`:`<button data-mark="${m}" data-m="${m}" data-k="${esc(k)}" aria-pressed="${mk.s===m}">${esc(l)}</button>`).join('')}</span></div>
     <span class="when">${pattern(c).map(p=>`<span>${p}</span>`).join('')}${roomsTxt(c)?`<span class="room">Salón: ${roomsTxt(c)}</span>`:''}</span>
     ${tags?`<span class="tags">${tags}</span>`:''}
-    ${mk.s?`<input class="note" type="text" data-note="${k}" value="${esc(mk.n||'')}" placeholder="Nota sobre este grupo o profesor" aria-label="Nota">`:''}</div>`;
+    ${mk.s?`<input class="note" type="text" data-note="${esc(k)}" value="${esc(mk.n||'')}" placeholder="Nota sobre este grupo o profesor" aria-label="Nota">`:''}</div>`;
 }
 /* filtros globales: profesores excluidos (cuentan como "No") y horario en la escuela (de … a …) */
 const isExcl=c=>{const ex=S.gavoid.map(norm);return ex.length>0&&c[5].some(i=>ex.some(p=>norm(DATA.prof[i]).includes(p)))};
@@ -1701,7 +1705,7 @@ function renderOffer(){
       const st=cur()[c[8]]?statusOf(c[8]).split(' ')[0]:'';
       const fl=cur()[c[8]]&&statusOf(c[8]).includes('fail');
       const badge=st==='late'?`<span class="tag bad">${fl?(['agotada','dictamen'].includes(reglaDesfase()?.por[c[8]])?'desfasada: requiere dictamen':'desfasada: recursar'):'desfasada'}</span> `:st==='fail'?'<span class="tag bad">por recursar</span> ':st==='now'?'<span class="tag good">de tu semestre</span> ':st==='curso'?'<span class="tag soft">en curso</span> ':st==='done'?'<span class="tag soft">ya acreditada</span> ':(isPersonal()&&cur()[c[8]]&&available(c[8]))?'<span class="tag good">puedes cursarla</span> ':'';
-      return `<article class="subj"><header><h3>${badge}${esc(name(c))}</h3><span class="meta">${c[8]} · ${fmtCr(c[7])} cr · Nivel ${c[2]}${c[9]&&c[9]!=='O'?' · '+TIPO[c[9]]:''}</span>${lineasDe(c[8]).length?`<span class="lineas">${lineasDe(c[8]).map(l=>`<span class="tag lin" title="Línea de especialización">${esc(l)}</span>`).join('')}</span>`:''}</header>${(()=>{
+      return `<article class="subj"><header><h3>${badge}${esc(name(c))}</h3><span class="meta">${esc(c[8])} · ${fmtCr(c[7])} cr · Nivel ${c[2]}${c[9]&&c[9]!=='O'?' · '+TIPO[c[9]]:''}</span>${lineasDe(c[8]).length?`<span class="lineas">${lineasDe(c[8]).map(l=>`<span class="tag lin" title="Línea de especialización">${esc(l)}</span>`).join('')}</span>`:''}</header>${(()=>{
         // con una opción marcada «Sí», la materia se colapsa a esa(s) opción(es) (y la que esté en el horario)
         const mk=ws().marks, keep=cs.filter(x=>mk[keyOf(x)]?.s==='si'||plan().sel.includes(keyOf(x)));
         const col=keep.length&&keep.some(x=>mk[keyOf(x)]?.s==='si')&&keep.length<cs.length, open=S.expand.has(c[4]);
@@ -1712,7 +1716,7 @@ function renderOffer(){
     const g=new Map();list.forEach(c=>{(g.get(c[3])||g.set(c[3],[]).get(c[3])).push(c)});
     const gp=cs=>Math.min(...cs.map(c=>prio(c[8])));
     const items=[...g.entries()].sort((a,b)=>gp(a[1])-gp(b[1])||a[0].localeCompare(b[0],'es',{numeric:true}));
-    html=items.map(([grp,cs])=>`<article class="subj"><header><h3 class="grp">${grp}</h3><span class="meta">${fmtCr(cs.reduce((s,c)=>s+c[7],0))} cr <button class="link" data-group="${grp}">Agregar grupo completo</button></span></header>${cs.map(c=>optRow(c,sel,true)).join('')}</article>`).join('');
+    html=items.map(([grp,cs])=>`<article class="subj"><header><h3 class="grp">${esc(grp)}</h3><span class="meta">${fmtCr(cs.reduce((s,c)=>s+c[7],0))} cr <button class="link" data-group="${esc(grp)}">Agregar grupo completo</button></span></header>${cs.map(c=>optRow(c,sel,true)).join('')}</article>`).join('');
     $('#offer-count').textContent=`${g.size} grupos · ${list.length} materias`;
   }
   $('#offer').innerHTML=html||'<p class="empty">No hay grupos que cumplan los filtros. Cambia el turno o el nivel, retira algún filtro de búsqueda o desactiva «Solo las elegidas en el mapa».</p>';
@@ -1748,7 +1752,7 @@ function renderPlans(){
   $('#b-saeshor').hidden=!(isPersonal()&&ALUMNO.horario_inscrito?.length);
   const ids=planIds();
   $('#plans').innerHTML='<span class="lbl" style="margin-right:4px">Versión</span>'+ids.map(p=>{const pl=ws().plans[p];const cr=pl.sel.map(byKey).filter(Boolean).reduce((s,c)=>s+c[7],0);
-    return `<span class="plan-tab"><button class="chip" data-plan="${p}" aria-pressed="${ws().plan===p}">Horario ${p}<small>${pl.sel.length?fmtCr(cr)+' cr':'vacío'}</small></button>${ids.length>1&&ws().plan===p?`<button class="x" data-delplan="${p}" aria-label="Eliminar el horario ${p}" title="Eliminar el horario ${p}">×</button>`:''}</span>`}).join('')+
+    return `<span class="plan-tab"><button class="chip" data-plan="${esc(p)}" aria-pressed="${ws().plan===p}">Horario ${p}<small>${pl.sel.length?fmtCr(cr)+' cr':'vacío'}</small></button>${ids.length>1&&ws().plan===p?`<button class="x" data-delplan="${esc(p)}" aria-label="Eliminar el horario ${p}" title="Eliminar el horario ${p}">×</button>`:''}</span>`}).join('')+
     `<button class="chip plan-new" data-newplan="1" title="Agregar un horario vacío">+ Nuevo</button><button class="link" data-dup style="margin-left:8px">Duplicar ${ws().plan}</button>`;
 }
 function renderCal(){
@@ -1775,7 +1779,7 @@ function renderCal(){
     items.filter(b=>b.d===d).forEach(b=>{
       const top=(b.a-lo)/SLOT*SLOTPX, ht=(b.b-b.a)/SLOT*SLOTPX-2, w=100/b.n, pos=`top:${top}px;height:${ht}px;left:calc(${b.lane*w}% + 2px);width:calc(${w}% - 4px)`;
       if(b.c.own) html+=`<div class="blk own${b.clash?' clash':''}" style="${pos}" title="${esc(b.c.n)} · ${hm(b.a)}–${hm(b.b)}"><b>${esc(b.c.n)}</b><span class="t">${hm(b.a)}</span></div>`;
-      else html+=`<div class="blk${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)};${pos}" data-k="${keyOf(b.c)}" title="${b.c[3]} · ${esc(name(b.c))} · ${esc(profs(b.c))} · ${hm(b.a)}–${hm(b.b)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}"><b>${esc(name(b.c))}</b><span class="t">${b.c[3]} · ${hm(b.a)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}</span></div>`;
+      else html+=`<div class="blk${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)};${pos}" data-k="${esc(keyOf(b.c))}" title="${esc(b.c[3])} · ${esc(name(b.c))} · ${esc(profs(b.c))} · ${hm(b.a)}–${hm(b.b)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}"><b>${esc(name(b.c))}</b><span class="t">${esc(b.c[3])} · ${hm(b.a)}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''}</span></div>`;
     });
     html+='</div>';
   }
@@ -1785,7 +1789,7 @@ function renderCal(){
   if(cv==='dia'){const by={};items.forEach(b=>(by[b.d]=by[b.d]||[]).push(b));
     $('#agenda').innerHTML=Object.keys(by).length?Object.keys(by).sort((a,b)=>a-b).map(d=>`<section class="ag-day"><h4>${DAYN[d]}</h4>`+by[d].sort((x,y)=>x.a-y.a).map(b=>b.c.own?
       `<div class="ag-it own${b.clash?' clash':''}"><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(b.c.n)}</b><small>Actividad extracurricular${b.clash?' · traslape':''}</small></span></div>`:
-      `<div class="ag-it${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)}"><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(name(b.c))}</b><small>${b.c[3]}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''} · ${esc(profs(b.c))}${b.ghost?' · vista previa':''}${b.clash?' · traslape':''}</small></span></div>`).join('')+'</section>').join(''):
+      `<div class="ag-it${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)}"><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(name(b.c))}</b><small>${esc(b.c[3])}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''} · ${esc(profs(b.c))}${b.ghost?' · vista previa':''}${b.clash?' · traslape':''}</small></span></div>`).join('')+'</section>').join(''):
       '<p class="ag-empty">Aún no hay materias en este horario.</p>'}
   const cr=sel.reduce((s,c)=>s+c[7],0);
   const mins=sel.reduce((s,c)=>s+c[6].reduce((t,b)=>t+b[2]-b[1],0),0);
@@ -1826,7 +1830,7 @@ function renderGTime(){
   document.querySelectorAll('[data-gdays]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gdays===String(GT.days||''))));
   document.querySelectorAll('[data-gsrc]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gsrc===String(GT.src||''))));
   document.querySelectorAll('[data-gn]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gn===String(GT.n||''))));
-  $('#gbreaks').innerHTML=GT.breaks.map((b,i)=>`<div class="gbrk" data-brk="${i}">al menos <select data-f="d" aria-label="Duración del descanso">${[30,60,90,120].map(m=>`<option value="${m}"${+b.d===m?' selected':''}>${({30:'30 min',60:'1 h',90:'1 h 30 min',120:'2 h'})[m]}</option>`).join('')}</select> libres entre <input type="time" step="1800" data-f="a" value="${b.a}" aria-label="Desde"> y <input type="time" step="1800" data-f="b" value="${b.b}" aria-label="Hasta"><span class="brkdays" role="group" aria-label="Días del descanso"><button type="button" class="chip" data-bday="all" aria-pressed="${!(b.days||[]).length}">Todos los días</button>${DAYS.slice(0,6).map((n,d)=>`<button type="button" class="chip" data-bday="${d}" aria-pressed="${(b.days||[]).includes(d)}">${n}</button>`).join('')}</span><button type="button" class="x" data-unbrk="${i}" aria-label="Quitar descanso">×</button></div>`).join('')+
+  $('#gbreaks').innerHTML=GT.breaks.map((b,i)=>`<div class="gbrk" data-brk="${i}">al menos <select data-f="d" aria-label="Duración del descanso">${[30,60,90,120].map(m=>`<option value="${m}"${+b.d===m?' selected':''}>${({30:'30 min',60:'1 h',90:'1 h 30 min',120:'2 h'})[m]}</option>`).join('')}</select> libres entre <input type="time" step="1800" data-f="a" value="${esc(b.a)}" aria-label="Desde"> y <input type="time" step="1800" data-f="b" value="${esc(b.b)}" aria-label="Hasta"><span class="brkdays" role="group" aria-label="Días del descanso"><button type="button" class="chip" data-bday="all" aria-pressed="${!(b.days||[]).length}">Todos los días</button>${DAYS.slice(0,6).map((n,d)=>`<button type="button" class="chip" data-bday="${d}" aria-pressed="${(b.days||[]).includes(d)}">${n}</button>`).join('')}</span><button type="button" class="x" data-unbrk="${i}" aria-label="Quitar descanso">×</button></div>`).join('')+
     `<button type="button" class="link" id="b-addbrk">+ Agregar descanso</button>`;
 }
 // ¿cada día con clases deja un hueco de al menos d minutos dentro de [a,b]?
@@ -1974,7 +1978,7 @@ function generateBank(subj,N,{marks,pscore,oq}){
 function renderGen(){
   const g=S.gen;
   if(!g){$('#genres').innerHTML='';return}
-  if(g.msg){$('#genres').innerHTML=`<p class="empty">${g.msg}</p>`;return}
+  if(g.msg){$('#genres').innerHTML=`<p class="empty">${esc(g.msg)}</p>`;return}
   const dmsg=g.bank?.auto?`<p class="gdays-msg">Selección automática entre tus <b>${g.bank.M}</b> materias: busca cerca de <b>${fmtCr(g.bank.meta)} créditos nuevos</b> (carga media${g.bank.tope!=null?`, sin rebasar ${fmtCr(g.bank.tope)} cr en total`:''}) con un horario saludable: hasta 8 h en la escuela (idealmente 6.5 h o menos), no más de 3 clases seguidas, al menos 1 h para comer entre 12:00 y 16:30, pocas horas libres y clases repartidas entre los días.</p>${g.bank.relajado?'<p class="gdays-msg warn">Con tus exclusiones y filtros ninguna combinación cumple todos estos criterios; se muestran las más cercanas. Revisa la permanencia y los descansos de cada opción, o reduce las exclusiones.</p>':''}${g.top.length&&g.bank.best<g.bank.meta-4.5?`<p class="gdays-msg warn">Con la oferta actual, las combinaciones que cumplen estos criterios llegan a <b>${fmtCr(g.bank.best)} créditos nuevos</b>. Para una carga mayor elige un número de materias por horario; esas opciones pueden tener jornadas más largas.</p>`:''}`:g.bank?`<p class="gdays-msg">Horarios de <b>${g.bank.N} materias</b> elegidas entre tus <b>${g.bank.M}</b> seleccionadas${g.bank.tope!=null?`, sin rebasar tu carga permitida (${fmtCr(g.bank.tope)} cr en total)`:''}. Cada opción combina materias distintas.</p>`:g.minDays!=null?`<p class="gdays-msg${g.maxD&&g.minDays>g.maxD?' warn':''}">Con todas las materias seleccionadas, el mínimo es de <b>${g.minDays} ${g.minDays>1?'días':'día'}</b> a la semana.${g.maxD&&g.minDays>g.maxD?` En ${g.maxD} días no es posible incluirlas todas; las opciones omiten al menos una materia.`:g.maxD?` Es posible en ${g.maxD} días o menos.`:''}</p>`:'';
   const oex=g.optExceso?Object.entries(g.optExceso).map(([v,x])=>x.libre<=0?`el plan ya tiene ${x.total===1?'cubierto su espacio':'cubiertos sus '+x.total+' espacios'} de optativa de nivel ${v}`:`el plan solo tiene ${x.libre===1?'un espacio libre':x.libre+' espacios libres'} de optativa de nivel ${v} y elegiste ${x.n}`):[];
   const oexMsg=oex.length?`<p class="gdays-msg warn">Optativas de un mismo nivel: ${oex.join('; ')}. Ninguna opción lleva más optativas de ese nivel que espacios por cubrir; para cursar optativas adicionales agrégalas a mano.</p>`:'';
@@ -2002,10 +2006,10 @@ function renderTop(){
   $('#t-tray').textContent=isPersonal()?'Mi trayectoria':'Mapa curricular';
   const cars=Object.entries(DATA.carreras).filter(([k])=>DATA.mapas[k]);
   if(!cars.some(([k])=>k===S.car)) S.car=cars[0][0];
-  $('#f-carrera').innerHTML=cars.map(([k,v])=>`<option value="${k}"${k===S.car?' selected':''}>${v}</option>`).join('');
+  $('#f-carrera').innerHTML=cars.map(([k,v])=>`<option value="${esc(k)}"${k===S.car?' selected':''}>${esc(v)}</option>`).join('');
   const f=new Date(DATA.capturado).toLocaleString('es-MX',{dateStyle:'long',timeStyle:'short'});
   const n=new Set(classes().filter(c=>c[0]===S.car).map(c=>c[3])).size;
-  $('#notice').innerHTML=`<span>Captura del SAES: <b>${f}</b></span><span><b>${n}</b> grupos de esta carrera</span>`+
+  $('#notice').innerHTML=`<span>Captura del SAES: <b>${esc(f)}</b></span><span><b>${n}</b> grupos de esta carrera</span>`+
     (!hasOffer('proximo')?'<span>El SAES aún no publica la oferta del próximo periodo; se muestra el periodo actual.</span>':S.per==='proximo'?'<span>La oferta del próximo periodo está en captura y puede estar incompleta.</span>':'')+
     (n===0?'<span class="bad">Esta carrera no tiene grupos publicados en este periodo.</span>':'')+(DATA.salones?.fuente==='saes'?'<span>Salones según el SAES.</span>':S.per==='actual'&&DATA.salones?`<span>Salones según el horario por aula de la unidad (ciclo ${esc(DATA.salones.periodo)}).</span>`:'<span>Salones aún sin asignar para este periodo.</span>');
 }
@@ -2028,8 +2032,8 @@ function renderList(){
   $('#tlist').innerHTML=Object.keys(by).sort((a,b)=>a-b).map(g=>`<section class="tl-sem"><h4>${useSem?'Semestre propuesto '+g:'Nivel '+g}</h4><div class="tl-rows">`+
     by[g].sort((a,b)=>c[a][2]-c[b][2]||a.localeCompare(b)).map(k=>{const t=tag(k), w=want.has(k), done=statusOf(k)==='done', ob=oblig.has(k), open=S.lfocus===k;
       return `<div class="tl-row${done?' done':''}${w?' want':''}" style="--nv:var(--n${c[k][2]})"><span class="tl-bar"></span>`+
-        `<button type="button" class="tl-name" data-lfocus="${k}" aria-expanded="${open}"><b>${esc(pretty(c[k][0]))}</b><small>${k} · ${fmtCr(c[k][1])} cr${off.has(k)||isElec(k)?'':' · sin grupos'}${t?` <span class="tl-tag ${t[1]}">${t[0]}</span>`:''}${ob?' <span class="tl-tag bad">Obligatoria</span>':''}</small></button>`+
-        `<button type="button" class="tl-want" data-lwant="${k}" aria-pressed="${w}"${done||ob||isElec(k)?' disabled':''} aria-label="${w?'Quitar':'Agregar'} ${esc(pretty(c[k][0]))}">${w?'✓':'+'}</button>`+
+        `<button type="button" class="tl-name" data-lfocus="${esc(k)}" aria-expanded="${open}"><b>${esc(pretty(c[k][0]))}</b><small>${esc(k)} · ${fmtCr(c[k][1])} cr${off.has(k)||isElec(k)?'':' · sin grupos'}${t?` <span class="tl-tag ${t[1]}">${t[0]}</span>`:''}${ob?' <span class="tl-tag bad">Obligatoria</span>':''}</small></button>`+
+        `<button type="button" class="tl-want" data-lwant="${esc(k)}" aria-pressed="${w}"${done||ob||isElec(k)?' disabled':''} aria-label="${w?'Quitar':'Agregar'} ${esc(pretty(c[k][0]))}">${w?'✓':'+'}</button>`+
         (open?`<div class="tl-more">${inspParts(k).l2}</div>`:'')+'</div>'}).join('')+'</div></section>').join('');
 }
 /* ---------- estadísticas del kárdex (solo con datos del SAES; se calculan en el navegador) ----------
@@ -2254,7 +2258,7 @@ function promMetaHtml(M){
   if(M.k){const c=cur(), comb=pmCombinacion(M);
     per=`<div class="pm-fila"><div><span class="pm-t">Este periodo</span><span>${M.periodo>10?`No alcanzable este periodo: aun con 10 en tus ${M.k} materias inscritas llegarías a ${M.max.toFixed(2)}.`:`Necesitas promediar ${est(M.periodo)} en tus ${M.k} ${M.k===1?'materia inscrita':'materias inscritas'} para alcanzar ${(+store.get('promMeta.'+S.car,0)||0)?'tu meta':'esta meta'}.`}</span></div>${escala(M.periodo)}</div>`+
       (M.periodo<=10?`<p class="pm-sub">Prueba otras combinaciones: puedes subir unas y bajar otras mientras el promedio alcance lo necesario.</p>
-      <div class="pm-mats">${tr().enCurso.map(k=>`<label class="pm-mat"><span>${esc(pretty(c[k][0]))}</span><select data-pmcal="${k}" aria-label="Calificación de ${esc(pretty(c[k][0]))}">${[10,9,8,7,6].map(n=>`<option${comb[k]===n?' selected':''}>${n}</option>`).join('')}</select></label>`).join('')}</div>
+      <div class="pm-mats">${tr().enCurso.map(k=>`<label class="pm-mat"><span>${esc(pretty(c[k][0]))}</span><select data-pmcal="${esc(k)}" aria-label="Calificación de ${esc(pretty(c[k][0]))}">${[10,9,8,7,6].map(n=>`<option${comb[k]===n?' selected':''}>${n}</option>`).join('')}</select></label>`).join('')}</div>
       <div class="pm-res" id="pm-estado" aria-live="polite">${pmEstado(M)}</div>
       <div class="pm-acc"><button class="btn" type="button" id="prom-sim">Usar en la simulación</button><button class="link" type="button" id="pm-reset">Repartir de nuevo</button></div>`:'')}
   const car=M.R?`<div class="pm-fila"><div><span class="pm-t">Al terminar la carrera</span><span>Necesitas promediar ${est(M.carrera)} en las ${M.R} materias obligatorias que te faltan.</span></div>${escala(M.carrera)}</div>`:'';
@@ -2758,7 +2762,7 @@ async function drawSchedule(part,k=3){
       g.fillStyle=INK;g.font=`400 14px ${F}`;
       if(c.own){g.fillText('—',PAD,y+28);g.fillText(c.own.n,PAD+80,y+28);g.fillStyle=MUT;g.fillText('Actividad extracurricular',PAD+470,y+28);g.fillText(`${c.own.d.map(d=>DAYS[d]).join(' ')} ${hm(c.own.a)}–${hm(c.own.b)}`,PAD+800,y+28);return}
       g.fillStyle=blkBar(hue(c));g.fillRect(PAD-12,y+12,5,22);g.fillStyle=INK;
-      g.fillText(c[3],PAD,y+28);g.fillText(wrapText(g,`${c[8]} ${pretty(name(c))}`,380)[0],PAD+80,y+28);
+      g.fillText(c[3],PAD,y+28);g.fillText(wrapText(g,`${esc(c[8])} ${pretty(name(c))}`,380)[0],PAD+80,y+28);
       g.fillStyle=MUT;g.fillText(wrapText(g,profs(c),320)[0],PAD+470,y+28);g.fillText(wrapText(g,pattern(c).join('; '),400)[0],PAD+800,y+28);
       g.fillStyle=INK;g.textAlign='right';g.fillText(fmtCr(c[7]),W-PAD,y+28);g.textAlign='left'});
   }
@@ -2849,7 +2853,7 @@ const EXP={get perPage(){return store.get('expPer',2)},get dark(){return store.g
 const drawFor=(part,k)=>EXP.style==='min'?drawTable(part,k):drawSchedule(part,k);
 
 /* ---------- Excel (.xlsx, también se abre en Google Sheets): mismo formato que la tabla minimalista ---------- */
-async function loadExcelJS(){if(window.ExcelJS)return window.ExcelJS;await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el generador de Excel.'));document.head.appendChild(s)});return window.ExcelJS}
+async function loadExcelJS(){if(window.ExcelJS)return window.ExcelJS;await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';s.integrity='sha512-dlPw+ytv/6JyepmelABrgeYgHI0O+frEwgfnPdXDTOIZz+eDgfW07QXG02/O8COfivBdGNINy+Vex+lYmJ5rxw==';s.crossOrigin='anonymous';s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el generador de Excel.'));document.head.appendChild(s)});return window.ExcelJS}
 async function exportXlsx(){
   if(!selected().length&&!plan().own.length)return 'Agrega materias a tu horario para exportarlo.';
   const ExcelJS=await loadExcelJS(), wb=new ExcelJS.Workbook(), {rows,days,cells,D}=weekGrid();
@@ -2898,7 +2902,7 @@ async function exportPng(){
   if(!selected().length&&!plan().own.length)return 'Agrega materias a tu horario para exportarlo.';
   const cv=await drawFor('all',3);return saveFile(`horario-${ws().plan}-upiita.png`,await toBlob(cv));
 }
-async function loadPdfLib(){if(window.PDFLib)return window.PDFLib;await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el generador de PDF.'));document.head.appendChild(s)});return window.PDFLib}
+async function loadPdfLib(){if(window.PDFLib)return window.PDFLib;await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';s.integrity='sha512-z8IYLHO8bTgFqj+yrPyIJnzBDf7DDhWwiEsk4sY+Oe6J2M+WQequeGS7qioI5vT6rXgVRb4K1UVQC5ER7MKzKQ==';s.crossOrigin='anonymous';s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el generador de PDF.'));document.head.appendChild(s)});return window.PDFLib}
 // agrega una hoja carta al PDF con el horario dibujado (horizontal en colorido, vertical en minimalista)
 async function pdfPage(doc,rgb){
   const cv=await drawFor('all',3), png=await doc.embedPng(new Uint8Array(await (await toBlob(cv)).arrayBuffer()));
@@ -2959,7 +2963,7 @@ $('#b-copy').addEventListener('click',async()=>{
   const sel=selected();if(!sel.length&&!plan().own.length)return;
   const cr=sel.reduce((s,c)=>s+c[7],0);
   const txt=`Horario ${ws().plan} ${DATA.siglas||UNIDAD.toUpperCase()} (${S.per==='proximo'?'próximo periodo':'periodo actual'}) · ${fmtCr(cr)} créditos\n`+
-    sel.map(c=>`${c[3]}  ${c[8]} ${name(c)} (${fmtCr(c[7])} cr)\n   ${profs(c)}\n   ${pattern(c).join('; ')}`).join('\n')+
+    sel.map(c=>`${c[3]}  ${esc(c[8])} ${name(c)} (${fmtCr(c[7])} cr)\n   ${profs(c)}\n   ${pattern(c).join('; ')}`).join('\n')+
     plan().own.map(o=>`\n—  ${o.n}\n   ${o.d.map(d=>DAYS[d]).join(' ')}  ${hm(o.a)}–${hm(o.b)}`).join('');
   const box=$('#copybox');box.value=txt;
   try{await navigator.clipboard.writeText(txt);$('#b-copy').textContent='Copiado';setTimeout(()=>$('#b-copy').textContent='Copiar texto',1500)}

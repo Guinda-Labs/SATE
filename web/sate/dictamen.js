@@ -1,7 +1,7 @@
 /* Captura de Dictamen; el estampado oficial pertenece exclusivamente a PdfDictamen. */
 (function(raiz){
   const el=(tag,texto)=>{const n=document.createElement(tag);if(texto!=null)n.textContent=texto;return n};
-  const leer=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null}};
+  const leer=k=>{try{return JSON.parse((window.IPNT?.almacen||localStorage).getItem(k)||'null')}catch{return null}};
   const periodo=p=>{const m=String(p||'').match(/^(?:20)?(\d{2})\/?([12])$/);return m?m[1]+'/'+m[2]:''};
   // Todo texto visible sale de contenido/textos/es.toml (sección [dictamen]).
   const tx=(k,v={})=>((typeof SATE_DATA!=='undefined'?SATE_DATA.dictamen?.textos:null)?.['dictamen.'+k]||k).replace(/\{(\w+)\}/g,(_,n)=>v[n]??'');
@@ -47,7 +47,7 @@
   let carga,font;
   async function cargar(){
     if(!carga)carga=(async()=>{
-      await SATE.script('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
+      await SATE.script('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js');
       await SATE.script('../tramites/pdf-comun.js');await SATE.script('../tramites/pdf-dictamen.js');
       const doc=await PDFLib.PDFDocument.create();font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
     })().catch(e=>{carga=null;console.error('Dictamen: carga de PDF fallida',{etapa:'biblioteca',error:e.name});throw e});
@@ -69,7 +69,7 @@
       }};
   }
   function definir(){
-    const base=SATE_DATA.dictamen,a=(window.SATE?.alumno?window.SATE.alumno():(()=>{try{return JSON.parse(localStorage.getItem('saes.alumno')||'null')}catch{return null}})()),alumno=a?.upiita_saes===1&&(a.unidad||SATE_CONFIG.unidadPredeterminada)===SATE_UNIDAD?a:{};
+    const base=SATE_DATA.dictamen,a=(window.SATE?.alumno?window.SATE.alumno():(()=>{try{return JSON.parse((window.IPNT?.almacen||localStorage).getItem('saes.alumno')||'null')}catch{return null}})()),alumno=a?.upiita_saes===1&&(a.unidad||SATE_CONFIG.unidadPredeterminada)===SATE_UNIDAD?a:{};
     const compartido=()=>{const v=leer('hu.tramite.datos');return v?.confirmado?v.datos:null};
     const datos=compartido()||{},catalogo=base.materias;
     const carrera=Object.entries(SATE_DATA.carreras||{}).find(([k,n])=>k===datos.carrera||n===datos.carrera)?.[0]||alumno.carrera;

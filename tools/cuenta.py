@@ -49,9 +49,47 @@ var IPNT=window.IPNT=(()=>{
     GO_SCOPES='openid email profile https://www.googleapis.com/auth/drive.appdata';
   // qué se guarda: todo lo de Horarios (hu.) y Electivas (ue.), menos el estado de pantalla de cada dispositivo
   const SYNC=/^(hu\.|ue\.)|^saes\.alumno$|^perfil\.opciones$/, LOCAL=/^hu\.(?:[a-z]+\.)?(tab|per|tur|niv|view|mview|cview|mobnote|cupos|cuposContexto)$/;
-  const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}},
-    del(k){try{localStorage.removeItem(k)}catch(e){}},keys(){try{return Object.keys(localStorage)}catch(e){return[]}},
-    obj(k,d){try{return JSON.parse(localStorage.getItem(k)||'null')||d}catch(e){return d}},put(k,o){try{localStorage.setItem(k,JSON.stringify(o))}catch(e){}}};
+  const PRIVADA=/^(hu\.|ue\.|saes\.|ipnt\.|msal\.)|^perfil\.opciones$|^msal[.-]/i, PERSISTIR='ipnt.persistir';
+  // Solo datos del alumno indican un perfil anterior; contadores y preferencias (ipnt.encuesta, ipnt.unidad) no.
+  const DATOS_PREVIOS=/^(hu\.|ue\.|saes\.)|^perfil\.opciones$/;
+  let mantener=false, decidido=false;
+  try{
+    const previa=localStorage.getItem(PERSISTIR)??sessionStorage.getItem(PERSISTIR);
+    mantener=previa==='si'||(previa===null&&Object.keys(localStorage).some(k=>DATOS_PREVIOS.test(k)));
+    decidido=previa!==null||mantener;
+    // Los perfiles anteriores conservan su persistencia, sin trasladar ni borrar datos.
+    if(mantener)localStorage.setItem(PERSISTIR,'si');
+  }catch(e){console.warn('SATE: almacenamiento no disponible',{operacion:'preferencia',error:e.name})}
+  const almacen={getItem(k){return (mantener?localStorage:sessionStorage).getItem(k)},
+    setItem(k,v){(mantener?localStorage:sessionStorage).setItem(k,v)},
+    removeItem(k){(mantener?localStorage:sessionStorage).removeItem(k)}};
+  const ls={get(k){try{return almacen.getItem(k)}catch(e){return null}},set(k,v){try{almacen.setItem(k,v);return true}catch(e){console.warn('SATE: no se pudo guardar',{operacion:'guardar',error:e.name});return false}},
+    del(k){try{almacen.removeItem(k)}catch(e){}},keys(){try{return Object.keys(mantener?localStorage:sessionStorage)}catch(e){return[]}},
+    obj(k,d){try{return JSON.parse(almacen.getItem(k)||'null')||d}catch(e){return d}},put(k,o){ls.set(k,JSON.stringify(o))}};
+  function persistencia(valor){
+    if(valor!==mantener){
+      const origen=mantener?localStorage:sessionStorage,destino=valor?localStorage:sessionStorage;
+      const claves=Object.keys(origen).filter(k=>PRIVADA.test(k)), anteriores=new Map(claves.map(k=>[k,destino.getItem(k)]));
+      // Primero copiar todo: una cuota insuficiente no debe destruir la copia existente.
+      try{for(const k of claves)destino.setItem(k,origen.getItem(k))}
+      catch(e){for(const [k,v] of anteriores){try{v===null?destino.removeItem(k):destino.setItem(k,v)}catch(err){}}throw new Error('No hay espacio para cambiar dónde se guardan tus datos. Descarga un respaldo e intenta de nuevo.')}
+      for(const k of claves)origen.removeItem(k);
+      mantener=valor;
+    }
+    decidido=true;ls.set(PERSISTIR,mantener?'si':'no');
+  }
+  let privacidadPendiente=null;
+  function privacidad(){
+    if(decidido)return Promise.resolve();
+    if(privacidadPendiente)return privacidadPendiente;
+    const dl=document.getElementById('ipnt-privacidad');if(!dl)return Promise.resolve();
+    privacidadPendiente=new Promise(ok=>{
+      const fin=()=>{try{persistencia(document.getElementById('ipnt-privacidad-mantener').checked)}catch(e){document.getElementById('ipnt-privacidad-error').textContent=e.message;return}
+        dl.close();privacidadPendiente=null;ok()};
+      dl.querySelector('button').onclick=fin;dl.oncancel=e=>{e.preventDefault();document.getElementById('ipnt-privacidad-mantener').checked=false;fin()};
+      dl.showModal();
+    });return privacidadPendiente;
+  }
   const opt=()=>ls.obj('perfil.opciones',null)||ls.obj('ipnt.opt',{saes:false});   // ipnt.opt: versión anterior (solo local)
   if(!ls.get('perfil.opciones')&&ls.get('ipnt.opt')) ls.set('perfil.opciones',ls.get('ipnt.opt'));   // migración de la casilla local
   const sincroniza=k=>SYNC.test(k)&&!LOCAL.test(k)&&(k!=='saes.alumno'||opt().saes);
@@ -98,7 +136,7 @@ var IPNT=window.IPNT=(()=>{
   /* ---- registro de cambios (lo llaman las páginas al guardar) ---- */
   function touch(k){if(!sincroniza(k))return;const t=ls.obj('ipnt.t',{}),b=ls.obj('ipnt.b',{});t[k]=Date.now();delete b[k];ls.put('ipnt.t',t);ls.put('ipnt.b',b);programar()}
   // escritura de las páginas: solo cuenta como cambio si el valor es distinto (volver a guardar lo mismo no gana la fusión)
-  function set(k,v){const antes=ls.get(k);if(!ls.set(k,v))return;if(antes!==v)touch(k)}
+  function set(k,v){const antes=ls.get(k);if(!ls.set(k,v))return;if(antes!==v)touch(k);if(SYNC.test(k)&&!LOCAL.test(k))privacidad()}
   function borrar(k){if(!sincroniza(k))return;const t=ls.obj('ipnt.t',{}),b=ls.obj('ipnt.b',{});delete t[k];b[k]=Date.now();ls.put('ipnt.t',t);ls.put('ipnt.b',b);programar()}
   function programar(){if(!cuenta)return;clearTimeout(timer);timer=setTimeout(()=>{timer=null;sincronizar('auto')},3000)}
 
@@ -130,12 +168,13 @@ var IPNT=window.IPNT=(()=>{
       if(this.pca) return;
       if(!window.msal) await cargar(CFG.msal,{integrity:CFG.sri,crossOrigin:'anonymous'});
       const pca=new msal.PublicClientApplication({auth:{clientId:CFG.clientId,authority:'https://login.microsoftonline.com/'+CFG.tenant,
-        redirectUri:location.origin+location.pathname,navigateToLoginRequestUrl:false},cache:{cacheLocation:'localStorage'}});
+        redirectUri:location.origin+location.pathname,navigateToLoginRequestUrl:false},cache:{cacheLocation:mantener?'localStorage':'sessionStorage'}});
       await pca.initialize();
       const r=await pca.handleRedirectPromise().catch(e=>{st.error=texto(e);return null});
       this.acc=r?.account||pca.getActiveAccount()||pca.getAllAccounts()[0]||null;
       if(this.acc) pca.setActiveAccount(this.acc);
       this.pca=pca;
+      this.persistente=mantener;
     },
     async recuperar(){await this.listo();return this.acc?{name:this.acc.name||'',username:this.acc.username}:null},
     async entrar(){
@@ -164,7 +203,7 @@ var IPNT=window.IPNT=(()=>{
       if(!r.ok) throw new Error('OneDrive respondió '+r.status+' al guardar tu perfil.');
       return true;
     },
-    async salir(){try{if(this.pca&&this.acc)await this.pca.clearCache({account:this.acc})}catch(e){}this.acc=null}
+    async salir(){try{if(this.pca)await this.pca.clearCache(this.acc?{account:this.acc}:{})}catch(e){console.warn('SATE: no se pudo limpiar la caché de Microsoft',{error:e.name})}this.acc=null}
   };
 
   // Google + Google Drive (espacio privado de la aplicación, appDataFolder: no aparece entre los archivos del alumno).
@@ -294,6 +333,8 @@ var IPNT=window.IPNT=(()=>{
     return m.split('\n')[0].slice(0,220)};
   async function entrar(id){
     const p=PROV[id];if(!p)return;
+    await privacidad();
+    if(MS.pca&&MS.persistente!==mantener){MS.pca=null;MS.acc=null} // La elección precede a la creación de la caché de autenticación.
     st.error='';st.fase='login';st.prov=id;pintar();
     try{
       const a=await p.entrar();if(!a)return;   // redirección en curso
@@ -307,11 +348,31 @@ var IPNT=window.IPNT=(()=>{
       pintar()}
   }
   async function salir(borrarLocal){
+    borrarLocal=borrarLocal||ls.get('ipnt.publica')==='si';
+    clearTimeout(timer);timer=null;
+    // Esperar las escrituras en curso antes de purgar evita que vuelvan a crear datos.
+    if(busy)await busy;
+    clearTimeout(timer);timer=null;
     if(prov) await prov.salir();
+    if(borrarLocal&&prov!==MS)await MS.salir();
     prov=null;cuenta=null;['ipnt.cuenta','ipnt.prov','ipnt.last'].forEach(k=>ls.del(k));st={fase:'',ultimo:null,error:''};
-    if(borrarLocal){for(const k of ls.keys())if(/^(hu\.|ue\.|saes\.|ipnt\.)/.test(k))ls.del(k);location.reload();return}
+    if(borrarLocal){
+      canalPrivacidad?.postMessage('borrar');
+      for(const storage of [localStorage,sessionStorage])for(const k of Object.keys(storage))if(PRIVADA.test(k))storage.removeItem(k);
+      console.info('SATE: datos del navegador borrados');location.reload();return
+    }
     pintar();
   }
+  const canalPrivacidad=typeof BroadcastChannel==='function'?new BroadcastChannel('ipnt-privacidad'):null;
+  if(canalPrivacidad)canalPrivacidad.onmessage=async e=>{
+    if(e.data!=='borrar')return;
+    clearTimeout(timer);timer=null;
+    if(busy)await busy;
+    await MS.salir();
+    prov=null;cuenta=null;
+    for(const storage of [localStorage,sessionStorage])for(const k of Object.keys(storage))if(PRIVADA.test(k))storage.removeItem(k);
+    location.reload();
+  };
 
   /* ---- respaldo en archivo ---- */
   function descargar(){
@@ -321,6 +382,8 @@ var IPNT=window.IPNT=(()=>{
     document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
   }
   async function restaurar(file){
+    if(file.size>2*1024*1024)throw new Error('El respaldo supera el límite de 2 MB. Elige un archivo más pequeño.');
+    await privacidad();
     const d=validar(JSON.parse(await file.text())), ahora=Date.now(), t=ls.obj('ipnt.t',{});let n=0;
     const b=ls.obj('ipnt.b',{});
     for(const [k,e] of Object.entries(d.claves)) if(SYNC.test(k)&&!LOCAL.test(k)&&e){ls.set(k,JSON.stringify(e.v));t[k]=ahora;delete b[k];n++}
@@ -353,6 +416,8 @@ var IPNT=window.IPNT=(()=>{
       f==='error'||f==='expirada'?esc(st.error):on&&st.ultimo?`Guardado en tu ${nube} · `+hora(st.ultimo):on?'Conectado.':'';
     if(!on&&st.error&&f!=='sync'){s.className='ipnt-state bad';s.textContent=st.error}
     $i('ipnt-saes').checked=!!opt().saes;
+    $i('ipnt-mantener').checked=mantener;
+    $i('ipnt-publica').checked=ls.get('ipnt.publica')==='si';
     $i('ipnt-relogin').hidden=f!=='expirada';
     $i('ipnt-relogin').textContent=prov?.id==='google'?'Volver a conectar con Google':'Volver a iniciar sesión';
   }
@@ -370,6 +435,8 @@ var IPNT=window.IPNT=(()=>{
     $i('ipnt-logout').addEventListener('click',()=>salir(false));
     $i('ipnt-wipe').addEventListener('click',()=>{const c=$i('ipnt-wipe-ok');c.hidden=!c.hidden});
     $i('ipnt-wipe-yes').addEventListener('click',()=>salir(true));
+    $i('ipnt-mantener').addEventListener('change',e=>{try{persistencia(e.target.checked);location.reload()}catch(err){st.error=err.message;st.fase='error';pintar()}});
+    $i('ipnt-publica').addEventListener('change',e=>ls.set('ipnt.publica',e.target.checked?'si':'no'));
     $i('ipnt-saes').addEventListener('change',e=>{const o={...opt(),saes:e.target.checked};set('perfil.opciones',JSON.stringify(o));if(o.saes&&ls.get('saes.alumno'))touch('saes.alumno')});
     $i('ipnt-down').addEventListener('click',descargar);
     $i('ipnt-file').addEventListener('change',async e=>{const f=e.target.files[0],m=$i('ipnt-filemsg');if(!f)return;
@@ -436,7 +503,7 @@ var IPNT=window.IPNT=(()=>{
     if(dl.showModal)dl.showModal();else dl.setAttribute('open','');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else setTimeout(wire,0);
-  return {bienvenida,diferencias,elegir,set,touch,borrar,documento,fusionar,validar,sincronizar,descargar,restaurar,cupos,get cuenta(){return cuenta},get proveedor(){return prov?.id||null}};
+  return {almacen,privacidad,persistencia,salir,bienvenida,diferencias,elegir,set,touch,borrar,documento,fusionar,validar,sincronizar,descargar,restaurar,cupos,get cuenta(){return cuenta},get proveedor(){return prov?.id||null}};
 })();
 """
 
@@ -490,16 +557,29 @@ UI = """<button class="ipnt-btn" id="ipnt-open" type="button" aria-haspopup="dia
   </div>
   <div id="ipnt-in" hidden>
     <p style="margin:0;font-size:.92rem"><b id="ipnt-who"></b></p>
-    <div class="row" style="margin-top:10px"><button class="btn" id="ipnt-sync" type="button">Sincronizar ahora</button><button class="btn primary" id="ipnt-relogin" type="button" hidden>Volver a iniciar sesión</button><button class="btn" id="ipnt-logout" type="button">Cerrar sesión</button><button class="link" id="ipnt-wipe" type="button">Cerrar sesión y borrar mis datos de este navegador</button></div>
-    <div class="row" id="ipnt-wipe-ok" hidden style="margin-top:8px;font-size:.88rem">¿Borrar de este navegador tus planes, marcas, actividades y datos del SAES? Tu copia en <span id="ipnt-where">la nube</span> se conserva. <button class="btn" id="ipnt-wipe-yes" type="button">Sí, borrar</button></div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="ipnt-sync" type="button">Sincronizar ahora</button><button class="btn primary" id="ipnt-relogin" type="button" hidden>Volver a iniciar sesión</button><button class="btn" id="ipnt-logout" type="button">Cerrar sesión</button></div>
     <label class="chk"><input type="checkbox" id="ipnt-saes"><span>Guardar también mis datos del SAES (kárdex, estado general y cita) en mi nube.</span></label>
   </div>
+  <h3>En este navegador</h3>
+  <label class="chk"><input type="checkbox" id="ipnt-mantener"><span>¿Mantener tu sesión y tus datos en este navegador?</span></label>
+  <p class="saes-note">Si sincronizas con tu cuenta Microsoft, tus datos quedan en tu OneDrive y no se pierden aunque no los guardes aquí. Si solo usas este navegador, se borrarán al cerrarlo.</p>
+  <label class="chk"><input type="checkbox" id="ipnt-publica"><span>Estoy en una computadora pública: al cerrar sesión, borrar mis datos de este navegador.</span></label>
+  <button class="link" id="ipnt-wipe" type="button">Borrar mis datos de este navegador</button>
+  <div class="row" id="ipnt-wipe-ok" hidden style="margin-top:8px;font-size:.88rem">¿Cerrar sesión y borrar de este navegador tus planes, marcas, actividades y datos del SAES? Tu copia en <span id="ipnt-where">la nube</span> se conserva. <button class="btn" id="ipnt-wipe-yes" type="button">Sí, borrar</button></div>
   <p class="ipnt-state" id="ipnt-state" aria-live="polite"></p>
   <h3>Respaldo en archivo</h3>
   <p class="saes-note" style="margin:0 0 8px">Descarga tus datos para guardarlos o pasarlos a otro navegador. Restaurar reemplaza los datos de este navegador por los del archivo.</p>
   <div class="row"><button class="btn" id="ipnt-down" type="button">Descargar respaldo</button><label class="btn ipnt-file">Restaurar desde archivo<input type="file" id="ipnt-file" accept=".json,application/json"></label></div>
   <p class="ipnt-state" id="ipnt-filemsg" aria-live="polite"></p>
   <p class="saes-note" style="margin:14px 0 0">Tus datos se guardan en tu propia nube: en OneDrive, en la <b>carpeta de la aplicación</b>; en Google Drive, en un espacio privado de la aplicación que no aparece entre tus archivos. La herramienta solo tiene acceso a ese espacio. No hay servidor intermedio: nadie más puede consultarlos. <a href="privacidad.html" target="_blank" rel="noopener">Aviso de privacidad</a> · <a href="condiciones.html" target="_blank" rel="noopener">Condiciones de uso</a></p>
+</dialog>
+<dialog class="saes-dlg ipnt-dlg" id="ipnt-privacidad" aria-labelledby="ipnt-privacidad-h">
+  <h2 id="ipnt-privacidad-h">¿Mantener tu sesión y tus datos en este navegador?</h2>
+  <label class="chk"><input type="checkbox" id="ipnt-privacidad-mantener"><span>Mantener la sesión y los datos al cerrar el navegador.</span></label>
+  <p>Si sincronizas con tu cuenta Microsoft, tus datos quedan en tu OneDrive y no se pierden aunque no los guardes aquí. Si solo usas este navegador, se borrarán al cerrarlo.</p>
+  <p class="saes-note">Sin marcar, se conservan en esta pestaña hasta cerrarla. Puedes cambiar esta opción desde tu cuenta.</p>
+  <p id="ipnt-privacidad-error" role="alert"></p>
+  <button class="btn primary" type="button">Continuar</button>
 </dialog>
 <dialog class="saes-dlg ipnt-dlg" id="ipnt-conf" aria-labelledby="ipnt-conf-h">
   <div class="dl-head"><h2 id="ipnt-conf-h">Ya hay datos en tu cuenta</h2></div>

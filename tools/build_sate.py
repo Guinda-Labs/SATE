@@ -895,6 +895,9 @@ def redireccion(unidad):
     import contenido, html
     titulo = html.escape(contenido.objeto_t()["sate.siglas"])
     return ('<!doctype html><html lang="es"><meta charset="utf-8">'
+            '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'; script-src \'self\' \'unsafe-inline\'; object-src \'none\'; base-uri \'self\'; form-action \'none\'">'
+            '<meta name="referrer" content="strict-origin-when-cross-origin">'
+            '<script>if(window.top!==window.self){let propio=false;try{propio=window.top.location.origin===location.origin}catch(e){}if(!propio){document.documentElement.hidden=true;document.documentElement.style.setProperty("display","none","important")}}</script>'
             '<title>' + titulo + '</title><script>' + rutas + '\nlocation.replace(SateRutas.redireccion('
             + json.dumps(unidad) + ',location.search,location.hash));</script>'
             '<a href="sate/index.html">Abrir SATE</a></html>')

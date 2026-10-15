@@ -26,7 +26,7 @@ for(const unidad of ['upiita','escom','upibi']){
     style:{setProperty(){}},classList:{add(){},remove(){},toggle(){},contains(){return false}},eventos:{},
     addEventListener(k,fn){(this.eventos[k]??=[]).push(fn)},setAttribute(){},removeAttribute(){},getAttribute(){return null},appendChild(){},insertAdjacentHTML(){},
     querySelector:s=>s==='svg'?null:nodo(),querySelectorAll:s=>s==='.charts'?[nodo(),nodo()]:[],closest:()=>null,contains:()=>false,
-    getBoundingClientRect:()=>({top:0,left:0,bottom:800,width:375,height:800}),replaceChildren(){},remove(){},matches:()=>false,focus(){document.activeElement=this}};}
+    getBoundingClientRect:()=>({top:0,left:0,bottom:800,width:375,height:800}),replaceChildren(){},remove(){},matches:()=>false,showModal(){this.open=true},close(){this.open=false},focus(){document.activeElement=this}};}
   const document={readyState:'loading',addEventListener(){},querySelector(s){if(!nodos.has(s))nodos.set(s,nodo(s));return nodos.get(s)},
     getElementById(id){return this.querySelector('#'+id)},querySelectorAll:()=>[],createElement:()=>nodo(),body:nodo(),documentElement:nodo(),
     head:{appendChild(s){solicitudes.push(s);queueMicrotask(()=>{

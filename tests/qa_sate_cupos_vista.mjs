@@ -90,7 +90,7 @@ assert.doesNotMatch(nodo('#sel').innerHTML,/cupos-riesgo|cupos-sugerencias|lugar
 c.CUPOS.fila=filaAnterior;c.CUPOS.insignia=insigniaAnterior;
 // Redirección ejecutada, conserva modo, unidad, parámetros OAuth y opener.
 let destino;const opener={};const loc={href:'https://sate.test/sate/cupos.html?unidad=unidad-ficticia&modo=saes&code=ficticio',search:'?unidad=unidad-ficticia&modo=saes&code=ficticio',hash:'#estado',replace:u=>destino=new URL(u)};
-vm.runInNewContext(leer('web/sate/cupos.html').match(/<script>([\s\S]*?)<\/script>/)[1],{URL,URLSearchParams,location:loc,opener});
+vm.runInNewContext([...leer('web/sate/cupos.html').matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1],{URL,URLSearchParams,location:loc,opener});
 assert.equal(destino.pathname,'/sate/index.html');assert.equal(destino.searchParams.get('vista'),'cupos');assert.equal(destino.searchParams.get('modo'),'saes');assert.equal(destino.searchParams.get('code'),'ficticio');assert.equal(destino.hash,'#estado');
 const css=leer('web/sate/cascaron.html');assert.match(css,/html\[data-vista=cupos\] \.sate-navegacion/);assert.match(css,/#cupos-vista button.*min-height:44px/);
 assert.match(leer('web/dist/sate.js'),/sate\/index\.html\?vista=cupos/);

@@ -68,7 +68,7 @@ JS = r"""
 const C=/*__ENC_CFG__*/{};
 const APOYO=/*__APOYO__*/"";
 const K='ipnt.encuesta', DIA=864e5, ahora=()=>Date.now();
-const ls={get(){try{return JSON.parse(localStorage.getItem(K))||{}}catch(e){return {}}},set(v){try{localStorage.setItem(K,JSON.stringify(v))}catch(e){}}};
+const ls={get(){try{return JSON.parse((window.IPNT?.almacen||localStorage).getItem(K))||{}}catch(e){return {}}},set(v){try{(window.IPNT?.almacen||localStorage).setItem(K,JSON.stringify(v))}catch(e){}}};
 let E=ls.get();
 E.id=E.id||(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)+ahora().toString(36));
 E.uso=E.uso||{min:0,ses:0,exp:0,gen:0};E.pos=E.pos||0;E.hasta=E.hasta||0;

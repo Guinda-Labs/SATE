@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="es">
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; script-src-attr 'none'; base-uri 'self'; form-action 'self'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://accounts.google.com; connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com https://*.files.1drv.com https://*.sharepoint.com https://*.storage.live.com https://www.googleapis.com https://accounts.google.com; frame-src 'self' https://login.microsoftonline.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if(window.top!==window.self){let propio=false;try{propio=window.top.location.origin===location.origin}catch(e){}if(!propio){document.documentElement.hidden=true;document.documentElement.style.setProperty('display','none','important')}}</script>
+
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="assets/icono/favicon.ico">
 <title>GuindaLabs · Herramientas de libre acceso para el alumnado del IPN</title>
@@ -71,14 +75,14 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:v
     escom:'Sistema de Apoyo a la Trayectoria Escolar: tu avance, mapas curriculares 2020 y horarios de clase.',
     upibi:'Sistema de Apoyo a la Trayectoria Escolar: tu avance, mapas por nivel y horarios de clase.'};
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  let sel=null;try{sel=localStorage.getItem('ipnt.unidad')}catch(e){}
+  let sel=null;try{sel=(window.IPNT?.almacen||localStorage).getItem('ipnt.unidad')}catch(e){}
   const box=document.getElementById('unis');
   const pinta=()=>{box.innerHTML=UNIS.filter(u=>u.disponible).map(u=>{const on=u.id===sel;
     const tools=[{t:'SATE '+u.siglas,u:u.url,d:DESC[u.id]||'Mapa curricular, oferta del SAES y armado de horarios.'},...(EXTRA[u.id]||[])];  // la demostración solo se abre con #demo (decisión del dueño)
     return `<div class="uni"><button type="button" data-uni="${esc(u.id)}" aria-expanded="${on}" aria-controls="t-${esc(u.id)}"><b>${esc(u.siglas)}</b><span>${esc(u.nombre)}</span><i aria-hidden="true">›</i></button>`+
       `<div class="grid" id="t-${esc(u.id)}"${on?'':' hidden'}>${tools.map(x=>`<a class="card" href="${esc(x.u)}"><b>${esc(x.t)}</b><span>${esc(x.d)}</span></a>`).join('')}</div></div>`}).join('')};
   box.addEventListener('click',e=>{const b=e.target.closest('[data-uni]');if(!b)return;
-    sel=sel===b.dataset.uni?null:b.dataset.uni;try{sel?localStorage.setItem('ipnt.unidad',sel):localStorage.removeItem('ipnt.unidad')}catch(e){}pinta()});
+    sel=sel===b.dataset.uni?null:b.dataset.uni;try{sel?(window.IPNT?.almacen||localStorage).setItem('ipnt.unidad',sel):(window.IPNT?.almacen||localStorage).removeItem('ipnt.unidad')}catch(e){}pinta()});
   pinta();
 })();
 </script>

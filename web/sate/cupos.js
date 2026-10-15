@@ -12,7 +12,7 @@ const CUPOS=(()=>{
     const simple=c=>({grupo:c[3],materia:c[8],horas:c[6],nombre:name(c),profesor:profs(c),horario:c[6].map(([d,a,b])=>DAYS[d]+' '+hm(a)+'–'+hm(b)).join(' · ')});
     const tokens={};for(const k of ['texto','superficie','linea','acento'])tokens[k]=getComputedStyle(document.documentElement).getPropertyValue('--ipn-'+k).trim();
     const ctx={...contexto(),periodo:S.per,grupos:selected().map(simple),oferta:classes().filter(c=>c[0]===S.car).map(simple),tokens};
-    const s=JSON.stringify(ctx);if(s!==ultimoContexto){ultimoContexto=s;IPNT.set(HU+'cuposContexto',s);canal?.postMessage({tipo:'contexto',unidad:UNIDAD});if(window.dispatchEvent)window.dispatchEvent(new Event('sate-cupos-seleccion'))}
+    const s=JSON.stringify(ctx);if(s!==ultimoContexto){ultimoContexto=s;IPNT.set(HU+'cuposContexto',s);canal?.postMessage({tipo:'contexto',unidad:UNIDAD,contexto:ctx});if(window.dispatchEvent)window.dispatchEvent(new Event('sate-cupos-seleccion'))}
   }
   function pintar(){const ayuda=$('#cupos-ayuda'),op=$('#cupos-omitir');if(!ayuda||!op)return;
     const hay=compatible(),vieja=C.antigua(datos),v=hay?datos.hora:'';
@@ -28,12 +28,12 @@ const CUPOS=(()=>{
   }
   function aceptar(d){if(!C.validar(d)||d.unidad!==UNIDAD)return;const nueva=C.reciente(datos,d);if(nueva===datos)return;datos=C.limpiar(nueva);IPNT.set(HU+'cupos',JSON.stringify(datos));
     if($('#cupos-ayuda')){pintar();if(S.gen){S.gen=generate();renderGen()}renderOffer();renderCal()}}
-  function leer(){try{aceptar(JSON.parse(localStorage.getItem(HU+'cupos')))}catch(e){console.warn('SATE Cupos: no se pudo leer la consulta local',e)}}
+  function leer(){try{aceptar(JSON.parse((window.IPNT?.almacen||localStorage).getItem(HU+'cupos')))}catch(e){console.warn('SATE Cupos: no se pudo leer la consulta local',e)}}
   async function nube(){if(typeof DEMO!=='undefined'&&DEMO)return;try{aceptar(await IPNT.cupos(UNIDAD))}catch(e){console.warn('SATE Cupos: lectura OneDrive fallida',{unidad:UNIDAD,error:e.message})}}
   window.addEventListener('storage',e=>{if(e.key===HU+'cupos')leer()});
   window.addEventListener('ipnt-sincronizado',nube);
   window.addEventListener('ipnt-cuenta',nube);
-  if(canal)canal.onmessage=e=>{if(e.data?.unidad===UNIDAD)leer()};
+  if(canal)canal.onmessage=e=>{if(e.data?.unidad===UNIDAD){if(e.data.tipo==='consulta'&&e.data.datos)aceptar(e.data.datos);else leer()}};
   function montar(){const op=$('#cupos-omitir');if(!op)return;
     op.onchange=()=>{omitir=op.checked;if(S.gen){S.gen=generate();renderGen()}};
     $('#cupos-instalar').textContent=tx('marcador');$('#cupos-omitir-texto').textContent=tx('omitir');

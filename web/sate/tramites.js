@@ -15,7 +15,7 @@
       ]});
     });
   }
-  function leer(id){try{return JSON.parse(localStorage.getItem('hu.tramite.'+id)||'null')}catch{return null}}
+  function leer(id){try{return JSON.parse((window.IPNT?.almacen||localStorage).getItem('hu.tramite.'+id)||'null')}catch{return null}}
   const completados=new Map();
   function estado(borrador,aplicacion,ahora=Date.now()){
     if(aplicacion?.aplica===false)return {id:'no_aplica',motivo:aplicacion.motivo,accion:null};
@@ -156,7 +156,7 @@
     try{IPNT.set('hu.tramite.datos',JSON.stringify({datos,confirmado:true,actualizado:Date.now()}))}
     catch(e){console.error('Ventanilla: identidad no guardada',{fase:'confirmación',error:e.name});throw e}
   }
-  function alumnoActual(){return window.SATE?.alumno?SATE.alumno():(()=>{try{return JSON.parse(localStorage.getItem('saes.alumno')||'null')}catch{return null}})()}
+  function alumnoActual(){return window.SATE?.alumno?SATE.alumno():(()=>{try{return JSON.parse((window.IPNT?.almacen||localStorage).getItem('saes.alumno')||'null')}catch{return null}})()}
   function formularioDatos(box,datos,campos,volver,{nombre=false}={}){
     const form=el('form',null,'tramite-datos'),controles={};form.noValidate=true;
     if(nombre)form.appendChild(el('h3','¿Así se escribe tu nombre?'));

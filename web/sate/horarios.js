@@ -111,7 +111,7 @@ function suggest(q){
   const cs=classes().filter(c=>c[0]===S.car), out=[], seen=new Set();
   const hit=s=>norm(s).includes(q);
   const push=(t,v,label,right)=>{const k=t+v;if(seen.has(k)||S.chips.some(x=>x.t===t&&x.v===v))return;seen.add(k);out.push({t,v,label,right})};
-  cs.forEach(c=>{if(hit(name(c))||hit(c[8]))push('m',c[4],name(c),`${c[8]} · ${esc(textoCreditos(c[8],c[7]))}`)});
+  cs.forEach(c=>{if(hit(name(c))||hit(c[8]))push('m',c[4],name(c),`${c[8]} · ${textoCreditos(c[8],c[7])}`)});
   cs.forEach(c=>c[5].forEach(i=>{if(hit(DATA.prof[i]))push('p',i,DATA.prof[i],'')}));
   cs.forEach(c=>{if(hit(c[3]))push('g',c[3],c[3],TURNOS[c[1]]||'')});
   const rank=x=>(norm(x.label).startsWith(q)?0:1);
@@ -146,10 +146,10 @@ function renderHFilters(){
   const mine=classes().filter(c=>c[0]===S.car);
   const turs=[...new Set(mine.map(c=>c[1]))].sort();
   if(S.tur!=='*'&&!turs.includes(S.tur)) S.tur='*';
-  $('#f-turno').innerHTML=[['*',txH('todos')],...turs.map(t=>[t,TURNOS[t]||t])].map(([v,l])=>`<button class="chip" data-tur="${v}" aria-pressed="${v===S.tur}">${l}</button>`).join('');
+  $('#f-turno').innerHTML=[['*',txH('todos')],...turs.map(t=>[t,TURNOS[t]||t])].map(([v,l])=>`<button class="chip" data-tur="${esc(v)}" aria-pressed="${v===S.tur}">${esc(l)}</button>`).join('');
   const nivs=[...new Set(mine.map(c=>c[2]))].sort((a,b)=>a-b);
   if(S.niv!=='*'&&!nivs.includes(S.niv)) S.niv='*';
-  $('#f-nivel').innerHTML=[['*',txH('todos')],...nivs.map(n=>[n,n])].map(([v,l])=>`<button class="chip" data-niv="${v}" aria-pressed="${v===S.niv}">${l}</button>`).join('');
+  $('#f-nivel').innerHTML=[['*',txH('todos')],...nivs.map(n=>[n,n])].map(([v,l])=>`<button class="chip" data-niv="${esc(v)}" aria-pressed="${v===S.niv}">${esc(l)}</button>`).join('');
   $('#proflist').innerHTML=[...new Set(mine.flatMap(c=>c[5]))].map(i=>`<option value="${esc(DATA.prof[i])}">`).join('');
   renderActive();renderGPrefs();
 }
@@ -174,14 +174,14 @@ function optRow(c,sel,inGroup){
   let tags=typeof CUPOS!=='undefined'?CUPOS.insignia(c):'';
   if(!on&&clash.length) tags+=`<span class="tag bad">${esc(txH('choca',{nombre:clash.map(s=>s.own?s.n:s[3]+' '+name(s).toLowerCase()).join(', ')}))}</span>`;
   if(!on&&same) tags+=`<span class="tag soft">${esc(txH('reemplaza',{grupo:same[3]}))}</span>`;
-  const who=inGroup?`<b>${esc(name(c))}</b> <small>${c[8]} · ${esc(textoCreditos(c[8],c[7]))}</small><br>${esc(profs(c))}`:esc(profs(c));
+  const who=inGroup?`<b>${esc(name(c))}</b> <small>${esc(c[8])} · ${esc(textoCreditos(c[8],c[7]))}</small><br>${esc(profs(c))}`:esc(profs(c));
   if(isExcl(c)) tags+=`<span class="tag soft">${esc(txH('profesor_excluido'))}</span>`;
-  return `<div class="opt${mk.s==='no'||isExcl(c)?' no':''}" data-k="${k}"><span class="grp">${inGroup?'':c[3]}</span><span class="who">${who}</span>
-    <div class="right"><button class="add" data-toggle="${k}" aria-pressed="${on}">${esc(txH(on?'quitar_opcion':'agregar'))}</button>
-      <span class="marks" role="group" aria-label="${esc(txH('marcar'))}"${isExcl(c)?` title="${esc(txH('profesor_excluido_ayuda'))}"`:''}>${[['si',txH('si')],['quiza',txH('quiza')],['no',txH('no')]].map(([m,l])=>isExcl(c)?`<button disabled data-m="${m}" aria-pressed="${m==='no'}">${l}</button>`:`<button data-mark="${m}" data-m="${m}" data-k="${k}" aria-pressed="${mk.s===m}">${l}</button>`).join('')}</span></div>
+  return `<div class="opt${mk.s==='no'||isExcl(c)?' no':''}" data-k="${esc(k)}"><span class="grp">${inGroup?'':esc(c[3])}</span><span class="who">${who}</span>
+    <div class="right"><button class="add" data-toggle="${esc(k)}" aria-pressed="${on}">${esc(txH(on?'quitar_opcion':'agregar'))}</button>
+      <span class="marks" role="group" aria-label="${esc(txH('marcar'))}"${isExcl(c)?` title="${esc(txH('profesor_excluido_ayuda'))}"`:''}>${[['si',txH('si')],['quiza',txH('quiza')],['no',txH('no')]].map(([m,l])=>isExcl(c)?`<button disabled data-m="${m}" aria-pressed="${m==='no'}">${esc(l)}</button>`:`<button data-mark="${m}" data-m="${m}" data-k="${esc(k)}" aria-pressed="${mk.s===m}">${esc(l)}</button>`).join('')}</span></div>
     <span class="when">${pattern(c).map(p=>`<span>${p}</span>`).join('')}${roomsTxt(c)?`<span class="room">${esc(txH('salon'))} ${roomsTxt(c)}</span>`:''}</span>
     ${tags?`<span class="tags">${tags}</span>`:''}
-    ${mk.s?`<input class="note" type="text" data-note="${k}" value="${esc(mk.n||'')}" placeholder="${esc(txH('nota_placeholder'))}" aria-label="${esc(txH('nota'))}">`:''}</div>`;
+    ${mk.s?`<input class="note" type="text" data-note="${esc(k)}" value="${esc(mk.n||'')}" placeholder="${esc(txH('nota_placeholder'))}" aria-label="${esc(txH('nota'))}">`:''}</div>`;
 }
 /* filtros globales: profesores excluidos (cuentan como "No") y horario en la escuela (de … a …) */
 const isExcl=c=>{const ex=S.gavoid.map(norm);return ex.length>0&&c[5].some(i=>ex.some(p=>norm(DATA.prof[i]).includes(p)))};
@@ -204,7 +204,7 @@ function montarSemana(){
   $('#mi-semana').hidden=false;
   const principales=['ida','vuelta','antes','dias'];
   for(const [id,campos] of [['principales',semanaCampos.filter(c=>principales.includes(c[0]))],['secundarios',semanaCampos.filter(c=>!principales.includes(c[0]))]]){
-    $(`#semana-${id}`).innerHTML=campos.map(([k,t,max])=>`<label class="field"><span>${esc(txH(`semana_${SEMANA_ETQ[k]||k}`))}</span><input id="semana-${k}" data-semana="${k}" type="${t}"${max?` min="${k==='dias'?1:0}" max="${max}" step="${k==='dias'?'1':'0.5'}"`:''} value="${esc(MS[k]??'')}"></label>`).join('');
+    $(`#semana-${id}`).innerHTML=campos.map(([k,t,max])=>`<label class="field"><span>${esc(txH(`semana_${SEMANA_ETQ[k]||k}`))}</span><input id="semana-${esc(k)}" data-semana="${esc(k)}" type="${t}"${max?` min="${k==='dias'?1:0}" max="${max}" step="${k==='dias'?'1':'0.5'}"`:''} value="${esc(MS[k]??'')}"></label>`).join('');
   }
   // Se mueve el formulario existente: conserva días, calendario y persistencia por versión.
   $('#semana-form').appendChild($('#ownform'));
@@ -339,7 +339,7 @@ function abrirFichaPropia(i){
     `<label class="field"><span>${esc(txH('semana_de'))}</span><input type="time" id="ficha-a" step="1800"></label><label class="field"><span>${esc(txH('semana_a'))}</span><input type="time" id="ficha-b" step="1800"></label>`+
     (SEMANA_ACTIVA?`<label class="check"><input type="checkbox" id="ficha-mostrar"> ${esc(txH('semana_mostrar'))}</label><label class="field"><span>${esc(txH('semana_horas_semana'))}</span><input type="number" id="ficha-hs" min="0" max="168" step="0.5"></label>`:'')+
     `<p class="err" id="ficha-err" role="alert"></p>`;
-  const q=s=>f.querySelector(s),pintar=()=>{q('#ficha-dias').innerHTML=DAYS.map((d,k)=>`<button type="button" class="chip" data-fd="${k}" aria-pressed="${dias.includes(k)}">${d}</button>`).join('')};
+  const q=s=>f.querySelector(s),pintar=()=>{q('#ficha-dias').innerHTML=DAYS.map((d,k)=>`<button type="button" class="chip" data-fd="${esc(k)}" aria-pressed="${dias.includes(k)}">${d}</button>`).join('')};
   const hhmm=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
   q('#ficha-n').value=o.n;
   q('#ficha-a').value=conHoras?'':hhmm(o.a);q('#ficha-b').value=conHoras?'':hhmm(o.b);
@@ -392,7 +392,7 @@ function renderGTime(){
   document.querySelectorAll('[data-gdays]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gdays===String(GT.days||''))));
   document.querySelectorAll('[data-gsrc]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gsrc===String(GT.src||''))));
   document.querySelectorAll('[data-gn]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gn===String(GT.n||''))));
-  $('#gbreaks').innerHTML=GT.breaks.map((b,i)=>`<div class="gbrk" data-brk="${i}">${esc(txH('descanso_al_menos'))}<select data-f="d" aria-label="${esc(txH('descanso_duracion'))}">${[30,60,90,120].map(m=>`<option value="${m}"${+b.d===m?' selected':''}>${({30:txH('minutos_30'),60:txH('hora_1'),90:txH('hora_media'),120:txH('horas_2')})[m]}</option>`).join('')}</select>${esc(txH('descanso_entre'))}<input type="time" step="1800" data-f="a" value="${b.a}" aria-label="${esc(txH('desde'))}"> ${esc(txH('y'))} <input type="time" step="1800" data-f="b" value="${b.b}" aria-label="${esc(txH('hasta'))}"><span class="brkdays" role="group" aria-label="${esc(txH('descanso_dias'))}"><button type="button" class="chip" data-bday="all" aria-pressed="${!(b.days||[]).length}">${esc(txH('todos_dias'))}</button>${DAYS.slice(0,6).map((n,d)=>`<button type="button" class="chip" data-bday="${d}" aria-pressed="${(b.days||[]).includes(d)}">${n}</button>`).join('')}</span><button type="button" class="x" data-unbrk="${i}" aria-label="${esc(txH('quitar_descanso'))}">×</button></div>`).join('')+
+  $('#gbreaks').innerHTML=GT.breaks.map((b,i)=>`<div class="gbrk" data-brk="${i}">${esc(txH('descanso_al_menos'))}<select data-f="d" aria-label="${esc(txH('descanso_duracion'))}">${[30,60,90,120].map(m=>`<option value="${m}"${+b.d===m?' selected':''}>${({30:txH('minutos_30'),60:txH('hora_1'),90:txH('hora_media'),120:txH('horas_2')})[m]}</option>`).join('')}</select>${esc(txH('descanso_entre'))}<input type="time" step="1800" data-f="a" value="${esc(b.a)}" aria-label="${esc(txH('desde'))}"> ${esc(txH('y'))} <input type="time" step="1800" data-f="b" value="${esc(b.b)}" aria-label="${esc(txH('hasta'))}"><span class="brkdays" role="group" aria-label="${esc(txH('descanso_dias'))}"><button type="button" class="chip" data-bday="all" aria-pressed="${!(b.days||[]).length}">${esc(txH('todos_dias'))}</button>${DAYS.slice(0,6).map((n,d)=>`<button type="button" class="chip" data-bday="${d}" aria-pressed="${(b.days||[]).includes(d)}">${n}</button>`).join('')}</span><button type="button" class="x" data-unbrk="${i}" aria-label="${esc(txH('quitar_descanso'))}">×</button></div>`).join('')+
     `<button type="button" class="link" id="b-addbrk">${esc(txH('agregar_descanso'))}</button>`;
 }
 // ¿cada día con clases deja un hueco de al menos d minutos dentro de [a,b]?
@@ -595,7 +595,7 @@ function renderGen(){
   const g=S.gen;
   $('#b-gen-clear').hidden=!g?.top?.length;
   if(!g){$('#genres').innerHTML='';return}
-  if(g.msg){$('#genres').innerHTML=`<p class="empty">${g.msg}</p>`;return}
+  if(g.msg){$('#genres').innerHTML=`<p class="empty">${esc(g.msg)}</p>`;return}
   const dmsg=g.bank?.auto?`<p class="gdays-msg">${txH('generador_auto',{n:g.bank.M,meta:fmtCr(g.bank.meta),tope:g.bank.tope!=null?txH('generador_tope',{n:fmtCr(g.bank.tope)}):''})}</p>${g.bank.relajado?`<p class="gdays-msg warn">${esc(txH('generador_relajado'))}</p>`:''}${g.top.length&&g.bank.best<g.bank.meta-4.5?`<p class="gdays-msg warn">${txH('generador_carga_menor',{n:fmtCr(g.bank.best)})}</p>`:''}`:g.bank?`<p class="gdays-msg">${txH('generador_numero',{n:g.bank.N,total:g.bank.M,tope:g.bank.tope!=null?txH('generador_carga_tope',{n:fmtCr(g.bank.tope)}):''})}</p>`:g.minDays!=null?`<p class="gdays-msg${g.maxD&&g.minDays>g.maxD?' warn':''}">${txH('generador_dias',{n:g.minDays})}${g.maxD&&g.minDays>g.maxD?' '+esc(txH('generador_dias_imposible',{n:g.maxD})):g.maxD?' '+esc(txH('generador_dias_posible',{n:g.maxD})):''}</p>`:'';
   const oex=g.optExceso?Object.entries(g.optExceso).map(([v,x])=>x.libre<=0?txH('optativas_cubiertas',{n:x.total,nivel:v}):txH('optativas_libres',{n:x.libre,nivel:v,elegidas:x.n})):[];
   const oexMsg=oex.length?`<p class="gdays-msg warn">${esc(txH('optativas_aviso',{detalle:oex.join('; ')}))}</p>`:'';
@@ -630,7 +630,7 @@ function renderOffer(){
       const fl=cur()[c[8]]&&statusOf(c[8]).includes('fail');
       const etiqueta=st==='late'?(fl?(['agotada','dictamen'].includes(reglaDesfase()?.por[c[8]])?'desfasada_dictamen':'desfasada_recursar'):'desfasada'):st==='fail'?'recursar':st==='now'?'semestre':st==='curso'?'curso':st==='done'?'acreditada':(isPersonal()&&cur()[c[8]]&&available(c[8]))?'disponible':'';
       const badge=etiqueta?`<span class="tag ${['late','fail'].includes(st)?'bad':st==='now'||etiqueta==='disponible'?'good':'soft'}">${esc(txH(etiqueta))}</span> `:'';
-      return `<article class="subj"><header><h3>${badge}${esc(name(c))}</h3><span class="meta">${c[8]} · ${esc(textoCreditos(c[8],c[7],true))} ${ayudaCreditos(c[8])} · ${esc(txH('nivel',{n:c[2]}))}${c[9]&&c[9]!=='O'?' · '+TIPO[c[9]]:''}</span>${lineasDe(c[8]).length?`<span class="lineas">${lineasDe(c[8]).map(l=>`<span class="tag lin" title="${esc(txH('linea'))}">${esc(l)}</span>`).join('')}</span>`:''}</header>${(()=>{
+      return `<article class="subj"><header><h3>${badge}${esc(name(c))}</h3><span class="meta">${esc(c[8])} · ${esc(textoCreditos(c[8],c[7],true))} ${ayudaCreditos(c[8])} · ${esc(txH('nivel',{n:c[2]}))}${c[9]&&c[9]!=='O'?' · '+TIPO[c[9]]:''}</span>${lineasDe(c[8]).length?`<span class="lineas">${lineasDe(c[8]).map(l=>`<span class="tag lin" title="${esc(txH('linea'))}">${esc(l)}</span>`).join('')}</span>`:''}</header>${(()=>{
         // con una opción marcada «Sí», la materia se colapsa a esa(s) opción(es) (y la que esté en el horario)
         const mk=ws().marks, keep=cs.filter(x=>mk[keyOf(x)]?.s==='si'||plan().sel.includes(keyOf(x)));
         const col=keep.length&&keep.some(x=>mk[keyOf(x)]?.s==='si')&&keep.length<cs.length, open=S.expand.has(c[4]);
@@ -641,7 +641,7 @@ function renderOffer(){
     const g=new Map();list.forEach(c=>{(g.get(c[3])||g.set(c[3],[]).get(c[3])).push(c)});
     const gp=cs=>Math.min(...cs.map(c=>prio(c[8])));
     const items=[...g.entries()].sort((a,b)=>gp(a[1])-gp(b[1])||a[0].localeCompare(b[0],'es',{numeric:true}));
-    html=items.map(([grp,cs])=>`<article class="subj"><header><h3 class="grp">${grp}</h3><span class="meta">${fmtCr(cs.reduce((s,c)=>s+c[7],0))} créditos ${ayudaCreditos()} <button class="link" data-group="${grp}">${esc(txH('agregar_grupo'))}</button></span></header>${cs.map(c=>optRow(c,sel,true)).join('')}</article>`).join('');
+    html=items.map(([grp,cs])=>`<article class="subj"><header><h3 class="grp">${esc(grp)}</h3><span class="meta">${fmtCr(cs.reduce((s,c)=>s+c[7],0))} créditos ${ayudaCreditos()} <button class="link" data-group="${esc(grp)}">${esc(txH('agregar_grupo'))}</button></span></header>${cs.map(c=>optRow(c,sel,true)).join('')}</article>`).join('');
     $('#offer-count').textContent=txH('cuenta_grupos',{n:g.size,materias:list.length});
   }
   $('#offer').innerHTML=html||`<p class="empty">${esc(txH('oferta_sin_resultados'))}</p>`;
@@ -667,13 +667,13 @@ function renderPlans(){
   $('#b-saeshor').hidden=!(isPersonal()&&ALUMNO.horario_inscrito?.length);
   const ids=planIds();
   $('#plans').innerHTML=`<span class="lbl" style="margin-right:4px">${esc(txH('version'))}</span>`+ids.map(p=>{const pl=ws().plans[p];const cr=pl.sel.map(byKey).filter(Boolean).reduce((s,c)=>s+c[7],0);
-    return `<span class="plan-tab"><button class="chip" data-plan="${p}" aria-pressed="${ws().plan===p}">${esc(txH('horario',{version:p}))}<small>${pl.sel.length?fmtCr(cr)+' créditos':esc(txH('vacio'))}</small></button>${ids.length>1&&ws().plan===p?`<button class="x" data-delplan="${p}" aria-label="${esc(txH('eliminar_horario',{version:p}))}" title="${esc(txH('eliminar_horario',{version:p}))}">×</button>`:''}</span>`}).join('')+
+    return `<span class="plan-tab"><button class="chip" data-plan="${esc(p)}" aria-pressed="${ws().plan===p}">${esc(txH('horario',{version:p}))}<small>${pl.sel.length?fmtCr(cr)+' créditos':esc(txH('vacio'))}</small></button>${ids.length>1&&ws().plan===p?`<button class="x" data-delplan="${esc(p)}" aria-label="${esc(txH('eliminar_horario',{version:p}))}" title="${esc(txH('eliminar_horario',{version:p}))}">×</button>`:''}</span>`}).join('')+
     `<button class="chip plan-new" data-newplan="1" title="${esc(txH('nuevo_ayuda'))}">${esc(txH('nuevo'))}</button><button class="link" data-dup style="margin-left:8px">${esc(txH('duplicar',{version:ws().plan}))}</button>`;
 }
 function agendaHorario(items,soloLectura=false){const by={};items.forEach(b=>(by[b.d]=by[b.d]||[]).push(b));
   return Object.keys(by).length?Object.keys(by).sort((a,b)=>a-b).map(d=>`<section class="ag-day"><h4>${DAYN[d]}</h4>`+by[d].sort((x,y)=>x.a-y.a).map(b=>b.c.own?
       `<div class="ag-it own${b.clash?' clash':''}"${!soloLectura&&b.c.i!=null?` data-own="${b.c.i}" tabindex="0" role="button" aria-label="${esc(txH('semana_abrir_bloque',{nombre:b.c.n}))}"`:''}><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(b.c.n)}</b><small>${esc(txH('actividad'))}${b.clash?' · '+esc(txH('traslape')):''}</small></span></div>`:
-      `<div class="ag-it${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)}"><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(name(b.c))}</b><small>${b.c[3]}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''} · ${esc(profs(b.c))}${b.ghost?' · '+esc(txH('vista_previa')):''}${b.clash?' · '+esc(txH('traslape')):''}</small>${typeof CUPOS!=='undefined'?CUPOS.insignia(b.c):''}</span></div>`).join('')+'</section>').join(''):
+      `<div class="ag-it${b.clash?' clash':''}${b.ghost?' ghost':''}" style="--h:${hue(b.c)}"><span class="t">${hm(b.a)}–${hm(b.b)}</span><span><b>${esc(name(b.c))}</b><small>${esc(b.c[3])}${roomAt(b.c,b.d,b.a)?' · '+esc(roomAt(b.c,b.d,b.a)):''} · ${esc(profs(b.c))}${b.ghost?' · '+esc(txH('vista_previa')):''}${b.clash?' · '+esc(txH('traslape')):''}</small>${typeof CUPOS!=='undefined'?CUPOS.insignia(b.c):''}</span></div>`).join('')+'</section>').join(''):
       `<p class="ag-empty">${esc(txH('horario_vacio'))}</p>`;
 }
 function renderCal(){

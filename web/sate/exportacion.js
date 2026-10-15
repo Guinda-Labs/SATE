@@ -160,7 +160,7 @@ const EXP={get perPage(){return store.get('expPer',2)},get dark(){return store.g
 const drawFor=(part,k)=>EXP.style==='min'?drawTable(part,k):drawSchedule(part,k);
 
 /* ---------- Excel (.xlsx, también se abre en Google Sheets): mismo formato que la tabla minimalista ---------- */
-async function loadExcelJS(){if(window.ExcelJS)return window.ExcelJS;await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el generador de Excel.'));document.head.appendChild(s)});return window.ExcelJS}
+async function loadExcelJS(){if(window.ExcelJS)return window.ExcelJS;await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';s.integrity='sha512-dlPw+ytv/6JyepmelABrgeYgHI0O+frEwgfnPdXDTOIZz+eDgfW07QXG02/O8COfivBdGNINy+Vex+lYmJ5rxw==';s.crossOrigin='anonymous';s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el generador de Excel.'));document.head.appendChild(s)});return window.ExcelJS}
 async function exportXlsx(){
   if(!selected().length&&!ownVis().length)return txH('exportacion_vacia');
   const ExcelJS=await loadExcelJS(), wb=new ExcelJS.Workbook(), {rows,days,cells,D}=weekGrid();
@@ -209,7 +209,7 @@ async function exportPng(){
   if(!selected().length&&!ownVis().length)return txH('exportacion_vacia');
   const cv=await drawFor('all',3);return saveFile(`horario-${ws().plan}-${UNIDAD}.png`,await toBlob(cv));
 }
-async function loadPdfLib(){if(window.PDFLib)return window.PDFLib;await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el generador de PDF.'));document.head.appendChild(s)});return window.PDFLib}
+async function loadPdfLib(){if(window.PDFLib)return window.PDFLib;await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';s.integrity='sha512-z8IYLHO8bTgFqj+yrPyIJnzBDf7DDhWwiEsk4sY+Oe6J2M+WQequeGS7qioI5vT6rXgVRb4K1UVQC5ER7MKzKQ==';s.crossOrigin='anonymous';s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el generador de PDF.'));document.head.appendChild(s)});return window.PDFLib}
 // agrega una hoja carta al PDF con el horario dibujado (horizontal en colorido, vertical en minimalista)
 async function pdfPage(doc,rgb){
   const cv=await drawFor('all',3), png=await doc.embedPng(new Uint8Array(await (await toBlob(cv)).arrayBuffer()));

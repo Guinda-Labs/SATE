@@ -64,9 +64,9 @@ JS = r"""
 const SAES={
   KEY:'saes.alumno',
   U(){return window.IPNT_UNIDAD||'upiita'},   // unidad de la página; los datos sin unidad son de la UPIITA (versiones anteriores)
-  load(){try{const v=JSON.parse(localStorage.getItem(this.KEY)||'null');return v&&v.upiita_saes===1&&(v.unidad||'upiita')===this.U()?v:null}catch(e){return null}},
-  save(d){if(window.IPNT)IPNT.set(this.KEY,JSON.stringify(d));else try{localStorage.setItem(this.KEY,JSON.stringify(d))}catch(e){}},
-  clear(){try{localStorage.removeItem(this.KEY)}catch(e){}if(window.IPNT)IPNT.borrar(this.KEY)},
+  load(){try{const v=JSON.parse((window.IPNT?.almacen||localStorage).getItem(this.KEY)||'null');return v&&v.upiita_saes===1&&(v.unidad||'upiita')===this.U()?v:null}catch(e){return null}},
+  save(d){if(window.IPNT)IPNT.set(this.KEY,JSON.stringify(d));else try{(window.IPNT?.almacen||localStorage).setItem(this.KEY,JSON.stringify(d))}catch(e){}},
+  clear(){try{(window.IPNT?.almacen||localStorage).removeItem(this.KEY)}catch(e){}if(window.IPNT)IPNT.borrar(this.KEY)},
   parse(t){try{const d=JSON.parse(String(t||'').trim());if(d&&d.upiita_saes===1&&Array.isArray(d.acreditadas))return d}catch(e){}return null},
   autorizada(d){const s=String(d?.avance?.autorizada||'');   // «MEDIA-REPROBADAS = 40.00 - 22.50 CREDITOS»: el tope total es la media (incluye las reprobadas)
     const m=s.match(/=\s*(\d+(?:\.\d+)?)\s*-\s*\d/)||s.match(/(\d+(?:\.\d+)?)\s*CR/i)||s.match(/(\d+(?:\.\d+)?)/);return m?+m[1]:null},
@@ -76,11 +76,13 @@ const SAES={
   wire(onLoad){
     const dl=document.getElementById('saes-dlg');if(!dl)return;
     const paste=dl.querySelector('#saes-paste'), msg=dl.querySelector('#saes-msg');
+    dl.querySelector('#saes-bm')?.addEventListener('click',e=>e.preventDefault());
     // delegado: también funciona con botones que se agregan después (p. ej. el recordatorio de Estado general)
     document.addEventListener('click',e=>{if(!e.target.closest?.('[data-saes-open]'))return;e.preventDefault();SAES.open()});
     dl.querySelector('#saes-x').addEventListener('click',()=>SAES.close());
     dl.addEventListener('click',e=>{if(e.target===dl)SAES.close()});   // clic fuera de la ventana
     const take=async t=>{const d=SAES.parse(t);if(!d){msg.innerHTML='<span class="bad">El contenido no corresponde al marcador SATE. Ejecuta el marcador en el SAES y selecciona «Copiar mis datos».</span>';return}
+      if(globalThis.IPNT?.privacidad)await globalThis.IPNT.privacidad();
       // Datos de otra unidad: se guardan y se abre el SATE de esa unidad (cualquier unidad tiene SATE).
       const suya=String(d.unidad||'upiita');
       if(suya!==SAES.U()&&/^[a-z0-9-]+$/.test(suya)){SAES.save(d);paste.value='';
@@ -122,15 +124,15 @@ const SAES={
   mismatch(car,nameOf,onBack,carOf=d=>d?.carrera){
     const el=document.getElementById('saes-mismatch');if(!el)return;
     const d=SAES.load(), cap=s=>String(s||'').toLowerCase().replace(/(^|\s)(\S)/g,(m,a,b)=>a+b.toUpperCase()).replace(/\b(En|De|Y)\b/g,w=>w.toLowerCase()).replace(/^Ingenieria\b/,'Ingeniería');
-    let hid=null;try{hid=localStorage.getItem('saes.aviso')}catch(e){}
+    let hid=null;try{hid=(window.IPNT?.almacen||localStorage).getItem('saes.aviso')}catch(e){}
     if(!d||!d.carrera||carOf(d)===car||hid===d.leido){el.hidden=true;return}
-    const mine=cap(nameOf(carOf(d))||d.carrera_nombre), here=cap(nameOf(car));
+    const mine=esc(cap(nameOf(carOf(d))||d.carrera_nombre)), here=esc(cap(nameOf(car)));
     el.innerHTML=`<p><b>Consultando ${here||'otra carrera'}.</b> Tus datos del SAES corresponden a ${mine}; el avance y las sugerencias no se aplican en esta carrera.</p>`+
       `<div class="mm-act"><button class="btn" type="button" data-mm="back">Volver a ${mine}</button><button class="btn" type="button" data-mm="load">Usar datos de otra sesión</button><button class="x" type="button" data-mm="hide" aria-label="Ocultar este aviso" title="Ocultar este aviso">×</button></div>`;
     el.hidden=false;
     el.onclick=e=>{const a=e.target.closest('[data-mm]')?.dataset.mm;if(!a)return;
       if(a==='back')onBack(carOf(d));else if(a==='load')SAES.open();
-      else{try{localStorage.setItem('saes.aviso',d.leido)}catch(err){}el.hidden=true}};
+      else{try{(window.IPNT?.almacen||localStorage).setItem('saes.aviso',d.leido)}catch(err){}el.hidden=true}};
   },
   status(d){
     const st=document.getElementById('saes-status'), btn=document.getElementById('saes-open');
@@ -219,7 +221,7 @@ def card(bm_href, page="horarios", short="", u=None):
   <details><summary>¿Prefieres verlo? Video paso a paso</summary><div class="saes-videos" id="saes-videos">{videos}<a class="saes-vlist" href="{VIDEOS_LISTA}" target="_blank" rel="noopener">Ver todos</a></div></details>
   <div id="saes-steps">
     <ol>
-      <li><p class="saes-arrastre"><b>Arrastra a tu barra de marcadores:</b> <a class="saes-bm" id="saes-bm" href="{bm_href}" draggable="true" onclick="event.preventDefault()">{html.escape(textos['sate.cupos.marcador'])}</a></p>
+      <li><p class="saes-arrastre"><b>Arrastra a tu barra de marcadores:</b> <a class="saes-bm" id="saes-bm" href="{bm_href}" draggable="true">{html.escape(textos['sate.cupos.marcador'])}</a></p>
         <p class="saes-tactil"><b>{html.escape(textos['sate.cupos.guardar'])}</b> <button class="link" id="saes-install" type="button">{html.escape(textos['sate.lector.tactil'])}</button></p>
         <details><summary>¿Qué es un marcador? ¿Cómo muestro la barra?</summary>
         <p>Un marcador es un favorito guardado en tu navegador. El marcador SATE lee tu SAES y sirve para todas las unidades del IPN; guárdalo solo una vez.</p><ul>

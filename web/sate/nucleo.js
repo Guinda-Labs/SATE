@@ -45,7 +45,7 @@ function montarAyudasCreditos(){
 if(location.hash==='#demo'){try{sessionStorage.setItem('ipnt.demo',UNIDAD)}catch(e){}history.replaceState(null,'',location.pathname+location.search)}
 const DEMO=(()=>{try{return sessionStorage.getItem('ipnt.demo')===UNIDAD}catch(e){return false}})();
 const HU=DEMO?'hu.demo.'+UNIDAD+'.':UNIDAD==='upiita'?'hu.':'hu.'+UNIDAD+'.';
-const ALM=DEMO?sessionStorage:localStorage;
+const ALM=DEMO?sessionStorage:(window.IPNT?.almacen||localStorage);
 const store={get(k,d){try{const v=ALM.getItem(HU+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){if(DEMO){try{ALM.setItem(HU+k,JSON.stringify(v))}catch(e){}}else IPNT.set(HU+k,JSON.stringify(v))}};   // IPNT: perfil sincronizable (tools/cuenta.py)
 
 const S={tab:store.get('tab','tray'),per:store.get('per','proximo'),car:store.get('car','B'),tur:store.get('tur','*'),niv:store.get('niv','*'),q:'',view:store.get('view','materia'),
@@ -404,7 +404,7 @@ function levelStats(){
 function levelOpen(niv){                        // ¿cumple la seriación recomendada para cursar ese nivel?
   const r=MAP().reglas[niv];if(!r) return {ok:true,miss:[]};
   const st=levelStats(), miss=[];
-  Object.entries(r).forEach(([k,f])=>{const s=st[k];if(s&&s.ok/s.tot<f-1e-9)miss.push(`N${k} ${Math.round(f*100)} %`)});
+  Object.entries(r).forEach(([k,f])=>{const s=st[k];if(s&&s.ok/s.tot<f-1e-9)miss.push(`N${esc(k)} ${Math.round(f*100)} %`)});
   return {ok:!miss.length,miss};
 }
 // periodo escolar que se planea = "Periodos escolares que cursaste" (Cita del SAES) + 1. En los planes por niveles
@@ -578,7 +578,7 @@ function inspParts(k){
   const all=ancestors([k]), sem=semOf()[k], off=offeredClaves().has(k);
   const nm=x=>esc(pretty(c[x][0]));
   const meta=`${esc(textoCreditos(k,cr,true))} ${ayudaCreditos(k)} · nivel ${niv}${sem&&!porNiveles()?' · semestre propuesto '+sem:''}`;
-  const l1=`<b>${esc(n)}</b> <span class="mono">${k}</span><span class="insp-meta">${meta}</span>`;
+  const l1=`<b>${esc(n)}</b> <span class="mono">${esc(k)}</span><span class="insp-meta">${meta}</span>`;
   // con datos del SAES: su estado y qué le falta (en lugar de marcarlo en el mapa)
   let st='';
   if(PLAN_DOS_PERIODOS&&PLAN_PASO===1&&planAsignado(k)===0)st=`Planeada en ${esc(planEtiqueta(0))}. Se supone acreditada para planear ${esc(planEtiqueta(1))}.`;
@@ -610,7 +610,7 @@ function planAcciones(k){
   const paso=planAsignado(k), base=conPlan(()=>tr(),0);
   if(isElec(k)||base.done.includes(k)||base.curso.includes(k))return '';
   const ob=paso!=null&&conPlan(()=>tr().oblig.includes(k),paso);
-  const boton=(clave,texto,atributos='')=>`<button class="btn primary" type="button" data-${clave}="${k}"${atributos}>${esc(texto)}</button>`;
+  const boton=(clave,texto,atributos='')=>`<button class="btn primary" type="button" data-${clave}="${esc(k)}"${atributos}>${esc(texto)}</button>`;
   if(paso==null)return boton('fwant',`Agregar a ${planEtiqueta(S.planPaso)}`);
   return (ob?'':boton('unwant',`Quitar de ${planEtiqueta(paso)}`,` data-plan-quitar="${paso}"`))+
     (ob&&paso===0?'':boton('fmover',`Mover a ${planEtiqueta(1-paso)}`));
@@ -621,7 +621,7 @@ function renderInsp(){
   el.hidden=!k||!c[k];
   if(el.hidden){el.innerHTML='';return}
   const {l1,l2}=inspParts(k), w=planAsignado(k)===S.planPaso, ob=tr().oblig.includes(k), done=statusOf(k)==='done';
-  el.innerHTML=`<div class="insp-t">${l1}</div><div class="insp-b">${l2}</div>`+(S.mapFocus?`<div class="insp-act">${PLAN_DOS_PERIODOS?planAcciones(k):ob||done||isElec(k)?'':`<button class="btn primary" type="button" data-fwant="${k}">${w?'Quitar de mi plan':'Quiero cursarla'}</button>`}<button class="btn" type="button" data-fclose="1">Cerrar</button></div>`:'');
+  el.innerHTML=`<div class="insp-t">${l1}</div><div class="insp-b">${l2}</div>`+(S.mapFocus?`<div class="insp-act">${PLAN_DOS_PERIODOS?planAcciones(k):ob||done||isElec(k)?'':`<button class="btn primary" type="button" data-fwant="${esc(k)}">${w?'Quitar de mi plan':'Quiero cursarla'}</button>`}<button class="btn" type="button" data-fclose="1">Cerrar</button></div>`:'');
   montarAyudasCreditos();
 }
 function leyendaMapa(completa=false){
@@ -704,14 +704,14 @@ function renderSide0(){
     const nuevos=elegidas.filter(k=>!t.fail.includes(k)).reduce((s,k)=>s+c[k][1],0), carga=cargaInfo(nuevos);
     const cuenta=carga?tx('resumen',{n:elegidas.length,creditos:fmtCr(cr),tope:fmtCr(carga.tope)}):tx('cuenta',{n:elegidas.length,creditos:fmtCr(cr)});
     return `<section class="plan-grupo plan-${paso+1}" aria-labelledby="plan-grupo-${paso}"><h4 id="plan-grupo-${paso}">${esc(tx('periodo_elegido',{periodo:planEtiqueta(paso)}))}</h4><p>${esc(cuenta)}</p><p>${esc(carga?tx('carga',{creditos:fmtCr(carga.total),tope:fmtCr(carga.tope),retenidos:fmtCr(carga.ret)}):tx('sin_carga',{creditos:fmtCr(cr)}))}</p><div class="wchips">`+
-      elegidas.sort((a,b)=>(semOf()[a]||99)-(semOf()[b]||99)).map(k=>`<span class="wchip"><span class="grp">${k}</span>${esc(pretty(c[k][0]))}${off.has(k)?'':' <small>'+esc(tx('sin_grupos'))+'</small>'}${t.oblig.includes(k)?'<span class="tag bad">'+esc(tx('obligatoria'))+'</span>':`<button class="x" data-unwant="${k}" data-plan-quitar="${paso}" aria-label="${esc(tx('quitar',{materia:c[k][0],periodo:planEtiqueta(paso)}))}">×</button>`}</span>`).join('')+
+      elegidas.sort((a,b)=>(semOf()[a]||99)-(semOf()[b]||99)).map(k=>`<span class="wchip"><span class="grp">${esc(k)}</span>${esc(pretty(c[k][0]))}${off.has(k)?'':' <small>'+esc(tx('sin_grupos'))+'</small>'}${t.oblig.includes(k)?'<span class="tag bad">'+esc(tx('obligatoria'))+'</span>':`<button class="x" data-unwant="${esc(k)}" data-plan-quitar="${paso}" aria-label="${esc(tx('quitar',{materia:c[k][0],periodo:planEtiqueta(paso)}))}">×</button>`}</span>`).join('')+
       (!elegidas.length?`<p>${esc(tx('vacio'))}</p>`:'')+`</div></section>`;
   },paso)).join('');
   $('#chosen-req').innerHTML=requisitosHtml(want);
   $('#h-sugg').innerHTML=esc(tx('sugeridas',{periodo:planEtiqueta(PLAN_PASO)}))+' '+simTag('sugg');
   const propuestas=suggestions();
   const yaElegidas=new Set(tr().want);   // las sugeridas que ya están en el plan del periodo activo llevan ✓
-  $('#sugg').innerHTML=propuestas.list.map(k=>`<label${yaElegidas.has(k)?' class="ya"':''}><span class="grp">${k}</span><span>${esc(pretty(c[k][0]))}${yaElegidas.has(k)?' <span class="ya-marca" aria-label="ya elegida">✓</span>':''}</span><span class="cr">${esc(textoCreditos(k,c[k][1]))} ${ayudaCreditos(k)}</span></label>`).join('')+`<small>${esc(tx('meta',{creditos:fmtCr(propuestas.cr),meta:fmtCr(propuestas.target),retenidos:fmtCr(propuestas.ret)}))}</small>`;
+  $('#sugg').innerHTML=propuestas.list.map(k=>`<label${yaElegidas.has(k)?' class="ya"':''}><span class="grp">${esc(k)}</span><span>${esc(pretty(c[k][0]))}${yaElegidas.has(k)?' <span class="ya-marca" aria-label="ya elegida">✓</span>':''}</span><span class="cr">${esc(textoCreditos(k,c[k][1]))} ${ayudaCreditos(k)}</span></label>`).join('')+`<small>${esc(tx('meta',{creditos:fmtCr(propuestas.cr),meta:fmtCr(propuestas.target),retenidos:fmtCr(propuestas.ret)}))}</small>`;
   document.querySelectorAll('[data-personal]').forEach(e=>e.hidden=!isPersonal());
   if(isPersonal()){
     const situacion=situacionDatos();
@@ -722,7 +722,7 @@ function renderSide0(){
     $('#lvls').innerHTML=`<p class="lvl-intro">Avance por nivel y porcentaje recomendado de los niveles previos para cursar cada uno.</p>`+
       Object.keys(st).sort((a,b)=>a-b).map(n=>{const s=st[n], rq=Object.entries(R[n]||{});
       const req=rq.length?`<div class="lvl-req">Para cursarlo se recomienda: ${rq.map(([k,f])=>{const ok=pct(k)>=Math.round(f*100);
-          return `<span class="${ok?'ok':'warn'}">${ok?'✓':'·'} Nivel ${k} al ${Math.round(f*100)} %${ok?'':` (llevas ${pct(k)} %)`}</span>`}).join(' ')}</div>`:'';
+          return `<span class="${ok?'ok':'warn'}">${ok?'✓':'·'} Nivel ${esc(k)} al ${Math.round(f*100)} %${ok?'':` (llevas ${pct(k)} %)`}</span>`}).join(' ')}</div>`:'';
       return `<div class="lvl"><div class="lvl-top"><b>Nivel ${n}</b><span class="minibar"><i style="width:${s.ok/s.tot*100}%;background:var(--n${n})"></i></span><span class="lvl-num">${s.ok} de ${s.tot}</span></div>${req}</div>`}).join('');
   }
   renderLegend();renderLineas();
@@ -742,7 +742,7 @@ function renderLineas(){
     const byNiv={};g.forEach(x=>(byNiv[x.niv]=byNiv[x.niv]||[]).push(x));
     const rows=Object.keys(byNiv).sort((a,b)=>a-b).map(n=>`<div class="ol-row"><span class="ol-niv">Nivel ${n}</span><div class="ol-boxes">${byNiv[n].map(x=>{
       const k=x.keys.find(k=>off.has(k))||x.keys[0];
-      return `<button class="obox${x.want?' want':''}${x.done?' done':''}${x.off?'':' offno'}" data-obox="${k}" aria-pressed="${x.want}" title="${esc(x.n)} · ${esc(textoCreditos(k,x.cr,true))}${x.off?'':' · sin grupos este periodo'}">${esc(x.n.replace(/\s*\(([^()]*)\)$/,(m,g)=>norm(g)===norm(l.linea)?'':m).toLowerCase())}</button>`}).join('')}</div></div>`).join('');
+      return `<button class="obox${x.want?' want':''}${x.done?' done':''}${x.off?'':' offno'}" data-obox="${esc(k)}" aria-pressed="${x.want}" title="${esc(x.n)} · ${esc(textoCreditos(k,x.cr,true))}${x.off?'':' · sin grupos este periodo'}">${esc(x.n.replace(/\s*\(([^()]*)\)$/,(m,g)=>norm(g)===norm(l.linea)?'':m).toLowerCase())}</button>`}).join('')}</div></div>`).join('');
     return `<article class="ol-card" style="--area:${color}">
       <header><span class="ol-area">${esc(l.area)}</span><h4>${esc(l.linea!==l.area?l.linea:l.area)}</h4>
         <span class="ol-stat">${nOff} de ${g.length} con grupos${nWant?` · <b>${nWant} elegida${nWant>1?'s':''}</b>`:''}${best>0&&score[i]===best?' · <span class="tag good">línea con mayor avance</span>':''}</span></header>
@@ -763,10 +763,10 @@ function renderTop(){
   
   const cars=Object.entries(DATA.carreras).filter(([k])=>DATA.mapas[k]);
   if(!cars.some(([k])=>k===S.car)) S.car=cars[0][0];
-  $('#f-carrera').innerHTML=cars.map(([k,v])=>`<option value="${k}"${k===S.car?' selected':''}>${v}</option>`).join('');
+  $('#f-carrera').innerHTML=cars.map(([k,v])=>`<option value="${esc(k)}"${k===S.car?' selected':''}>${esc(v)}</option>`).join('');
   const f=new Date(DATA.capturado).toLocaleString('es-MX',{dateStyle:'long',timeStyle:'short'});
   const n=new Set(classes().filter(c=>c[0]===S.car).map(c=>c[3])).size;
-  $('#notice').innerHTML=`<span>Captura del SAES: <b>${f}</b></span><span><b>${n}</b> grupos de esta carrera</span>`+
+  $('#notice').innerHTML=`<span>Captura del SAES: <b>${esc(f)}</b></span><span><b>${n}</b> grupos de esta carrera</span>`+
     (!hasOffer('proximo')?'<span>El SAES aún no publica la oferta del próximo periodo; se muestra el periodo actual.</span>':S.per==='proximo'?'<span>La oferta del próximo periodo está en captura y puede estar incompleta.</span>':'')+
     (n===0?'<span class="bad">Esta carrera no tiene grupos publicados en este periodo.</span>':'')+(DATA.salones?.fuente==='saes'?'<span>Salones según el SAES.</span>':S.per==='actual'&&DATA.salones?`<span>Salones según el horario por aula de la unidad (ciclo ${esc(DATA.salones.periodo)}).</span>`:'<span>Salones aún sin asignar para este periodo.</span>');
 }

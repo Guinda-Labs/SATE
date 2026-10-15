@@ -9,7 +9,7 @@
   const variante = new URLSearchParams(location.search).get('pestanas');
   if (cascaron && ['v1','v3'].includes(variante)) cascaron.setAttribute('data-pestanas', variante);
   let api, actual, tabs, barra, version = 0, recalcularPestanas=()=>{};
-  const leer = k => { try { return localStorage.getItem(k); } catch { return null; } };
+  const leer = k => { try { return window.IPNT?.almacen?IPNT.almacen.getItem(k):((typeof sessionStorage!=='undefined'?sessionStorage.getItem(k):null)??localStorage.getItem(k)); } catch { return null; } };
   const parametros = new URLSearchParams(location.search), entrada = parametros.get('sateEntrada') === '1';
   const cuposReducida = parametros.get('vista') === 'cupos' || /\/cupos(?:\?|$)/.test(location.hash);
   if(cuposReducida) document.documentElement.dataset.vista='cupos';
@@ -68,6 +68,13 @@
   function script(src) {
     if (!cargas.has(src)) cargas.set(src, new Promise((ok, no) => {
       const s = document.createElement('script'); s.src = src;
+      if(/^https?:/.test(src)){
+        const integridad={
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js':'sha512-z8IYLHO8bTgFqj+yrPyIJnzBDf7DDhWwiEsk4sY+Oe6J2M+WQequeGS7qioI5vT6rXgVRb4K1UVQC5ER7MKzKQ=='
+        };
+        if(!integridad[src]){cargas.delete(src);no(new Error('Biblioteca externa sin integridad: '+src));return}
+        s.integrity=integridad[src];s.crossOrigin='anonymous';
+      }
       s.onload = () => { window.SateMedicion?.instrumentar(); ok(); }; s.onerror = () => { cargas.delete(src); no(new Error('Archivo: ' + src)); };
       document.head.appendChild(s);
     }));

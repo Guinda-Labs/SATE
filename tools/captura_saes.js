@@ -25,15 +25,31 @@
   var parse = function (h) { return new DOMParser().parseFromString(h, 'text/html'); };
   var P = 'ctl00$mainCopy$', F = P + 'Filtro$';
   var opts = function (d, n) { return Array.prototype.map.call(d.querySelectorAll('select[name="' + n + '"] option'), function (o) { return o.value; }); };
+  // El límite incluye la lectura del cuerpo; no se reintenta un servidor saturado.
+  var consultar = async function (url, opciones) {
+    await sleep(600 + Math.random() * 400);
+    var control = new AbortController(), inicio = Date.now();
+    var limite = setTimeout(function () { control.abort(); }, 10000);
+    try {
+      var r = await fetch(url, Object.assign({}, opciones, { signal: control.signal }));
+      if (r.status === 429 || r.status === 503) throw new Error('Captura detenida: el SAES respondió HTTP ' + r.status + '. Intenta en otro momento.');
+      if (!r.ok) throw new Error('Captura detenida: HTTP ' + r.status + '.');
+      var texto = await r.text();
+      if (Date.now() - inicio > 10000) throw new Error('Captura detenida: el SAES tardó más de 10 segundos.');
+      return { url: r.url, texto: texto };
+    } catch (e) {
+      if (control.signal.aborted) throw new Error('Captura detenida: el SAES tardó más de 10 segundos.');
+      throw e;
+    } finally { clearTimeout(limite); }
+  };
   var post = async function (url, doc, target, ov) {
     var fd = new FormData(doc.forms[0]);
     fd.delete(P + 'cmdVisalizar');
     fd.set('__EVENTTARGET', target); fd.set('__EVENTARGUMENT', '');
     for (var k in ov) fd.set(k, ov[k]);
-    await sleep(250);   // ritmo moderado para no cargar el servidor
-    var r = await fetch(url, { method: 'POST', body: new URLSearchParams(fd), credentials: 'same-origin' });
+    var r = await consultar(url, { method: 'POST', body: new URLSearchParams(fd), credentials: 'same-origin' });
     if (/default\.aspx/i.test(r.url)) throw new Error('La sesión del SAES expiró. Inicia sesión y vuelve a ejecutar el capturador.');
-    return parse(await r.text());
+    return parse(r.texto);
   };
   var cellsOf = function (row) { return Array.prototype.map.call(row.cells, function (c) { return c.textContent.replace(/ /g, ' ').trim(); }); };
   // Parsers puros: el contrato local ejecuta este mismo bloque sin red.
@@ -63,7 +79,7 @@
   try {
     /* ---------- horarios de clase ---------- */
     var H = '/Academica/horarios.aspx', out = { fuente: host + H, capturado: now, carreras: {}, actual: [], proximo: [] }, n = 0;
-    var d0 = parse(await (await fetch(H, { credentials: 'same-origin' })).text());
+    var d0 = parse((await consultar(H, { credentials: 'same-origin' })).texto);
     if (!d0.querySelector('[name="' + F + 'cboCarrera"]')) throw new Error('No se encontró la página de horarios; verifica que tu sesión esté iniciada.');
     for (var per of ['optActual', 'optProximo']) {
       var key = per === 'optActual' ? 'actual' : 'proximo', ov = {}; ov[P + 'GroupPeriodoEscolar'] = per;
@@ -88,7 +104,7 @@
     /* ---------- mapa curricular (créditos, claves y tipo de cada materia) ---------- */
     var M = '/Academica/mapa_curricular.aspx', mapa = { fuente: host + M, capturado: now, cols: ['carrera', 'plan', 'nivel', 'clave', 'nombre', 'tipo', 'creditos', 'horas_teoria', 'horas_practica'], rows: [] };
     try {
-      var dm = parse(await (await fetch(M, { credentials: 'same-origin' })).text());
+      var dm = parse((await consultar(M, { credentials: 'same-origin' })).texto);
       for (var cm of opts(dm, F + 'cboCarrera')) {
         var q1 = {}; q1[F + 'cboCarrera'] = cm; dm = await post(M, dm, F + 'cboCarrera', q1);
         for (var pm of opts(dm, F + 'cboPlanEstud')) {
@@ -100,7 +116,7 @@
           }
         }
       }
-    } catch (e) { mapa.error = String(e.message || e); }
+    } catch (e) { throw e; }
     /* ---------- descarga ---------- */
     var link = function (name, obj) {
       var url = URL.createObjectURL(new Blob([JSON.stringify(obj)], { type: 'application/json' }));

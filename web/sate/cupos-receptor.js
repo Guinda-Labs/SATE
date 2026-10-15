@@ -36,7 +36,7 @@
   permitir.onclick=async()=>{if(!notificacion||Date.now()>=hasta)return;try{if(typeof Notification==='function')await Notification.requestPermission();permiso()}
     catch(e){console.warn('SATE Cupos: permiso de notificación fallido',e);aviso.textContent=tx('permiso_panel')}};
   function alertar(antes,d){if(Date.now()>=hasta)return;let ctx;
-    try{ctx=JSON.parse(localStorage.getItem(conf.prefijo+'cuposContexto'))}catch(e){}
+    try{ctx=JSON.parse((window.IPNT?.almacen||localStorage).getItem(conf.prefijo+'cuposContexto'))}catch(e){}
     if(!ctx||ctx.carrera!==d.carrera||ctx.plan&&ctx.plan!==d.plan||!Array.isArray(ctx.grupos))return;
     const cambios=C.cambios(antes,d,ctx.grupos);if(!cambios.length)return;
     sonar();
@@ -67,9 +67,9 @@
   async function cargarOferta(){try{const partes=await Promise.all(['nucleo','oferta'].map(async nombre=>{const r=await fetch('datos/'+u+'/'+nombre+'.json');if(!r.ok)throw new Error(nombre+': HTTP '+r.status);return r.json()}));catalogo=Object.assign({},...partes);pintar()}catch(e){console.warn('SATE Cupos: oferta publicada no disponible',{unidad:u,error:e.message});estado.textContent=tx('error_oferta')}}
   tabla.onclick=detalle;
   function guardar(d){if(!C.validar(d)||d.unidad!==u)return false;const nueva=C.reciente(datos,d);if(nueva===datos)return false;
-    datos=C.limpiar(nueva);if(window.SateCuposVista)CUPOS.recibir(datos);IPNT.set(clave,JSON.stringify(datos));canal?.postMessage({tipo:'consulta',unidad:u});pintar();return true}
-  function seleccion(){let ctx;try{ctx=JSON.parse(localStorage.getItem(conf.prefijo+'cuposContexto'))}catch(e){}
-    if(!ctx){let perfil;try{if(!window.SateCuposVista?.revision)perfil=JSON.parse(localStorage.getItem('saes.alumno'))}catch(e){}ctx={grupos:[],oferta:[],...(perfil?.unidad===u?{carrera:perfil.carrera,plan:perfil.plan}:{})}}
+    datos=C.limpiar(nueva);if(window.SateCuposVista)CUPOS.recibir(datos);IPNT.set(clave,JSON.stringify(datos));canal?.postMessage({tipo:'consulta',unidad:u,datos});pintar();return true}
+  function seleccion(){let ctx;try{ctx=JSON.parse((window.IPNT?.almacen||localStorage).getItem(conf.prefijo+'cuposContexto'))}catch(e){}
+    if(!ctx){let perfil;try{if(!window.SateCuposVista?.revision)perfil=JSON.parse((window.IPNT?.almacen||localStorage).getItem('saes.alumno'))}catch(e){}ctx={grupos:[],oferta:[],...(perfil?.unidad===u?{carrera:perfil.carrera,plan:perfil.plan}:{})}}
     contexto=ctx;pintar();if(!conectado||!window.opener)return;window.opener.postMessage({tipo:'ipnt.cupos.seleccion',v:1,...ctx},origen)}
   async function sincronizar(){if(window.SateCuposVista?.revision||!IPNT.cuenta||IPNT.proveedor!=='ms')return;
     try{const d=await IPNT.cupos(u);guardar(d);if(datos&&C.reciente(d,datos)===datos)await IPNT.cupos(u,datos);estado.textContent=tx('nube_guardada')}
@@ -89,7 +89,7 @@
   window.addEventListener('ipnt-sincronizado',nube);
   window.addEventListener('sate-cupos-seleccion',seleccion);
   window.addEventListener('ipnt-cuenta',nube);
-  if(canal)canal.onmessage=e=>{if(e.data?.unidad===u&&e.data.tipo==='contexto')seleccion()};
-  try{guardar(JSON.parse(localStorage.getItem(clave)))}catch(e){}
+  if(canal)canal.onmessage=e=>{if(e.data?.unidad!==u)return;if(e.data.tipo==='contexto'){if(e.data.contexto)IPNT.set(conf.prefijo+'cuposContexto',JSON.stringify(e.data.contexto));seleccion()}else if(e.data.tipo==='consulta'&&e.data.datos)guardar(e.data.datos)};
+  try{guardar(JSON.parse((window.IPNT?.almacen||localStorage).getItem(clave)))}catch(e){}
   seleccion();pintar();nube();if(!window.SATE)cargarOferta();
 })();

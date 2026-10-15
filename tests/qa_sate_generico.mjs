@@ -137,10 +137,10 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
   if(modo==='encb-curso-sin-horario'){Object.assign(p,structuredClone(encbHorario));p.horario_inscrito=[];}
   if(modo==='viejo'||modo==='periodos'||modo==='encb-viejo')delete p.materias;
   if(modo==='periodos'){p.no_cursadas=[['Z401',null,0,null]];p.reprobadas_periodo=p.reprobadas_periodo.map(r=>r.slice(0,3));p.desfasadas_saes=[];}
-  const almacen=new Map(modo==='vacio'||modo.startsWith('demo')?[]:[['saes.alumno',JSON.stringify(p)]]),nodos=new Map(),archivos=[],eventos={};let c;
+  const almacen=new Map(modo==='vacio'||modo.startsWith('demo')?[]:[['saes.alumno',JSON.stringify(p)]]),sesion=new Map(),nodos=new Map(),archivos=[],eventos={};let c;
   function nodo(id=''){return {id,hidden:false,textContent:'',innerHTML:'',style:{setProperty(k,v){this[k]=v}},dataset:{},children:[],
     clientWidth:ancho,classList:{toggle(){}},setAttribute(){},getAttribute(){return null},removeAttribute(){},addEventListener(){},replaceChildren(){this.children=[]},focus(){document.activeElement=this},remove(){},prepend(n){this.children.unshift(n)},appendChild(n){this.children.push(n)},
-    querySelector:s=>nodo(s),querySelectorAll:()=>[],closest:()=>null};}
+    querySelector:s=>nodo(s),querySelectorAll:()=>[],showModal(){this.open=true},close(){this.open=false},closest:()=>null};}
   const buscarId=(n,id)=>n.id===id?n:n.children.map(h=>buscarId(h,id)).find(Boolean);
   const document={readyState:'loading',documentElement:{getAttribute(){return null},setAttribute(){},style:{setProperty(){},removeProperty(){}}},addEventListener(k,f){(eventos['dom:'+k]??=[]).push(f)},getElementById(id){for(const n of nodos.values()){const encontrado=buscarId(n,id);if(encontrado)return encontrado}if(!nodos.has(id))nodos.set(id,nodo(id));return nodos.get(id)},
     querySelector:s=>document.getElementById(s),querySelectorAll:()=>[],createElement:tag=>Object.assign(nodo(),{tagName:tag}),createElementNS:(_,tag)=>Object.assign(nodo(),{tagName:tag}),body:nodo(),head:{appendChild(s){
@@ -148,7 +148,7 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
     }}};
   const location={hash:modo.startsWith('demo')?'#'+modo:'',search:'?sateUnidad='+unidad,pathname:'/sate/index.html'};
   c=vm.createContext({console:{...console,debug(){}},URL,URLSearchParams,document,location,SATE_CONFIG:structuredClone(config),setTimeout,clearTimeout,
-    localStorage:{getItem:k=>almacen.get(k)??null,setItem:(k,v)=>almacen.set(k,v)},navigator:{userAgent:'Node',connection:{saveData:true}},
+    localStorage:{...Object.fromEntries(almacen),getItem:k=>almacen.get(k)??null,setItem:(k,v)=>almacen.set(k,v)},sessionStorage:{getItem:k=>sesion.get(k)??null,setItem:(k,v)=>sesion.set(k,v),removeItem:k=>sesion.delete(k)},navigator:{userAgent:'Node',connection:{saveData:true}},
     addEventListener:(k,f)=>eventos[k]=f,history:{replaceState(a,b,url){location.hash=url.slice(url.indexOf('#'))}},
     fetch(){throw new Error('SATE genérico no descarga datos de planes')},
     SateUI:{usarTextos(){},usarAlmacen(){},cerrarModal(){},pestanas(o){const n=nodo();n.seleccionar=()=>{};return n},barraInferior(){return {marcar(){}}}}});
