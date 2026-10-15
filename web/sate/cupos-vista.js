@@ -28,7 +28,7 @@ window.SateCuposVista=(()=>{
   function pintar(){
     if(!raiz)return;
     if(opciones.length&&versionOpciones!==version()){opciones=[];$('#cupos-opciones').innerHTML=''}
-    const riesgo=selected().filter(c=>{const f=CUPOS.fila(c);return f&&f.disponibles<=3});
+    const riesgo=selected().filter(c=>{const f=CUPOS.fila(c);return f&&(f.disponibles===0||CUPOS.pocos(f.disponibles))});
     $('#cupos-riesgos').innerHTML=riesgo.length?riesgo.map(c=>{
       const alts=alternativas(c);
       return `<article class="box2"><h3>${esc(name(c))} · ${esc(c[3])} ${CUPOS.insignia(c)}</h3>`+

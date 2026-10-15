@@ -4,6 +4,8 @@
   const origenSaes=o=>/^https:\/\/(www\.)?saes\.[a-z0-9]+\.ipn\.mx$/.test(o);
   const origenSate=(o,url)=>!!url&&o===new URL(url).origin;
   const clave=f=>f.grupo+'|'+f.materia;
+  // «Pocos lugares»: menos de POCOS (decisión del dueño, 2026-10-14). Única fuente para SATE y el marcador.
+  const POCOS=10,CASI=3,pocos=n=>n>0&&n<POCOS;
   function parsear(doc){
     if(doc.querySelector('input[type="password"]'))throw new Error('sesion');
     const tabla=doc.querySelector('#ctl00_mainCopy_GrvOcupabilidad');
@@ -38,7 +40,7 @@
     if(!antes||antes.carrera!==despues.carrera||antes.plan!==despues.plan)return [];
     const prev=new Map(antes.filas.map(f=>[clave(f),f.disponibles])),propios=new Set(grupos.map(clave));
     return despues.filas.filter(f=>{const a=prev.get(clave(f)),n=f.disponibles;
-      return propios.has(clave(f))&&a!==undefined&&a!==n&&(a===0&&n>0||n===0||n<=3);
+      return propios.has(clave(f))&&a!==undefined&&a!==n&&(a===0&&n>0||n===0||a>=POCOS&&n<POCOS||n<=CASI);
     });
   }
   function tarjetas(datos,seleccion,oferta){return seleccion.map(s=>({...s,fila:datos.filas.find(f=>clave(f)===clave(s)),alternativas:datos.filas.filter(f=>f.materia===s.materia&&f.grupo!==s.grupo&&f.disponibles>0).map(f=>{
@@ -93,7 +95,7 @@
     if(sw?.getRegistration)Promise.resolve().then(()=>sw.getRegistration()).then(r=>r?sw.ready:null).then(r=>r?.showNotification?r.showNotification(titulo,opciones):directo()).catch(()=>{});
     else directo();
   }
-  raiz.IPNCupos={texto,origenSaes,origenSate,clave,parsear,validar,limpiar,antigua,reciente,fecha,tarjetas,consultar,cambios,notificar};
+  raiz.IPNCupos={POCOS,pocos,texto,origenSaes,origenSate,clave,parsear,validar,limpiar,antigua,reciente,fecha,tarjetas,consultar,cambios,notificar};
 })(typeof window==='undefined'?globalThis:window);
 
 /*__CUPOS_PANEL__*/

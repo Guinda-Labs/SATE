@@ -18,7 +18,7 @@ const c=vm.createContext({console,URL,URLSearchParams,Date,performance,DEMO:fals
   classes:()=>oferta,keyOf:key,byKey:k=>oferta.find(c=>key(c)===k),name:c=>c[8],profs:()=>'Docente ficticio',pattern:()=>['Lun 09:00–10:30'],
   overlaps:(a,b)=>a[6].some(x=>b[6].some(y=>x[0]===y[0]&&x[1]<y[2]&&y[1]<x[2])),ownAsClasses:()=>[],
   save:()=>guardados.push(JSON.stringify(w)),store:{set:(k,v)=>guardados.push(JSON.stringify(v))},renderCal(){c.SateCuposVista.pintar()},
-  CUPOS:{fila:cupos,insignia:()=>'lugares',omitirLlenos(){omitir=true},excluir:c=>omitir&&cupos(c).disponibles===0},
+  CUPOS:{pocos:n=>n>0&&n<10,fila:cupos,insignia:()=>'lugares',omitirLlenos(){omitir=true},excluir:c=>omitir&&cupos(c).disponibles===0},
   esc:String,hm:String,DAYS:['Lun','Mar','Mié','Jue','Vie'],slots:c=>c[6],START:420,BLOCK:90,SLOT:30,hue:()=>1,roomAt:()=>'',
   txH:k=>k,tr:()=>({want:[],done:[],curso:[],oblig:[]}),cur:()=>Object.fromEntries(oferta.map(c=>[c[8],[c[8],4]])),norm:String,tmin:()=>null,
   optCupo:()=>({}),optExceso:()=>({}),nivOpt:()=>null,breaksOk:()=>true,semanaOk:()=>true,semanaPena:()=>0,daysOf:cs=>[...new Set(cs.flatMap(c=>c[6].map(b=>b[0])))],isPersonal:()=>false});

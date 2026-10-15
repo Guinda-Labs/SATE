@@ -6,7 +6,7 @@ const CUPOS=(()=>{
   function contexto(){return DATA.opciones_plan?.[S.car]||{carrera:S.car,plan:null}}
   function compatible(){const c=contexto();return datos&&datos.carrera===c.carrera&&(!c.plan||datos.plan===c.plan)}
   function fila(c){return compatible()&&c[0]===S.car?datos.filas.find(f=>f.grupo===c[3]&&f.materia===c[8]):null}
-  function insignia(c){const f=fila(c),reducida=document.documentElement?.dataset?.vista==='cupos';return f||reducida?`<span class="cupos-insignia cupos-${!f?'sin-dato':f.disponibles===0?'lleno':f.disponibles<=3?'pocos':'lugar'}${C.antigua(datos)?' cupos-vieja':''}">${esc(tx(!f?'sin_dato':f.disponibles===0?'lleno':'lugares',{n:f?.disponibles}))}</span>`:''}
+  function insignia(c){const f=fila(c),reducida=document.documentElement?.dataset?.vista==='cupos';return f||reducida?`<span class="cupos-insignia cupos-${!f?'sin-dato':f.disponibles===0?'lleno':C.pocos(f.disponibles)?'pocos':'lugar'}${C.antigua(datos)?' cupos-vieja':''}">${esc(tx(!f?'sin_dato':f.disponibles===0?'lleno':'lugares',{n:f?.disponibles}))}</span>`:''}
   function excluir(c){return omitir&&fila(c)?.disponibles===0}
   function seleccion(){
     const simple=c=>({grupo:c[3],materia:c[8],horas:c[6],nombre:name(c),profesor:profs(c),horario:c[6].map(([d,a,b])=>DAYS[d]+' '+hm(a)+'–'+hm(b)).join(' · ')});
@@ -50,5 +50,5 @@ const CUPOS=(()=>{
   }
   leer();
   setInterval(()=>{if(!document.hidden&&$('#cupos-ayuda')){const antes=omitir;pintar();if(antes!==omitir&&S.gen){S.gen=generate();renderGen()}renderOffer();renderCal()}},60000);
-  return {insignia,excluir,pintar,montar,fila,recibir:aceptar,omitirLlenos(){omitir=true},get datos(){return datos}};
+  return {pocos:C.pocos,insignia,excluir,pintar,montar,fila,recibir:aceptar,omitirLlenos(){omitir=true},get datos(){return datos}};
 })();
