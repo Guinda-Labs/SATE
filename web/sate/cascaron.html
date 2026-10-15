@@ -570,7 +570,9 @@ details.box2>summary{cursor:pointer;font-weight:600;font-size:.92rem}
 .gapcell.on{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
 .pill.gap{border-color:var(--accent)}
 .blk{position:absolute;border-radius:4px;padding:3px 5px;font-size:.7rem;line-height:1.2;overflow:hidden;background:hsl(var(--h) var(--blk-s) var(--blk-l));color:var(--blk-fg);border-left:3px solid hsl(var(--h) 55% var(--blk-edge));cursor:pointer}
-.blk b{display:block;font-weight:600;font-size:.72rem}
+.blk:not(.ghost){display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:2px 4px}
+.blk>*{flex-shrink:0;max-width:100%}
+.blk b{flex:0 0 100%;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;font-weight:600;font-size:.72rem;line-height:1.2}
 .blk .t{font-family:var(--f-mono);font-size:.64rem;opacity:.85}
 .blk.own{background:repeating-linear-gradient(135deg,var(--own) 0 6px,var(--surface) 6px 12px);color:var(--fg);border-left-color:var(--muted)}
 .blk.clash{outline:2px solid var(--bad);outline-offset:-2px}
