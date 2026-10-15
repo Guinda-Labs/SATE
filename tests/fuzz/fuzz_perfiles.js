@@ -224,6 +224,16 @@
       finally{S.hideDone=anterior}
     }, ctx);
     // generador: materias elegidas = sugeridas + algunas al azar (incluye a veces acreditadas o en curso a propósito)
+    revisar('reemplazos de cupos elegibles y sin choques con el resto', () => {
+      if(!window.SateCuposVista||typeof CUPOS==='undefined')return true;
+      for(const anterior of selected())for(const a of SateCuposVista.otras(anterior)){
+        const c=a.c,resto=selected().filter(x=>keyOf(x)!==keyOf(anterior));
+        if(c[0]!==S.car||!cur()[c[8]]||!available(c[8]))return 'reemplazo fuera del plan o no cursable: '+c[8];
+        if(!(CUPOS.fila(c)?.disponibles>0))return 'reemplazo sin lugar: '+keyOf(c);
+        if(!c[6].length||[...resto,...ownAsClasses()].some(x=>!slots(x).length||overlaps(x,c)))return 'reemplazo sin horario verificable o con choque: '+keyOf(c);
+      }
+      return true;
+    }, ctx);
     const t = tr(); t.want = [...new Set([...suggestions().list, ...shuffle(Object.keys(cur())).slice(0, ri(0, 4))])].filter(k => !isElec(k));
     for (const n of ['', 'auto', String(ri(2, 5))]) {
       revisar('generador ' + (n || 'todas'), () => {

@@ -584,11 +584,39 @@ details.box2>summary{cursor:pointer;font-weight:600;font-size:.92rem}
 .bar{position:relative;height:10px;background:var(--sunken);border-radius:999px;border:1px solid var(--line)}
 .bar .fill{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:999px}
 .bar .tick{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--fg);opacity:.5}
-.ticks{position:relative;height:1rem;font-family:var(--f-mono);font-size:.66rem;color:var(--muted)}
-.ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}.ticks.dos{height:2rem}.ticks span.f2{top:1rem}
+.ticks{display:flex;flex-wrap:wrap;gap:4px 16px;padding-block:4px;font-family:var(--f-mono);font-size:.72rem;color:var(--ipn-tenue)}
+.ticks span{white-space:nowrap}
 .sel{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
-.sel>div{display:grid;grid-template-columns:.7rem 4.6rem minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:6px 10px;border-top:1px solid var(--line);font-size:.86rem}
-.sel>div:first-child{border-top:0}
+.sel-item{border-top:1px solid var(--ipn-linea);font-size:.86rem;min-width:0}
+.sel-item:first-child{border-top:0}
+.sel-row{display:grid;grid-template-columns:.7rem 4.6rem minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 10px}
+.sel-materia{min-width:0}.sel-nombre{overflow-wrap:anywhere}.sel-prof{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ipn-tenue)}
+.sel-meta{display:flex;align-items:center;gap:8px}.sel-meta .cr{white-space:nowrap}
+.sel-meta button,.cupos-sugerencias button{min-width:44px;min-height:44px}
+.sel-meta .cupos-insignia{white-space:nowrap;margin:0}
+.cupos-riesgo{border-inline-start:3px solid var(--ipn-acento)}
+.cupos-sugerencias{padding:0 12px 12px;min-width:0;background:var(--ipn-superficie)}
+.cupos-sugerencias summary{cursor:pointer;min-height:44px;align-content:center;color:var(--ipn-acento)}
+.cupos-sugerencias h4{margin:12px 0 4px}.cupos-sugerencias p{margin:6px 0;overflow-wrap:anywhere}
+.cupos-alternativa{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--ipn-linea);padding-block:12px}
+.cupos-alternativa>div{min-width:0}.cupos-alternativa button{flex-shrink:0}
+.cupos-recomendada{font-size:.8rem;color:var(--ipn-acento);font-weight:600}
+.cupos-carga{padding:8px 12px;color:var(--ipn-acento);font-weight:600}
+#cupos-alerta{margin:0}#cupos-alerta button{min-height:44px;text-align:start;white-space:normal}
+#cupos-resultado p:empty{display:none}#cupos-resultado button{min-height:44px}
+html[data-vista=cupos] #ownform{display:none}
+@media(max-width:639px){
+  .sel{gap:10px;border:0;background:transparent}
+  .sel-item{border:1px solid var(--ipn-linea);border-radius:var(--r);background:var(--ipn-superficie)}
+  .sel-item:first-child{border-top:1px solid var(--ipn-linea)}
+  .sel-item.cupos-riesgo{border-inline-start:3px solid var(--ipn-acento)}
+  .sel-row{grid-template-columns:.7rem auto minmax(0,1fr);gap:6px 8px;padding:10px}
+  .sel-materia{display:contents}
+  .sel-nombre{grid-column:3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .sel-prof{grid-column:2/-1;grid-row:2}
+  .sel-meta{grid-column:1/-1;grid-row:3;gap:6px}.sel-meta .cr{margin-inline-end:auto}
+  .cupos-alternativa{align-items:stretch;flex-direction:column;gap:8px}
+}
 .cr{font-family:var(--f-mono);font-size:.78rem;font-variant-numeric:tabular-nums}
 .sw{width:.7rem;height:.7rem;border-radius:2px;background:hsl(var(--h) 55% var(--blk-edge))}
 .sw.own{background:var(--muted)}
@@ -733,7 +761,7 @@ html[data-vista=cupos] body{padding-bottom:24px}
 html[data-vista=cupos] .wrap{max-width:1100px}
 html[data-vista=cupos] header.top{padding-block:14px 10px}
 html[data-vista=cupos] .brand h1{font-size:1.5rem}
-#cupos-vista{display:grid;gap:16px;padding-block:20px;min-width:0}
+#cupos-vista{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding-block:20px;min-width:0}
 #cupos-vista h3{font-size:1rem;margin:0 0 8px}
 #cupos-vista p{margin:6px 0;overflow-wrap:anywhere}
 #cupos-vista .box2{padding:16px;background:var(--surface)}
@@ -753,7 +781,7 @@ html[data-vista=cupos] .brand h1{font-size:1.5rem}
 .cupos-pocos{color:var(--warn);background:var(--warn-soft)}
 .cupos-lugar{color:var(--ok);background:var(--ok-soft)}
 .cupos-sin-dato{color:var(--muted)}
-#cupos-opciones{display:grid;gap:16px}
+#cupos-opciones{display:grid;gap:16px}#cupos-opciones:empty{display:none}
 .cupos-mini{min-width:600px}
 .cupos-mini .blk b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cupos-mini-agenda{display:none}
@@ -949,7 +977,10 @@ html[data-vista=cupos] .brand h1{font-size:1.5rem}
         <div class="summary">
           <div class="stats" id="stats"></div>
           <div class="load" id="load"></div>
+          <p id="cupos-alerta" hidden><button type="button" class="link" data-cupos-riesgos></button></p>
+          <div id="cupos-resultado"><p id="cupos-cambio" role="status" aria-live="polite"></p><button type="button" class="btn" id="cupos-deshacer" data-cupos-deshacer hidden></button></div>
           <div class="sel" id="sel"></div>
+          <div id="cupos-opciones"></div>
           <div class="aviso-deshacer" id="own-deshacer" role="status" aria-live="polite" hidden><span id="own-deshacer-txt"></span> <button type="button" class="link" id="own-deshacer-b" data-htexto="semana_deshacer"></button></div>
           <details class="box2" id="ownform">
             <summary>Agregar actividad extracurricular</summary>

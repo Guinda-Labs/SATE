@@ -749,6 +749,17 @@ pegado_manual = "No se pudo leer el portapapeles. Pega los datos en el recuadro.
 tactil = "Instalar en teléfono"
 
 [sate.cupos]
+resumen_titulo = "Unidades de aprendizaje elegidas"
+resumen_riesgo = "{n} de tus grupos están llenos o con pocos lugares · Ver sugerencias"
+sugerencias = "Ver sugerencias de reemplazo"
+misma_materia = "Otro grupo de la misma unidad de aprendizaje"
+mismo_horario = "Otras unidades de aprendizaje disponibles"
+mismo_horario_ayuda = "Primero las recomendadas. Los grupos caben en el hueco o no chocan con el resto de tu horario."
+recomendada = "Recomendada"
+todas_disponibles = "Ver todas las disponibles · {n}"
+cambiar = "Cambiar"
+ver_horario = "Ver mi horario"
+cambio_carga = "La carga queda fuera de los límites conocidos: {n} créditos; mínima {min}, máxima autorizada {max}."
 tu_horario_cupos = "Tu horario con cupos"
 buscar_sin_llenos = "Buscar horarios sin grupos llenos"
 oferta_completa = "Toda la oferta con cupos"

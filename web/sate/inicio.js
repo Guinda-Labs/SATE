@@ -89,7 +89,7 @@
     if (cfg.generica && id !== 'calendario') return modulos[id];
     if (id === 'trayectoria') await script('desempeno.js');
     if (id === 'calendario') await script('calendario.js');
-    if (id === 'horarios' && cfg.cupos) await script('cupos.js');
+    if (id === 'horarios' && cfg.cupos) { await script('cupos.js'); await script('cupos-vista.js'); }
     if (id === 'mapa' || id === 'horarios') await script(id + '.js');
     if (id === 'tramites' && !cargas.has('tramites.json')) {
       cargas.set('tramites.json',json('tramites').then(d=>Object.assign(window.SATE_DATA,d)).catch(e=>{cargas.delete('tramites.json');throw e}));

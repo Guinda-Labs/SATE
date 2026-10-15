@@ -704,17 +704,17 @@ function renderCal(){
     const tag=t<L.min?txH('carga_menor'):t>ci.tope+0.01?(ci.aut!=null||ci.regla?txH('carga_excede'):ci.adeudo?txH('carga_excede_media'):txH('carga_mayor')):t<=L.media?txH('carga_min_media'):txH('carga_media_max');
     const bad=t<L.min||t>ci.tope+0.01;
     $('#load').innerHTML=`<span class="lbl${bad?' bad':''}">${esc(txH('carga_total',{n:fmtCr(t),estado:tag}))}</span><div class="bar">${ci.ret?`<div class="fill ret" style="width:${pct(ci.ret)}%"></div>`:''}<div class="fill" style="left:${pct(ci.ret)}%;width:${Math.max(0,pct(t)-pct(ci.ret))}%"></div>${['min','media','max'].map(k=>`<div class="tick" style="left:${pct(L[k])}%"></div>`).join('')}${ci.tope!==L.max&&ci.tope!==L.media?`<div class="tick tope" style="left:${pct(ci.tope)}%"></div>`:''}</div>
-      ${(()=>{   // etiquetas de la barra de carga: si dos quedan cerca, la segunda baja a otro renglón
+      ${(()=>{   // La leyenda fluye sin depender de la distancia entre los límites en la barra.
         const et=[['min',txH('minima')],['media',txH('media')],['max',txH('maxima')]].map(([k,l])=>({p:pct(L[k]),t:`${l} ${L[k]}`,c:''}));
         if(ci.tope!==L.max&&ci.tope!==L.media)et.push({p:pct(ci.tope),t:txH('carga_autorizada',{n:fmtCr(ci.tope)}),c:'bad'});
-        et.sort((x,y)=>x.p-y.p);let fila=0;et.forEach((e,i)=>{e.f=i&&e.p-et[i-1].p<14&&et[i-1].f===0?1:0});fila=Math.max(0,...et.map(e=>e.f));
-        return `<div class="ticks${fila?' dos':''}">${et.map(e=>`<span class="${e.c}${e.f?' f2':''}" style="left:${e.p}%">${e.t}</span>`).join('')}</div>`})()}`+
+        et.sort((x,y)=>x.p-y.p);
+        return `<div class="ticks">${et.map(e=>`<span class="${e.c}">${esc(e.t)}</span>`).join('')}</div>`})()}`+
       `<p class="load-note"><span>${esc(txH('carga_resumen',{n:fmtCr(t),max:fmtCr(ci.tope)}))}${ci.faltaMin?esc(txH('carga_falta',{f:fmtCr(ci.faltaMin)})):''}</span></p>`;
     if(ci.ret)$('#load .load-note').appendChild(SateUI.ayuda('sate.horarios.carga_ayuda',{ret:fmtCr(ci.ret),nuevos:fmtCr(ci.nuevos),libre:fmtCr(ci.libre),tope:fmtCr(ci.tope)}));
   }else $('#load').innerHTML='';
   $('#sel').hidden=!both.length;
-  $('#sel').innerHTML=sel.map(c=>`<div><span class="sw" style="--h:${hue(c)}"></span><span class="grp">${c[3]}</span><span>${esc(pretty(name(c)))}<br><small>${esc(profs(c))}</small>${typeof CUPOS!=='undefined'?CUPOS.insignia(c):''}</span><span class="cr">${esc(textoCreditos(c[8],c[7]))} ${ayudaCreditos(c[8])}</span><button class="x" data-toggle="${keyOf(c)}" aria-label="${esc(txH('quitar',{nombre:name(c)}))}">×</button></div>`).join('')+
-    own.map(o=>{const r=plan().own[o.i];return `<div><span class="sw own"></span><span class="grp">${esc(txH('extra'))}</span><span>${esc(o.n)}<br><small>${r.d.map(d=>DAYS[d]).join(' ')} ${hm(r.a)}–${hm(r.b)}</small></span><span></span><button class="x" data-unown="${o.i}" aria-label="${esc(txH('quitar',{nombre:o.n}))}">×</button></div>`}).join('');
+  $('#sel').innerHTML=sel.map(c=>`<div class="sel-item${window.SateCuposVista?.riesgo(c)?' cupos-riesgo':''}"><div class="sel-row"><span class="sw" style="--h:${hue(c)}"></span><span class="grp">${esc(c[3])}</span><span class="sel-materia"><span class="sel-nombre">${esc(pretty(name(c)))}</span><small class="sel-prof" title="${esc(profs(c))}">${esc(profs(c))}</small></span><span class="sel-meta"><span class="cr">${esc(textoCreditos(c[8],c[7]))}</span>${typeof CUPOS!=='undefined'?CUPOS.insignia(c):''}${ayudaCreditos(c[8])}<button class="x" data-toggle="${esc(keyOf(c))}" aria-label="${esc(txH('quitar',{nombre:name(c)}))}">×</button></span></div>${window.SateCuposVista?.avisoCarga(c)||''}${window.SateCuposVista?.sugerencias(c)||''}</div>`).join('')+
+    own.map(o=>{const r=plan().own[o.i];return `<div class="sel-item"><div class="sel-row"><span class="sw own"></span><span class="grp">${esc(txH('extra'))}</span><span class="sel-materia"><span class="sel-nombre">${esc(o.n)}</span><small class="sel-prof">${r.d.map(d=>DAYS[d]).join(' ')} ${hm(r.a)}–${hm(r.b)}</small></span><span class="sel-meta"><button class="x" data-unown="${o.i}" aria-label="${esc(txH('quitar',{nombre:o.n}))}">×</button></span></div></div>`}).join('');
   montarAyudasCreditos();
   window.SateCuposVista?.pintar();
 }
