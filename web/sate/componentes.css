@@ -30,7 +30,7 @@
 .tramite-campo{display:flex;flex-direction:column;gap:var(--ipn-esp-1);margin-block:var(--ipn-esp-2)}
 .tramite-campo input,.tramite-campo textarea,.tramite-campo select{box-sizing:border-box;width:100%;min-width:0;max-width:100%;font:inherit;padding:var(--ipn-esp-2);color:var(--ipn-texto);background:var(--ipn-superficie);border:1px solid var(--ipn-borde-control);border-radius:var(--ipn-radio)}
 .tramite-campo [aria-invalid=true]{border-color:var(--ipn-error)}
-.tramite-pasos,.tramite-chips,.tramite-acciones{display:flex;flex-wrap:wrap;gap:var(--ipn-esp-2)}
+.tramite-pasos,.tramite-chips,.tramite-acciones,.tramite-acciones-extra{display:flex;flex-wrap:wrap;gap:var(--ipn-esp-2)}
 .tramite-compuesto,.tramite-chips>*{min-width:0;max-width:100%}
 #sate-tramites button{box-sizing:border-box;max-width:100%;white-space:normal;overflow-wrap:anywhere}
 .tramite-acciones{position:sticky;bottom:calc(5rem + env(safe-area-inset-bottom,0px));z-index:2;background:var(--ipn-superficie);padding-block:var(--ipn-esp-2)}

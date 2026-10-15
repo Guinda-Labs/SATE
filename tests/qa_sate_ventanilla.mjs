@@ -123,9 +123,9 @@ box.todos().find(n=>n.textContent==='Continuar'&&n.tagName==='button').click();
 assert.equal(a.modelo.paso,2);assert.ok(box.querySelector('dl'));
 box.todos().find(n=>n.textContent==='Cambiar'&&n.tagName==='button').click();assert.equal(a.modelo.paso,0);
 assert.equal(t.modelo(def).datos.secreto,'','Los sensibles no reaparecen después de recargar');
-await new Promise(r=>setTimeout(r,350));assert.ok(box.querySelector('iframe').src.startsWith('blob:'));
-box.todos().find(n=>n.textContent==='Ver formato').click();assert.ok(abiertos.at(-1).startsWith('blob:'));
-a.destruir();assert.equal(a.modelo.datos.secreto,'');assert.ok(revocados.length);
+await new Promise(r=>setTimeout(r,350));assert.equal(box.querySelector('iframe'),null,'Sin vista previa ni «Ver formato» antes del último paso');
+assert.ok(!box.todos().some(n=>n.textContent==='Ver formato'));
+a.destruir();assert.equal(a.modelo.datos.secreto,'');
 almacen.delete('hu.tramite.ejemplo-prueba');
 const defListo={id:'listo-prueba',titulo:'Listo',pasos:[{titulo:'Pregunta',campos:[{id:'dato',texto:'Dato',requerido:true}]}],generar:async()=>new Uint8Array([37,80,68,70])};
 const listo=t.asistente(box,defListo);box.querySelector('input').value='Ficticio';box.querySelector('input').oninput();box.todos().find(n=>n.textContent==='Continuar').click();await cancelar(()=>listo.descargar());assert.equal(JSON.parse(almacen.get('hu.tramite.listo-prueba')).listo,false);await aceptar(()=>listo.descargar());
@@ -134,8 +134,8 @@ let generadoDesdeLista=0;t.registrar({...defListo,id:'electivas',generar:async()
 almacen.set('hu.tramite.electivas',JSON.stringify({listo:true,paso:1,total:2,datos:{dato:'Ficticio'}}));t.mostrarLista(box);
 await cancelar(()=>box.todos().find(n=>n.tagName==='button'&&n.textContent==='Descargar').onclick());assert.equal(generadoDesdeLista,0);await aceptar(()=>box.todos().find(n=>n.tagName==='button'&&n.textContent==='Descargar').onclick());assert.equal(generadoDesdeLista,1,'Descargar en la lista genera el PDF directamente');
 const invalido=t.asistente(box,{...defListo,id:'preview-invalida',datos:{dato:'Ficticio'}});
-await new Promise(r=>setTimeout(r,350));assert.ok(box.querySelector('iframe').src);
-box.querySelector('input').value='';box.querySelector('input').oninput();await new Promise(r=>setTimeout(r,350));assert.equal(box.querySelector('iframe').src,undefined);assert.equal(box.querySelector('[data-ver-formato]').disabled,true);invalido.destruir();
+await new Promise(r=>setTimeout(r,350));assert.equal(box.querySelector('iframe'),null,'Sin vista previa en un paso de captura');
+invalido.destruir();
 const errorDef={id:'error-prueba',titulo:'Error',pasos:[{titulo:'Pregunta',campos:[{id:'dato',texto:'Dato',requerido:true}]}]};
 const b=t.asistente(box,errorDef);box.todos().find(n=>n.textContent==='Continuar').click();assert.equal(b.modelo.paso,0);assert.equal(foco,box.querySelector('input'));b.destruir();
 const css=readFileSync('web/sate/componentes.css','utf8');assert.match(css,/@media\(min-width:1025px\)/);assert.match(css,/grid-template-columns:minmax\(0,1fr\)/);
@@ -283,7 +283,7 @@ console.log('Dictamen V2: sugerencia, catálogo, periodos, límite 8, privacidad
   // Sin tipo: no se puede ver ni generar; el motivo se explica y nunca se arma una hoja vacía.
   const sinTipo={...dd3,id:'dictamen-sin-tipo',datos:{...dd3.datos,tipo:''}};
   const a1=t.asistente(box,sinTipo);
-  assert.equal(box.querySelector('[data-ver-formato]').disabled,true);
+  assert.equal(!box.querySelector('[data-ver-formato]')||box.querySelector('[data-ver-formato]').disabled,true);
   assert.match(box.querySelector('[data-pdf-falta]').textContent,/elegir el tipo de dictamen/);
   assert.match(dd3.faltante({...dd3.datos,tipo:''}),/elegir el tipo/);
   assert.equal(dd3.faltante({...dd3.datos,tipo:'interno'}),'','Con tipo, datos, materia y periodo ya se puede ver el formato');
@@ -293,8 +293,7 @@ console.log('Dictamen V2: sugerencia, catálogo, periodos, límite 8, privacidad
   await assert.rejects(()=>dd3.generar({...dd3.datos,tipo:''}));
   await assert.rejects(()=>dd3.previsualizar({...dd3.datos,tipo:''}));
   a1.modelo.datos.tipo='interno';await new Promise(r=>setTimeout(r,450));
-  assert.equal(box.querySelector('[data-ver-formato]').disabled,false,'Con el tipo elegido se habilita');
-  assert.equal(box.querySelector('[data-pdf-falta]').textContent,'');
+  assert.equal(box.querySelector('[data-ver-formato]'),null,'«Ver formato» solo aparece en el último paso');
   a1.destruir();
 
   // Motivo de la petición: lo detectado en el kárdex o un motivo propio.

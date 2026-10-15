@@ -137,12 +137,13 @@
       else if(def.alTerminar)acciones.appendChild(boton(tx('confirmar'),()=>{if(!m.campos.some(c=>m.validar(c))){m.listo=true;m.guardar();def.alTerminar(m.datos)}}));
       pantalla.appendChild(acciones);
       const aviso=el('p','');aviso.setAttribute('data-pdf-estado','');aviso.setAttribute('role','status');pantalla.appendChild(aviso);
-      if(def.generar){
+      // La vista previa y «Ver formato» solo en el último paso: antes se podía sacar un PDF casi vacío.
+      if(def.generar&&m.paso>=def.pasos.length){
         const lateral=el('aside',null,'tramite-preview'),iframe=el('iframe');iframe.title=tx('vista_previa');if(url)iframe.src=url;lateral.appendChild(iframe);layout.appendChild(lateral);
         const ver=boton(tx('ver_formato'),()=>{if(url)window.open(url,'_blank','noopener')});ver.className+=' tramite-ver';ver.setAttribute('data-ver-formato','');ver.disabled=!url;pantalla.appendChild(ver);
-        if(def.faltante){const falta=el('p','',  'tramite-falta');falta.setAttribute('data-pdf-falta','');falta.setAttribute('role','status');pantalla.appendChild(falta)}
         programar();
       }
+      if(def.generar&&def.faltante){const falta=el('p','',  'tramite-falta');falta.setAttribute('data-pdf-falta','');falta.setAttribute('role','status');pantalla.appendChild(falta)}
       box.appendChild(layout);if(def.generar)estadoFalta();
       if(def.volver){const pie=el('div',null,'tramite-pie');pie.appendChild(regreso('tramite-volver-pie'));box.appendChild(pie)}
     }
@@ -226,6 +227,17 @@
           finally{accion.disabled=false}
         });
         const aviso=el('p','');aviso.setAttribute('role','status');tarjeta.appendChild(accion);tarjeta.appendChild(aviso);
+        // Un trámite terminado se puede revisar (vuelve al asistente) o reiniciar; antes solo se podía descargar.
+        if(e.id==='listo'){
+          const fila=el('div',null,'tramite-acciones-extra');
+          fila.appendChild(boton(tx('corregir'),()=>SATE.ir('tramites/'+id)));
+          fila.appendChild(boton(tx('reiniciar'),()=>{
+            if(!confirm(tx('reiniciar_confirmar')))return;
+            const k='hu.tramite.'+id;try{IPNT.borrar?.(k);(IPNT.almacen||localStorage).removeItem(k)}catch(err){}
+            completados.delete(id);mostrarLista(box);
+          }));
+          tarjeta.appendChild(fila);
+        }
       }
       lista.appendChild(tarjeta);
     }box.appendChild(lista);
