@@ -16,8 +16,8 @@ Herramientas web estáticas de libre acceso para el alumnado del IPN (sin servid
 - **Electivas** (`web/sate/electivas.js`): DIE-03 por modalidad y formulario (solo UPIITA).
 - **Lector** (`tools/lector_saes.js`): marcador que lee el SAES del alumno (solo lectura) en cualquier unidad.
 - **Capturador** (`tools/captura_saes.js`): oferta y mapa curricular del SAES de cualquier unidad.
-- **Cuenta** (`tools/cuenta.py`): perfil `ipnt` 1 (docs/FORMATO-PERFIL.md) sincronizado en OneDrive o Google Drive
-  del propio alumno; respaldo en archivo; bienvenida por unidad.
+- **Cuenta** (`tools/cuenta.py`): perfil `ipnt` 1 (docs/FORMATO-PERFIL.md) sincronizado en el OneDrive
+  del propio alumno (Google solo para migrar datos antiguos, GOOG1); respaldo en archivo; bienvenida por unidad.
 
 Sitio en vivo: https://silver-vs.github.io/upiita/ (se publica desde el repositorio `Silver-VS/Silver-VS.github.io`).
 
@@ -103,8 +103,8 @@ flechas en mapas por áreas). Pendientes, en orden sugerido:
 3. **Propuestas de `docs/ANALISIS-ACADEMICO.md`:** probabilidad de desfase, comparar escenarios de simulación,
    carga recomendada por periodo, alerta de baja por tiempo.
 4. **Revisión de categorías** de `docs/CATEGORIAS-ESCOM.md` con academias.
-5. Cuentas: avisos controlados por `data/cuenta.json` (`institucionalPendiente`, `googlePrueba`); cambiar a
-   `false` cuando TI del IPN autorice la app o Google apruebe la marca.
+5. Cuentas: avisos controlados por `data/cuenta.json` (`institucionalPendiente`); cambiar a
+   `false` cuando TI del IPN autorice la app. Google está retirado: `googleSoloMigracion` (docs/CUENTA-GOOGLE.md).
 
 Al terminar un trabajo: commits pequeños y descriptivos en tu rama, `git push`, y un resumen para el dueño con
 qué cambió, cómo se probó y qué falta. No modifiques `/upiita` del repositorio del sitio.

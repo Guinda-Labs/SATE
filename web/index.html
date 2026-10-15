@@ -2,6 +2,7 @@
 <html lang="es">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; script-src-attr 'none'; base-uri 'self'; form-action 'self'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://accounts.google.com; connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com https://*.files.1drv.com https://*.sharepoint.com https://*.storage.live.com https://www.googleapis.com https://accounts.google.com; frame-src 'self' https://login.microsoftonline.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+<!-- CSP: accounts.google.com y www.googleapis.com se conservan SOLO mientras exista la migración de datos de Google a Microsoft (GOOG1, data/cuenta.json googleSoloMigracion); al retirarla, quitarlos. -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(window.top!==window.self){let propio=false;try{propio=window.top.location.origin===location.origin}catch(e){}if(!propio){document.documentElement.hidden=true;document.documentElement.style.setProperty('display','none','important')}}</script>
 
@@ -56,11 +57,8 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:v
   <p style="margin-top:14px;font-size:.9rem"><a href="revision.html">Guía de revisión</a>: instructivo, perfil de demostración y casos de prueba.</p>
 
   <h2>Tus datos</h2>
-  <p>GuindaLabs no tiene servidor ni base de datos: todo se procesa en tu navegador. Si quieres usar tus datos en varios dispositivos, puedes iniciar sesión con Microsoft o con Google. Tu información se guarda en tu propio OneDrive o Google Drive, en un espacio al que solo tiene acceso la aplicación.</p>
-  <ul>
-    <li>Con Microsoft: acceso a la carpeta de la aplicación de tu OneDrive.</li>
-    <li>Con Google: acceso al espacio privado de la aplicación en tu Google Drive (no ve tus demás archivos).</li>
-  </ul>
+  <p>GuindaLabs no tiene servidor ni base de datos: todo se procesa en tu navegador. Si quieres usar tus datos en varios dispositivos, puedes iniciar sesión con Microsoft. Tu información se guarda en tu propio OneDrive, en la carpeta de la aplicación, a la que solo tiene acceso la aplicación.</p>
+  <p>Si antes guardaste tus datos con Google, desde «Iniciar sesión» puedes pasarlos a Microsoft; Google ya no se usa para iniciar sesión.</p>
   <p>Consulta el <a href="privacidad.html">aviso de privacidad</a> y las <a href="condiciones.html">condiciones de uso</a>.</p>
 
   <footer><span>Herramienta independiente; la inscripción oficial se hace en el SAES.</span><a href="privacidad.html">Aviso de privacidad</a><a href="condiciones.html">Condiciones de uso</a><a href="https://github.com/Silver-VS/IPN-tools">Código fuente</a><!--__APOYO__--></footer>

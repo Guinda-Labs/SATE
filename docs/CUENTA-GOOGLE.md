@@ -1,3 +1,19 @@
+# RETIRADO (GOOG1, 2026-10-15): Google solo sirve para migrar
+
+Decisión del dueño: el inicio de sesión con Google está retirado («deprecado»). La cuenta de SATE es solo Microsoft
+(Outlook/Hotmail o institucional). Lo que queda de Google:
+
+- **Solo migración:** `data/cuenta.json` → `googleSoloMigracion: true` (y `googleClientId`). Quien guardó su perfil
+  en Google Drive lo **lee** una vez (permiso `drive.appdata`, solo peticiones GET; no existe código de escritura) y lo
+  pasa a su OneDrive en tres pasos (traer, guardar en el navegador, continuar con Microsoft). No se borra nada del Drive;
+  el alumno puede eliminar el archivo en Drive › Configuración › Administrar aplicaciones › «Eliminar datos ocultos de la app».
+- Una sesión de Google recordada (`ipnt.prov = 'google'`) ya no sincroniza: el diálogo de cuenta muestra el aviso de migración.
+- CSP: `accounts.google.com` y `www.googleapis.com` se conservan solo por esta migración. Al retirarla, quitar
+  `googleSoloMigracion`, `googleClientId`, `GO` en `tools/cuenta.py` y esos orígenes de las CSP.
+- Ya no hay usuarios de prueba ni aviso de «fase de prueba» (`googlePrueba` y el correo de contacto se retiraron).
+
+Lo siguiente es el registro histórico de la aplicación en Google Cloud (sigue siendo necesario mientras exista la migración).
+
 # Registro de la aplicación en Google Cloud
 
 «Continuar con Google» guarda el perfil (`perfil.ipnt.json`) en el **espacio privado de la aplicación** del

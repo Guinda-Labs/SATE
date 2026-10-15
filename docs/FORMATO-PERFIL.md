@@ -111,8 +111,8 @@ su `t` es mayor que la del valor. Así, dos dispositivos que editan claves disti
 
 ## Almacenamiento en la nube del alumno
 
-Dos proveedores con la misma interfaz (`tools/cuenta.py`): Microsoft (OneDrive) y Google (Google Drive,
-`appDataFolder`, ver `docs/CUENTA-GOOGLE.md`). El archivo y el formato son los mismos en ambos.
+Un solo proveedor de sesión (`tools/cuenta.py`): Microsoft (OneDrive). Google Drive (`appDataFolder`) solo se lee una vez
+para migrar perfiles antiguos (ver `docs/CUENTA-GOOGLE.md`); el archivo y el formato son los mismos.
 
 ### Microsoft
 

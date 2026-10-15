@@ -21,8 +21,7 @@
       "url": "horarios-upibi.html"
     }
   ],
-  "googlePrueba": true,
-  "contacto": "vacevess1900@alumno.ipn.mx",
+  "googleSoloMigracion": true,
   "institucionalPendiente": true,
   "donativos": "https://github.com/sponsors/Silver-VS"
 }

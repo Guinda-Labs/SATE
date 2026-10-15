@@ -2,7 +2,7 @@
 # Textos de SATE (Sistema de Apoyo a la Trayectoria Escolar) en español de México, tuteo.
 # Reglas: claves a-z0-9_ con puntos; variables {nombre}; plurales {n, plural, one {# x} other {# xs}}.
 # Al cambiar un texto: sube `version` y valida con `python tools/contenido.py`.
-version = "2026.10.23"
+version = "2026.10.24"
 
 [sate.creditos]
 rotulo = "créditos"
@@ -1191,3 +1191,26 @@ copiar = "Copiar resultados (JSON)"
 copiado = "Resultados copiados"
 error_copia = "No se pudo copiar. Consulta SateMedicion.resultados() en la consola."
 resumen = "FCP: {fcp} ms · Render: {render} ms · Generación: {generacion} ms · {nodos} nodos · {tareas} tareas largas"
+
+# Cuenta: migración de datos guardados con Google hacia Microsoft (Google ya no se ofrece para iniciar sesión).
+[cuenta.migracion]
+enlace = "¿Guardaste tus datos con Google? Pásalos a Microsoft"
+titulo = "Pasa tus datos de Google a Microsoft"
+aviso_sesion = "Tu navegador recuerda una sesión de Google. Ya no sincronizamos con Google: pasa tus datos a Microsoft para seguir guardándolos en tu nube."
+paso1_titulo = "Trae tus datos de Google"
+paso1_detalle = "Iniciarás sesión con Google solo para leer tu perfil guardado. No escribimos nada en tu Drive."
+paso1_boton = "Traer mis datos de Google"
+paso2_titulo = "Se guardan en este navegador"
+paso2_detalle = "Tus datos quedan en este navegador, sin cambiar nada en Google."
+paso3_titulo = "Continúa con Microsoft"
+paso3_detalle = "Inicia sesión con tu cuenta de Microsoft (Outlook, Hotmail o institucional) para guardarlos en tu OneDrive."
+paso3_boton = "Continuar con Microsoft"
+paso3_boton_sync = "Sincronizar con mi OneDrive"
+abriendo = "Abriendo el inicio de sesión de Google…"
+leyendo = "Leyendo tu perfil guardado…"
+sin_perfil = "No encontramos un perfil guardado con esa cuenta de Google."
+traidos = "Listo: tus datos están guardados en este navegador. Falta el paso 3."
+listo = "Listo: tus datos están en tu OneDrive. Ya no usaremos Google."
+recargar = "Recargar para verlos"
+cerrar = "Cerrar aviso"
+borrar_archivo = "No borramos nada de tu Google Drive. Si quieres eliminar el archivo: en drive.google.com abre Configuración, luego Administrar aplicaciones, busca la aplicación y elige «Eliminar datos ocultos de la app»."

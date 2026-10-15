@@ -32,7 +32,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:v
   <h1>Aviso de privacidad</h1>
   <p class="upd">Última actualización: 3 de octubre de 2026</p>
 
-  <div class="box"><b>En resumen:</b> SATE no tiene servidor ni base de datos. Lo que generas se guarda en tu navegador y, si inicias sesión, en tu propio OneDrive o Google Drive, en un espacio al que solo tiene acceso la herramienta. Nadie más, incluido quien la desarrolla, puede ver tu información. La única excepción es la encuesta de satisfacción, que es voluntaria y anónima (punto 2).</div>
+  <div class="box"><b>En resumen:</b> SATE no tiene servidor ni base de datos. Lo que generas se guarda en tu navegador y, si inicias sesión, en tu propio OneDrive, en un espacio al que solo tiene acceso la herramienta. Nadie más, incluido quien la desarrolla, puede ver tu información. La única excepción es la encuesta de satisfacción, que es voluntaria y anónima (punto 2).</div>
 
   <h2>1. Quién es responsable</h2>
   <p>SATE (Horarios y Electivas) es una herramienta independiente desarrollada por Víctor Serrano, alumno de Ingeniería Biónica de la UPIITA-IPN. Por ahora no es un servicio oficial del IPN. Contacto: <a href="mailto:vacevess1900@alumno.ipn.mx">vacevess1900@alumno.ipn.mx</a>.</p>
@@ -43,7 +43,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:v
     <tr><td>Carrera, materias que quieres cursar, planes de horario, marcas, filtros y preferencias</td><td>Armar tu trayectoria y tus horarios</td><td>Tu navegador (almacenamiento local)</td></tr>
     <tr><td>Actividades de Electivas y los datos que escribes para los formatos (nombre, boleta, correo)</td><td>Llenar el DIE-03 y el formulario</td><td>Tu navegador</td></tr>
     <tr><td>Datos del SAES que tú decides traer con el marcador SATE: kárdex, estado general, horario inscrito y cita de reinscripción</td><td>Mostrar tu avance, reprobadas, desfases y carga</td><td>Tu navegador</td></tr>
-    <tr><td>Si inicias sesión: tu nombre y correo de la cuenta de Microsoft o Google</td><td>Mostrar con qué cuenta estás conectado</td><td>Tu navegador</td></tr>
+    <tr><td>Si inicias sesión: tu nombre y correo de la cuenta de Microsoft</td><td>Mostrar con qué cuenta estás conectado</td><td>Tu navegador</td></tr>
     <tr><td>Si contestas la encuesta de satisfacción: tus respuestas y datos de uso anónimos (unidad, carrera, si usaste el modo demostración o tus datos del SAES, número de materias elegidas, tipo de dispositivo, minutos de uso, exportaciones y un identificador aleatorio del navegador). No incluye nombre, boleta, correo ni calificaciones.</td><td>Evaluar en la fase de pruebas si la herramienta es útil y qué mejorar</td><td>Una hoja de cálculo de Google del responsable (punto 1), a la que solo él tiene acceso. Los resultados se comparten únicamente de forma agregada</td></tr>
     <tr><td>Si inicias sesión: una copia de todo lo anterior (archivo <code>perfil.ipnt.json</code>). Los datos del SAES solo se incluyen si activas la casilla correspondiente.</td><td>Usar tus datos en varios dispositivos</td><td>Tu OneDrive (carpeta de la aplicación) o el espacio privado de la aplicación en tu Google Drive</td></tr>
   </table></div>
@@ -52,7 +52,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:v
   <h2>3. Permisos que se solicitan al iniciar sesión</h2>
   <ul>
     <li><b>Microsoft:</b> iniciar sesión y leer tu perfil básico (nombre y correo), y acceso únicamente a la carpeta de la aplicación en tu OneDrive (<code>Files.ReadWrite.AppFolder</code>).</li>
-    <li><b>Google:</b> tu nombre y correo (<code>openid</code>, <code>email</code>, <code>profile</code>) y acceso únicamente al espacio de datos de la aplicación en tu Google Drive (<code>drive.appdata</code>).</li>
+    <li><b>Google (solo para migrar):</b> Google ya no se usa para iniciar sesión ni para guardar datos. Si lo eliges, se lee una sola vez el perfil que guardaste antes en el espacio de datos de la aplicación en tu Google Drive (<code>drive.appdata</code>, con tu nombre y correo para identificar la cuenta) para pasarlo a Microsoft. No se escribe ni se borra nada en tu Drive.</li>
   </ul>
   <p>La herramienta no puede ver ni modificar tus demás archivos, tu correo, tus contactos ni tu calendario. El acceso se usa solo desde tu navegador; no pasa por servidores de SATE.</p>
   <p>El uso que hace SATE de la información recibida de las API de Google cumple con la <a href="https://developers.google.com/terms/api-services-user-data-policy">Política de Datos de Usuario de los Servicios de API de Google</a>, incluidos los requisitos de Uso Limitado.</p>
@@ -71,7 +71,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:v
     <li>GitHub Pages (alojamiento del sitio).</li>
     <li>Google Fonts (tipografía), cdnjs y jsDelivr (bibliotecas para generar PDF e iniciar sesión).</li>
     <li>Plataforma de identidad de Microsoft y Microsoft Graph, si inicias sesión con Microsoft.</li>
-    <li>Google Identity Services y la API de Google Drive, si inicias sesión con Google.</li>
+    <li>Google Identity Services y la API de Google Drive, solo si eliges pasar a Microsoft los datos que guardaste con Google.</li>
     <li>Google Apps Script y Hojas de cálculo de Google, si contestas la encuesta de satisfacción.</li>
   </ul>
 
@@ -80,7 +80,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:v
     <li><b>En el navegador:</b> en el diálogo de cuenta, «Cerrar sesión y borrar mis datos de este navegador». En Horarios también puedes borrar solo los datos del SAES desde «Traer mis datos del SAES».</li>
     <li><b>Respaldo:</b> «Descargar respaldo» te entrega todo en un archivo que puedes revisar.</li>
     <li><b>En OneDrive:</b> borra la carpeta de la aplicación.</li>
-    <li><b>En Google Drive:</b> Configuración › Administrar apps › la aplicación › Eliminar datos ocultos de la app.</li>
+    <li><b>En Google Drive (si guardaste datos ahí antes):</b> Configuración › Administrar apps › la aplicación › Eliminar datos ocultos de la app. SATE no borra ese archivo.</li>
     <li><b>Retirar el acceso:</b> en <a href="https://myaccount.microsoft.com/">myaccount.microsoft.com</a> (Aplicaciones) o en <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</li>
   </ul>
   <p>Como SATE no conserva tu información, no tiene datos tuyos que entregar, corregir o cancelar; esos controles están en tus manos. Si tienes dudas o quieres ejercer tus derechos de acceso, rectificación, cancelación u oposición, escribe al contacto del punto 1.</p>

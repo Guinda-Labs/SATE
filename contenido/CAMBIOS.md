@@ -1,6 +1,12 @@
 <!-- SPDX-License-Identifier: CC0-1.0 -->
 # Cambios de textos
 
+## 2026-10-15 · 2026.10.24 · Claude (GOOG1)
+
+| Claves | Cambio |
+|---|---|
+| `cuenta.migracion.*` | Nuevas: pasos y avisos para pasar los datos guardados con Google a Microsoft. Google ya no se ofrece para iniciar sesión; se retiran los avisos de «fase de prueba» de Google (que estaban escritos en `tools/cuenta.py`). |
+
 ## 2026-10-07 · 2026.10.20 · Codex
 
 | Claves | Cambio |
