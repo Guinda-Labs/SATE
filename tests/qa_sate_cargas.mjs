@@ -24,8 +24,8 @@ assert.match(mapaHTML,/class="plan-head plan-bandeja"[\s\S]*id="plan-resumen"[\s
 assert.match(html,/\.plan-bandeja\{position:sticky;bottom:0/);
 const css=leer('web/sate/componentes.css');
 assert.match(css,/\.req-tabla th,\.req-tabla td\{[^}]*overflow-wrap:anywhere/,'REQ: nombres largos se ajustan al ancho');
-assert.match(css,/@media\(max-width:720px\)\{\s*\.req-tabla[^}]*display:block;width:auto/,'REQ: fichas sin ancho fijo en teléfono');
-assert.match(css,/@media\(max-width:720px\)\{[\s\S]*\.plan-bandeja\{position:fixed;[^}]*flex-wrap:nowrap/,'F: bandeja compacta solo en teléfono');
+assert.match(css,/@media\(max-width:639px\)\{\s*\.req-tabla[^}]*display:block;width:auto/,'REQ: fichas sin ancho fijo en teléfono');
+assert.match(css,/@media\(max-width:639px\)\{[\s\S]*\.plan-bandeja\{position:fixed;[^}]*flex-wrap:nowrap/,'F: bandeja compacta solo en teléfono');
 assert.match(css,/#v-tray\{padding-bottom:calc\(160px \+ env\(safe-area-inset-bottom/,'F: espacio para bandeja y barra inferior');
 assert.match(css,/\.plan-menu\[open\]>\.plan-menu-cuerpo\{[^}]*position:absolute/,'F: menú fuera del flujo');
 assert.match(html,/<details class="plan-menu" id="plan-menu"><summary><\/summary>/);
@@ -33,11 +33,11 @@ assert.ok(!Object.values(config.textos).some(t=>/pincel/i.test(t)));
 assert.ok(Object.values(config.unidades).every(c=>typeof c.planDosPeriodos==='boolean'));
 assert.ok(!panelHTML.includes('data-personal'),'planeación disponible sin SAES');
 assert.ok(!/\.plan-panel[^{}]*\{[^}]*max-height/.test(html),'sin altura máxima');
-assert.match(html,/@media\(max-width:720px\)\{\.plan-grupos\{grid-template-columns:1fr/,'grupos apilados en teléfono');
+assert.match(html,/@media\(max-width:639px\)\{\.plan-grupos\{grid-template-columns:1fr/,'grupos apilados en teléfono');
 assert.match(html,/\.plan-grupos\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,'dos columnas');
 assert.match(html,/id="plan-activo" role="status" aria-live="polite"/,'anuncio accesible');
 assert.match(html,/\.box.want.plan-2[^{}]*\{background:var\(--plan-segundo\)/,'color del segundo periodo');
-assert.match(html,/\.box.want\{background:var\(--accent\)/,'acento del primer periodo');
+assert.match(html,/\.box.want\{background:var\(--ipn-acento\)/,'acento del primer periodo');
 // Contraste del texto con el fondo de selección en los tres bloques del tema.
 const luminancia=hex=>{
   const rgb=hex.match(/\w\w/g).map(h=>parseInt(h,16)/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);
@@ -76,7 +76,7 @@ for (const dosPeriodos of [false,true]) for (const unidad of ['upiita','escom','
   const ayudas=[];
   contexto=vm.createContext({SateUI:{modal:(titulo,contenido)=>ayudas.push({titulo,contenido}),ayuda:()=>nodo()},console:{...console,debug(){}},document,SATE,SATE_CONFIG:configModo,structuredClone,SATE_DATA:datos,SATE_UNIDAD:unidad,URL,URLSearchParams,Blob,performance,
     localStorage:almacen(),sessionStorage:almacen(),location:{hash:'#/'+unidad+'/mapa',search:'',pathname:'/sate/index.html'},history:{replaceState(){}},
-    navigator:{userAgent:'Node',maxTouchPoints:0},matchMedia:s=>s==='(max-width:720px)'?movil:{matches:false,addEventListener(){}},addEventListener(){},setTimeout(fn,ms,...args){if(ms===6000)ultimaEspera={fn,ms};return setTimeout(fn,ms,...args)},clearTimeout,
+    navigator:{userAgent:'Node',maxTouchPoints:0},matchMedia:s=>s==='(max-width:639px)'?movil:{matches:false,addEventListener(){}},addEventListener(){},setTimeout(fn,ms,...args){if(ms===6000)ultimaEspera={fn,ms};return setTimeout(fn,ms,...args)},clearTimeout,
     requestAnimationFrame:fn=>fn(),getComputedStyle:()=>({getPropertyValue:()=>''}),MutationObserver:class{observe(){}},CSS:{escape:s=>s},innerWidth:1280,innerHeight:800,
     fetch(){throw new Error('Red prohibida en QA de cargas')}});
   vm.runInContext('window=globalThis',contexto);

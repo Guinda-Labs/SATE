@@ -65,8 +65,8 @@ nodo('#b-horario').eventos.click();assert.equal(nodo('#horario-compacto').open,t
 assert.ok(nodo('#horario-compacto-cuerpo').children.includes(nodo('.calwrap')));
 nodo('#horario-compacto-cerrar').eventos.click();assert.equal(nodo('#horario-compacto').open,false);assert.ok(nodo('.planner').children.includes(nodo('.calwrap')));
 assert.match(html,/\.planner\{position:sticky/);
-assert.match(html,/@media \(max-width:980px\)\{\.hlayout/);
-assert.match(html,/@media \(max-width:980px\)\{\.horario-flotante\{display:block/);  // una columna y botón «Ver horario» bajo 981 px
+assert.match(html,/@media \(max-width:1024px\)\{\.hlayout/);
+assert.match(html,/@media \(max-width:1024px\)\{\.horario-flotante\{display:block/);  // una columna y botón «Ver horario» bajo 981 px
 assert.match(html,/\.horario-compacto \.cal\{min-width:0;grid-template-columns:2\.2rem repeat\(var\(--days\),minmax\(0,1fr\)\)/);
 assert.match(html,/id="b-horario"[^>]*aria-haspopup="dialog"/);
 assert.match(html,/id="horario-compacto" aria-labelledby=/);

@@ -4,7 +4,7 @@
   'use strict';
   var traducir = function (k, v) { return typeof raiz.t === 'function' ? raiz.t(k, v) : k; };
   var guardar = null, leer = null;
-  var MOVIL = '(max-width:720px)';
+  var MOVIL = '(max-width:639px)';
   var contador = 0;
 
   function usarTextos(fn) { traducir = fn; }
@@ -435,7 +435,7 @@ function indicadoresTrayectoria(D,{esc,fmtCr,info,SATE}){
   const hist=`<span class="k-hist" aria-hidden="true">${cuenta.map((n,j)=>`<i class="g${j+6}" style="height:${Math.max(2,n/cmax*100)}%" title="${n} con ${j+6}"></i>`).join('')}</span>`;
   // ordinario: anillo de porcentaje
   const pct=D.ord!=null?Math.round(D.ord*100):null, Rr=15, Cc=2*Math.PI*Rr;
-  const anillo=pct==null?'':`<svg class="k-anillo" viewBox="0 0 40 40" width="40" height="40" aria-hidden="true"><circle cx="20" cy="20" r="${Rr}" fill="none" stroke="var(--line)" stroke-width="6"/><circle cx="20" cy="20" r="${Rr}" fill="none" stroke="var(--ok)" stroke-width="6" stroke-dasharray="${(pct/100*Cc).toFixed(1)} ${Cc.toFixed(1)}" transform="rotate(-90 20 20)"/></svg>`;
+  const anillo=pct==null?'':`<svg class="k-anillo" viewBox="0 0 40 40" width="40" height="40" aria-hidden="true"><circle cx="20" cy="20" r="${Rr}" fill="none" stroke="var(--ipn-linea)" stroke-width="6"/><circle cx="20" cy="20" r="${Rr}" fill="none" stroke="var(--ipn-ok)" stroke-width="6" stroke-dasharray="${(pct/100*Cc).toFixed(1)} ${Cc.toFixed(1)}" transform="rotate(-90 20 20)"/></svg>`;
   const otras=[['EXT','extraordinario','extraordinarios'],['ETS','ETS','ETS'],['REC','recursada','recursadas']].map(([c,u,v])=>{const n=D.rows.filter(r=>r.codigo===c).length;return [n,n===1?u:v]}).filter(([n])=>n);
   // créditos por periodo: mini barras de los últimos periodos
   const ult=D.porPer.filter(d=>d.cr!=null&&!d.sim).slice(-6), crmax=Math.max(1,...ult.map(d=>d.cr));
@@ -476,20 +476,20 @@ function caminoTrayectoria(Dc,A,plazo,totalPer,{esc,fmtCr,perName,proyeccionCred
 
 function leyendaGrafica(items,esc){
   const m=(t,c)=>({linea:`<path d="M1 7H21" stroke="${c}" stroke-width="2.4"/><circle cx="11" cy="7" r="2.6" fill="${c}"/>`,
-    punteada:`<path d="M1 7H21" stroke="${c}" stroke-width="2" stroke-dasharray="4 3"/><circle cx="11" cy="7" r="2.8" fill="var(--bg)" stroke="${c}" stroke-width="1.5"/>`,
+    punteada:`<path d="M1 7H21" stroke="${c}" stroke-width="2" stroke-dasharray="4 3"/><circle cx="11" cy="7" r="2.8" fill="var(--ipn-fondo)" stroke="${c}" stroke-width="1.5"/>`,
     guion:`<path d="M1 7H21" stroke="${c}" stroke-width="1.6" stroke-dasharray="2 3"/>`,
     area:`<rect x="1" y="2" width="20" height="10" rx="2" fill="${c}" fill-opacity=".2"/>`,
     numero:`<text x="11" y="11" text-anchor="middle" font-size="10" font-weight="700" fill="${c}">8.5</text>`,
     rayado:`<rect x="1" y="2" width="20" height="10" rx="2" fill="${c}" fill-opacity=".35"/><path d="M4 12L10 2M10 12L16 2M16 12L21 4" stroke="${c}" stroke-width="1.5"/>`,
     marca:`<path d="M11 1V13" stroke="${c}" stroke-width="2"/>`,
     grado:`<rect x="0" y="2" width="4" height="10" fill="var(--g6)"/><rect x="4.5" y="2" width="4" height="10" fill="var(--g7)"/><rect x="9" y="2" width="4" height="10" fill="var(--g8)"/><rect x="13.5" y="2" width="4" height="10" fill="var(--g9)"/><rect x="18" y="2" width="4" height="10" fill="var(--g10)"/>`,
-    letra:`<text x="11" y="11" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fg)">${c}</text>`,
+    letra:`<text x="11" y="11" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ipn-texto)">${c}</text>`,
     simulada:`<rect x="4" y="1.5" width="14" height="11" rx="2" fill="none" stroke="${c}" stroke-dasharray="2 2"/>`,
     cuadro:`<rect x="5" y="2" width="12" height="10" rx="2" fill="${c}"/>`,
     rango:`<path d="M11 2V12" stroke="${c}" stroke-opacity=".35" stroke-width="7" stroke-linecap="round"/>`,
     barra:`<rect x="4" y="3" width="6" height="10" fill="${c}" fill-opacity=".75"/><rect x="12" y="6" width="6" height="7" fill="${c}" fill-opacity=".75"/>`,
     punto:`<circle cx="11" cy="7" r="4" fill="${c}" fill-opacity=".8"/>`,
-    anillo:`<circle cx="11" cy="7" r="4" fill="var(--bg)" stroke="${c}" stroke-width="1.8"/>`,
+    anillo:`<circle cx="11" cy="7" r="4" fill="var(--ipn-fondo)" stroke="${c}" stroke-width="1.8"/>`,
     vertical:`<path d="M11 1V13" stroke="${c}" stroke-width="2"/>`,
     'vertical-p':`<path d="M11 1V13" stroke="${c}" stroke-width="1.6" stroke-dasharray="3 2"/>`}[t]);
   return `<span class="ley">${items.map(([t,c,x])=>`<span><svg viewBox="0 0 22 14" width="22" height="14" aria-hidden="true" fill="none">${m(t,c)}</svg>${esc(x)}</span>`).join('')}</span>`;

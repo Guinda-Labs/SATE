@@ -576,8 +576,7 @@ UI = """<button class="ipnt-btn" id="ipnt-open" type="button" aria-haspopup="dia
 <dialog class="saes-dlg ipnt-dlg" id="ipnt-privacidad" aria-labelledby="ipnt-privacidad-h">
   <h2 id="ipnt-privacidad-h">¿Mantener tu sesión y tus datos en este navegador?</h2>
   <label class="chk"><input type="checkbox" id="ipnt-privacidad-mantener"><span>Mantener la sesión y los datos al cerrar el navegador.</span></label>
-  <p>Si sincronizas con tu cuenta Microsoft, tus datos quedan en tu OneDrive y no se pierden aunque no los guardes aquí. Si solo usas este navegador, se borrarán al cerrarlo.</p>
-  <p class="saes-note">Sin marcar, se conservan en esta pestaña hasta cerrarla. Puedes cambiar esta opción desde tu cuenta.</p>
+  <p>Con tu cuenta Microsoft sincronizada, tus datos siguen en OneDrive. Sin ella y sin marcar la casilla, se borran al cerrar esta pestaña.</p>
   <p id="ipnt-privacidad-error" role="alert"></p>
   <button class="btn primary" type="button">Continuar</button>
 </dialog>

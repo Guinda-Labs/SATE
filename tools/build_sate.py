@@ -982,6 +982,7 @@ def escribir_sate(data):
     for nombre in ("calendario.js", "situacion.js", "mapa.js", "horarios.js", "inicio.js", "rutas.js", "componentes.js", "desempeno.js", "exportacion.js", "tramites.js", "dictamen.js", "electivas.js"):
         shutil.copy(fuente / nombre, destino / nombre)
     shutil.copytree(ROOT / 'web/tramites', dist / 'tramites', dirs_exist_ok=True)
+    shutil.copytree(ROOT / 'web/assets/vendor', dist / 'assets/vendor', dirs_exist_ok=True)
     cfg = json.loads((ROOT / "data/sate.json").read_text(encoding="utf-8"))
     identidad_unidades = cuenta.identidades()
     unidades = {u["id"]: u for u in cuenta.config()["unidades"]}

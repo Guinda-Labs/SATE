@@ -11,7 +11,7 @@
   const corto=e=>e.desde===e.hasta?breve(e.desde):tx('rango',{desde:breve(e.desde),hasta:breve(e.hasta)});
   const identidad=e=>[e.periodo,e.categoria,e.titulo,e.desde,e.hasta].join('|'),delDia=(s,es)=>es.filter(e=>e.desde<=s&&e.hasta>=s);
   // Teléfono: una sola columna y detalle como hoja inferior.
-  const movil=()=>typeof matchMedia==='function'&&matchMedia('(max-width:819px)').matches;
+  const movil=()=>typeof matchMedia==='function'&&matchMedia('(max-width:639px)').matches;
   const simbolos={triangulo:'▲',triangulo_invertido:'▼',estrella:'★',circulo:'○',rayado:'▨',contorno:'□',discontinuo:'┄',relleno:'■'};
   let arribaVisible=true,copiaActiva=false,observador=null,tarjetaMes=null,tarjetaCopia=null,ladoNodo=null;
   let periodo=null,mes=null,foco=null,ampliar=false,verPasados=false,elegidos=new Set(),tituloElegido='',hoja=false,retorno=null;
@@ -154,7 +154,10 @@
         const siguiente=items.filter(o=>o.lane===it.lane&&o.a>it.a)[0],espacio=(siguiente?siguiente.a:100)-it.fin;
         if(espacio>=14){const n=el('span',e.titulo.replace(/ \(registro\)$/,''),'calendario-linea-nombre');n.style.left='calc('+it.fin+'% + 4px)';n.style.top=(top+2)+'px';n.style.width='calc('+(espacio-1)+'% - 8px)';n.setAttribute('aria-hidden','true');pista.appendChild(n)}
       });
-      fila.appendChild(pista);cuerpo.appendChild(fila);
+      fila.appendChild(pista);
+      const lista=el('div',null,'calendario-linea-lista');
+      for(const e of evs){const b=boton(e.titulo+' · '+corto(e),()=>{},idDe('cal-lista-',e));conectar(b,[e],e.titulo);lista.appendChild(b)}
+      fila.appendChild(lista);cuerpo.appendChild(fila);
     });
     if(r.dentro||api.hoy()>=desde&&api.hoy()<=hasta){const ov=el('div',null,'calendario-linea-hoy-capa'),l=el('div',null,'calendario-linea-hoy');l.style.left=pos(api.hoy())+'%';l.setAttribute('data-etiqueta',tx('linea_hoy'));l.setAttribute('aria-hidden','true');ov.appendChild(l);cuerpo.appendChild(ov)}
     raiz.appendChild(cuerpo);tarjeta.appendChild(raiz);tarjeta.appendChild(el('p',tx('linea_leyenda'),'calendario-linea-leyenda'));contenido.appendChild(tarjeta);

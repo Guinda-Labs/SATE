@@ -88,7 +88,7 @@
   }
   const panel=document.createElement('details'), titulo=document.createElement('summary'), resumen=document.createElement('p'), boton=document.createElement('button');
   const tx=(k,v)=>SATE.texto('sate.medicion.'+k,v);
-  panel.id='sate-panel-medicion';panel.style.cssText='position:fixed;right:12px;bottom:80px;z-index:1100;max-width:min(340px,90vw);padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);font-size:12px';
+  panel.id='sate-panel-medicion';panel.style.cssText='position:fixed;right:12px;bottom:80px;z-index:1100;max-width:min(340px,90vw);padding:10px;border:1px solid var(--ipn-linea);border-radius:12px;background:var(--ipn-superficie);color:var(--ipn-texto);font-size:12px';
   titulo.textContent=tx('titulo');boton.type='button';boton.className='btn';boton.textContent=tx('copiar');resumen.setAttribute('role','status');
   panel.append(titulo,resumen,boton);document.body.appendChild(panel);
   function actualizar(){resumen.textContent=tx('resumen',{fcp:datos.pinturas.fcp?.toFixed(1)??'?',render:datos.renders.at(-1)?.ms.toFixed(1)??'?',generacion:datos.generaciones.at(-1)?.ms.toFixed(1)??'?',nodos:document.getElementsByTagName('*').length,tareas:datos.tareasLargas.length})}

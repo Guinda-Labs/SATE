@@ -138,7 +138,7 @@ await new Promise(r=>setTimeout(r,350));assert.ok(box.querySelector('iframe').sr
 box.querySelector('input').value='';box.querySelector('input').oninput();await new Promise(r=>setTimeout(r,350));assert.equal(box.querySelector('iframe').src,undefined);assert.equal(box.querySelector('[data-ver-formato]').disabled,true);invalido.destruir();
 const errorDef={id:'error-prueba',titulo:'Error',pasos:[{titulo:'Pregunta',campos:[{id:'dato',texto:'Dato',requerido:true}]}]};
 const b=t.asistente(box,errorDef);box.todos().find(n=>n.textContent==='Continuar').click();assert.equal(b.modelo.paso,0);assert.equal(foco,box.querySelector('input'));b.destruir();
-const css=readFileSync('web/sate/componentes.css','utf8');assert.match(css,/@media\(min-width:1024px\)/);assert.match(css,/grid-template-columns:minmax\(0,1fr\)/);
+const css=readFileSync('web/sate/componentes.css','utf8');assert.match(css,/@media\(min-width:1025px\)/);assert.match(css,/grid-template-columns:minmax\(0,1fr\)/);
 const cssVentanilla=css.slice(css.indexOf('.tramite-lista'),css.indexOf('.sate-recorte-calendario'));
 assert.ok(!/var\(--(?!ipn-|sate-realce\)|sate-sobre-realce\))[^),]+/.test(cssVentanilla));
 for(const regla of cssVentanilla.matchAll(/([^{}]+)\{([^{}]+)\}/g))if(regla[2].includes('--sate-realce')){

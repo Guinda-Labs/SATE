@@ -199,6 +199,17 @@ api.hoy=()=> '2026-10-12';mostrar();assert.ok(nodos('calendario-pildora').some(n
 
 // 3. Selección compartida: arco ↔ mes ↔ agenda ↔ ficha ↔ detalle.
 const detalleActual=()=>nodos('calendario-detalle')[0];
+// UX1: cada fila conserva el nombre y las fechas en una alternativa táctil,
+// incluso para eventos sin espacio para una etiqueta sobre la barra.
+cambiarVista('carriles');
+const listasTactiles=nodos('calendario-linea-lista');
+assert.ok(listasTactiles.length>0);
+const eventosTactiles=listasTactiles.flatMap(n=>n.children);
+assert.ok(eventosTactiles.length>0);
+for(const b of eventosTactiles){assert.ok(b.textContent.includes(' · '));assert.ok(b.getAttribute('aria-label'))}
+eventosTactiles[0].onclick();assert.equal(detalleActual().hidden,false);
+cambiarVista('semicirculo');
+document.getElementById('cal-volver-detalle')?.onclick();
 assert.equal(detalleActual().hidden,false,'Escritorio: la tarjeta de detalle siempre está');
 assert.equal(nodos('calendario-detalle-evento').length,1,'Sin selección muestra lo siguiente');assert.equal(document.getElementById('cal-volver-detalle'),undefined);
 const arco=nodos('calendario-arco').find(n=>n.getAttribute('aria-label').includes('registro de protocolo'));
@@ -372,7 +383,7 @@ for(const categoria of api.categorias){assert.ok(css.includes('--ipn-cal-'+categ
 assert.match(css,/\[data-theme=dark\] #sate-calendario\{/);assert.match(css,/@media\(prefers-color-scheme:dark\)/);
 assert.match(css,/grid-template-columns:repeat\(7,minmax\(0,1fr\)\)/);
 assert.match(css,/\.calendario-arriba\{display:grid;grid-template-columns:minmax\(0,1fr\) 300px/);
-assert.match(css,/@media\(max-width:819px\)\{\.calendario-arriba,\.calendario-abajo\{grid-template-columns:minmax\(0,1fr\)\}/);
+assert.match(css,/@media\(max-width:639px\)\{\.calendario-arriba,\.calendario-abajo\{grid-template-columns:minmax\(0,1fr\)\}/);
 assert.match(css,/\.calendario-centro\{bottom:16%/);assert.match(css,/\.calendario-centro-largo\{display:none\}/);assert.match(css,/\.calendario-svg-mes,\.calendario-svg-extremo\{font-size:21px\}/);
 assert.match(css,/\.calendario-lado\{position:sticky/);assert.match(css,/\.calendario-tarjeta\[hidden\]\{display:none\}/);
 assert.match(css,/\.calendario-linea-fila\{[^}]*min-height:34px/);

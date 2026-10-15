@@ -31,15 +31,15 @@ for(const unidad of ['upiita','escom','upibi']){
     getElementById(id){return this.querySelector('#'+id)},querySelectorAll:()=>[],createElement:()=>nodo(),body:nodo(),documentElement:nodo(),
     head:{appendChild(s){solicitudes.push(s);queueMicrotask(()=>{
       if(fallar){s.onerror();return}
-      if(s.src.includes('d3@'))c.d3={groups(rows,fn){const m=new Map();for(const r of rows){const k=fn(r);if(!m.has(k))m.set(k,[]);m.get(k).push(r)}return [...m]},mean:(rs,fn)=>rs.reduce((s,r)=>s+fn(r),0)/rs.length};
-      if(s.src.includes('@observablehq'))c.Plot={plot:op=>{trazados++;graficas.push(op);return nodo()},ruleY:(datos,op)=>({tipo:'recta',datos,op}),dot:(datos,op)=>({tipo:'puntos',datos,op}),ruleX:(datos,op)=>({tipo:'media',datos,op})};
+      if(s.src.includes('d3-7.9.0'))c.d3={groups(rows,fn){const m=new Map();for(const r of rows){const k=fn(r);if(!m.has(k))m.set(k,[]);m.get(k).push(r)}return [...m]},mean:(rs,fn)=>rs.reduce((s,r)=>s+fn(r),0)/rs.length};
+      if(s.src.includes('plot-0.6.17'))c.Plot={plot:op=>{trazados++;graficas.push(op);return nodo()},ruleY:(datos,op)=>({tipo:'recta',datos,op}),dot:(datos,op)=>({tipo:'puntos',datos,op}),ruleX:(datos,op)=>({tipo:'media',datos,op})};
       s.onload();
     })}}};
   const SATE={texto,actual:{pestana:'mapa'},modulos:{},pestana(id,m){this.modulos[id]=m},error:e=>{throw e},nucleoListo:async a=>{api=a},
     repintar(){api.renderTop();return this.modulos[this.actual.pestana]?.mostrar()},ir(){},identidadSaes(){}};
   c=vm.createContext({console,document,SATE,SateUI:{cerrarModal(){}},SATE_DATA:{...JSON.parse(leer(`web/dist/sate/datos/${unidad}/nucleo.json`)),periodos:{actual:[],proximo:[]},asig:[],prof:[]},SATE_UNIDAD:unidad,
     URL,URLSearchParams,Blob,performance,localStorage:almacen(),sessionStorage:almacen(),location:{hash:'#/'+unidad+'/mapa',search:'',pathname:'/sate/index.html'},history:{replaceState(){}},
-    navigator:{userAgent:'Node',maxTouchPoints:0},matchMedia:q=>({get matches(){return q.includes('720px')&&movil},addEventListener(){}}),addEventListener(){},setTimeout,clearTimeout,
+    navigator:{userAgent:'Node',maxTouchPoints:0},matchMedia:q=>({get matches(){return q.includes('639px')&&movil},addEventListener(){}}),addEventListener(){},setTimeout,clearTimeout,
     requestAnimationFrame:fn=>cuadros.push(fn),getComputedStyle:()=>({getPropertyValue:n=>((oscuro?
       {'--ipn-acento':'#eaa2bd','--ipn-tenue':'#b1b4be','--ipn-linea':'#393c45','--ipn-texto':'#e6e7ec'}:
       {'--ipn-acento':'#721e45','--ipn-tenue':'#667085','--ipn-linea':'#dddddd','--ipn-texto':'#222222'})[n]||'')}),MutationObserver:class{observe(){}},CSS:{escape:s=>s},innerWidth:375,innerHeight:800,
@@ -85,7 +85,7 @@ for(const unidad of ['upiita','escom','upibi']){
   areas.open=false;areas.eventos.toggle.at(-1)();vaciarCuadros();await pendiente;
   assert.equal(solicitudes.length,0,'F: cerrar antes de medir cancela descarga');
   areas.open=true;pendiente=areas.eventos.toggle.at(-1)();vaciarCuadros();await pendiente;
-  assert.equal(solicitudes.length,2);assert.match(solicitudes[0].src,/d3@/);assert.match(solicitudes[1].src,/@observablehq/);
+  assert.equal(solicitudes.length,2);assert.equal(solicitudes[0].src,'../assets/vendor/d3-7.9.0.min.js');assert.equal(solicitudes[1].src,'../assets/vendor/plot-0.6.17.min.js');
   for(const s of solicitudes){assert.match(s.integrity,/^sha384-/);assert.equal(s.crossOrigin,'anonymous')}
   assert.equal(trazados,1,'F: gráfica solo al abrir áreas');
   assert.deepEqual(Array.from(graficas[0].x.domain),[6,10],'K: escala absoluta fija');

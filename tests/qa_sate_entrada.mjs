@@ -86,7 +86,7 @@ for(const unidad of ['upiita','encb']){
   assert.ok(!e.archivos.includes('tramites.js'),'La entrada no carga confirmaciones de una unidad ajena');
 }
 const css=leer('web/sate/componentes.css');
-assert.match(css,/grid-template-columns:repeat\(auto-fit,minmax\(min\(100%,21rem\),1fr\)\)/);
+assert.match(css,/grid-template-columns:repeat\(auto-fit,minmax\(min\(100%,16rem\),1fr\)\)/);
 assert.match(css,/\.sate-entrada>input\{[^}]*box-sizing:border-box;width:100%;min-width:0/);
 assert.match(css,/\.sate-entrada :is\(input,button\):focus-visible/);
 const legacy=await entorno();assert.equal(legacy.c.SateRutas.redireccion(null,'',''),'sate/index.html');

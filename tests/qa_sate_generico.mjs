@@ -131,7 +131,7 @@ for(const a of [encb,encbHorario]){
 assert.deepEqual(encbHorario.acreditadas,encb.acreditadas,'El horario no cambia el historial de seis periodos');
 assert.deepEqual(encbHorario.kardex_reprobadas,encb.kardex_reprobadas);
 assert.ok(encbHorario.en_curso.every(k=>!encbHorario.acreditadas.some(r=>r[0]===k)),'Inscritas pendientes para el siguiente periodo 26/2');
-for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','vacio','encb','encb-horario','encb-viejo','encb-curso-sin-horario','demo','demo-horario']){
+for(const ancho of [1440,1024,768,414,375])for(const modo of ['actual','viejo','periodos','vacio','encb','encb-horario','encb-viejo','encb-curso-sin-horario','demo','demo-horario']){
   const unidad=modo.startsWith('encb')||modo.startsWith('demo')?'encb':'esimez';
   const p=structuredClone(unidad==='encb'?(modo.endsWith('horario')?encbHorario:encb):perfil);
   if(modo==='encb-curso-sin-horario'){Object.assign(p,structuredClone(encbHorario));p.horario_inscrito=[];}
@@ -172,8 +172,8 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
     assert.match(tray.innerHTML,/class="kx-c g8"/);assert.doesNotMatch(tray.innerHTML,/NaN|undefined|Sugerida|Sin área/);
     for(const componente of ['Promedio sin reprobadas','k-regla','Tus calificaciones','k-hist','En ordinario','k-anillo','Créditos por periodo','Tu camino en la carrera','cm-track','Tu kárdex por periodo','trayectoria-kardex','¿Y si…?','meta-panel','id="sate-presente"','trayectoria-minimapa'])assert.ok(tray.innerHTML.includes(componente),componente+' a '+ancho+' px');
     assert.doesNotMatch(tray.innerHTML,/trayectoria-areas|trayectoria-observaciones|Tus áreas|seriación|oferta/);
-    assert.equal(/id="trayectoria-kardex" open/.test(tray.innerHTML),ancho>720,'Kárdex abierto en escritorio y plegado en teléfono');
-    assert.equal(/id="trayectoria-escenario" open/.test(tray.innerHTML),ancho>720,'Escenario sigue el mismo acomodo responsive');
+    assert.equal(/id="trayectoria-kardex" open/.test(tray.innerHTML),ancho>=640,'Kárdex abierto en escritorio y plegado en teléfono');
+    assert.equal(/id="trayectoria-escenario" open/.test(tray.innerHTML),ancho>=640,'Escenario sigue el mismo acomodo responsive');
     if(unidad==='encb')for(const componente of ['k-bars','cm-m pas','cm-m fut','Terminarías','<i>E</i>','<i>T</i>'])assert.ok(tray.innerHTML.includes(componente),componente);
     const D=c.SateGenerico.estadisticas(p,c.SateGenerico.datos(p));
     assert.equal(D.media,p.acreditadas.reduce((s,r)=>s+r[1],0)/p.acreditadas.length);assert.ok(D.rows.every(r=>r.cal>=6&&r.cal<=10));
@@ -285,16 +285,16 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
   assert.ok(!archivos.includes('nucleo.js'));
 }
 const css=leer('web/sate/componentes.css'), shell=leer('web/sate/cascaron.html');
-assert.match(css,/@media\(max-width:720px\)\{\.horario-inscrito/);
+assert.match(css,/@media\(max-width:639px\)\{\.horario-inscrito/);
 assert.doesNotMatch(css,/\[data-sate-generico\] \.trayectoria-minimapa\{/,'Sin sustituir el acomodo compartido');
 assert.match(css,/\.trayectoria-datos\{[^}]*grid-column:1;grid-row:2 \/ span 4;align-self:start;display:grid;gap:\.35rem/);
 assert.match(css,/\.trayectoria-datos p\{margin:0;line-height:1\.6\}/);
-assert.match(css,/@media\(max-width:720px\)\{\.trayectoria-datos\{grid-row:3\}\}/);
+assert.match(css,/@media\(max-width:639px\)\{\.trayectoria-datos\{grid-row:3\}\}/);
 const acreditada=shell.match(/\.box\.done\{([^}]+)\}/)[1];
-assert.match(acreditada,/opacity:1/);assert.match(acreditada,/color:var\(--fg\)/);assert.match(acreditada,/background:var\(--surface\)/);
+assert.match(acreditada,/opacity:1/);assert.match(acreditada,/color:var\(--ipn-texto\)/);assert.match(acreditada,/background:var\(--ipn-superficie\)/);
 assert.doesNotMatch(acreditada,/line-through/,'Contrato de contraste: texto sin tachado ni opacidad reducida');
 const luminancia=hex=>{const v=hex.match(/\w\w/g).map(c=>parseInt(c,16)/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);return .2126*v[0]+.7152*v[1]+.0722*v[2]};
-const superficies=[...shell.matchAll(/--surface:(#[a-f0-9]{6})/g)].map(m=>m[1]), textos=[...shell.matchAll(/--fg:(#[a-f0-9]{6})/g)].map(m=>m[1]);
+const superficies=[...shell.matchAll(/--ipn-superficie:(#[a-f0-9]{6})/g)].map(m=>m[1]), textos=[...shell.matchAll(/--ipn-texto:(#[a-f0-9]{6})/g)].map(m=>m[1]);
 assert.equal(superficies.length,textos.length);
 superficies.forEach((f,i)=>{const a=luminancia(f.slice(1)),b=luminancia(textos[i].slice(1));assert.ok((Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5,'Acreditadas: contraste AA en tema '+i)});
 const componentes=leer('web/sate/componentes.js'), desempeno=leer('web/sate/desempeno.js');
@@ -349,4 +349,4 @@ for(const u of ['upiita','escom','upibi','esimez']){
   vm.runInContext(destino,c);
   assert.equal(c.TOOL,'https://ejemplo.invalid/upiita/'+(u==='esimez'?'sate/index.html?sateUnidad=esimez':'horarios-'+u+'.html'));
 }
-console.log('SATE genérico: Lector, analítica y componentes compartidos, simulación sin persistencia, mapa/lista/zoom/pendientes, horario compacto y contraste AA; DOM a 1440 y 375 px, sin navegador ni red.');
+console.log('SATE genérico: Lector, analítica y componentes compartidos, simulación sin persistencia, mapa/lista/zoom/pendientes, horario compacto y contraste AA; DOM a 1440, 1024, 768, 414 y 375 px, sin navegador ni red.');

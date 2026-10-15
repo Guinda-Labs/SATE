@@ -46,7 +46,7 @@ window.IPNT_UNIDAD = window.SATE_UNIDAD;
     for (const m of materias.values()) {
       if (reproNombres.has(normal(m.nombre)) || reproNombres.has(normal(m.clave))) reprobadas.add(m.clave);
       m.estado = altas.has(m.clave) ? 'Acreditada' : desfasadas.has(m.clave) ? 'Desfasada según el SAES' : curso.has(m.clave) ? 'En curso' : reprobadas.has(m.clave) ? 'Reprobada' : 'Por cursar';
-      m.color = altas.has(m.clave) ? 'var(--ok)' : desfasadas.has(m.clave) ? 'var(--ipn-desfasada)' : curso.has(m.clave) ? 'var(--accent)' : reprobadas.has(m.clave) ? 'var(--ipn-reprobada)' : 'var(--line)';
+      m.color = altas.has(m.clave) ? 'var(--ipn-ok)' : desfasadas.has(m.clave) ? 'var(--ipn-desfasada)' : curso.has(m.clave) ? 'var(--ipn-acento)' : reprobadas.has(m.clave) ? 'var(--ipn-reprobada)' : 'var(--ipn-linea)';
       const grupo = porSemestre ? m.semestre == null ? 'Sin semestre informado' : 'Semestre '+m.semestre : m.periodo ? 'Periodo '+m.periodo : curso.has(m.clave) ? 'En curso' : 'Por cursar';
       if (!grupos.has(grupo)) grupos.set(grupo,[]);
       grupos.get(grupo).push(m);
@@ -136,10 +136,10 @@ window.IPNT_UNIDAD = window.SATE_UNIDAD;
     const mini=representacion(d).mini;
     return '<div class="trayectoria-minimapa">'+(abrir?'<button type="button" data-abrir-mapa aria-label="Abrir mapa curricular">'+mini.svg+'</button>':mini.svg)+'<div class="mm-leg">'+mini.leyenda+'</div></div>';
   }
-  let vistaMapa='mapa', pendientes=false, zoom=null;
+  let vistaMapa=$('v-tray').clientWidth<640?'lista':'mapa', pendientes=false, zoom=null;
   function escalaMapa(L){
     const ancho=$('mapwrap').clientWidth||$('v-tray').clientWidth||1000;
-    return Math.max(ancho>720?.2:.6,(ancho-2)/L.w);
+    return Math.max(ancho>=640?.2:.6,(ancho-2)/L.w);
   }
   function cuadricula(d){
     const {L,ctx}=representacion(d);
@@ -172,7 +172,7 @@ window.IPNT_UNIDAD = window.SATE_UNIDAD;
   const formas={ORD:'Ordinario',EXT:'Extraordinario',ETS:'ETS',REC:'Recurse',EQV:'Equivalencia',REV:'Revalidación',DIC:'Dictamen'};
   let simular=false, notas={}, metaPeriodos=4, metaPromedio=8.5;
   const secciones={};
-  const abierto=(id,inicial=true)=>(secciones[id]??(inicial&&$('sate-trayectoria').clientWidth>720))?' open':'';
+  const abierto=(id,inicial=true)=>(secciones[id]??(inicial&&$('sate-trayectoria').clientWidth>=640))?' open':'';
   function estadisticas(a,d){
     const mean=xs=>xs.length?xs.reduce((s,n)=>s+n,0)/xs.length:null;
     const nombres=new Map(d.materias.map(m=>[m.clave,m.nombre])), unicas=new Map();
@@ -234,7 +234,7 @@ window.IPNT_UNIDAD = window.SATE_UNIDAD;
     $('sate-trayectoria').innerHTML='<h2>Mi trayectoria</h2><div id="sate-presente"><p class="trayectoria-resumen">'+esc(a.carrera_nombre||'')+(a.plan?' · Plan '+esc(a.plan):'')+' · '+(D.total>0&&numero(a.avance?.obtenidos)!=null?Math.round(a.avance.obtenidos/D.total*100)+' % de avance':'Avance sin informar')+'</p>'+minimapa(d,true)+
       '<div class="trayectoria-datos"><p>'+esc(desfase)+'</p><p>Promedio del SAES: '+dato(a.promedio)+'</p><p>Periodos cursados: '+dato(a.avance?.cursados)+' · Duración: '+dato(a.carga?.duracion)+' · Duración máxima: '+dato(a.carga?.duracion_max)+'</p><p>Carga mínima: '+dato(a.carga?.min)+' · Media: '+dato(a.carga?.media)+' · Máxima: '+dato(a.carga?.max)+'</p></div></div>'+aviso(d)+
       '<div class="kstats" id="kstats">'+(D.avisos.length?'<p class="st-note">'+D.avisos.map(esc).join(' ')+'</p>':'')+SateUI.indicadoresTrayectoria(D,{esc,fmtCr,info,SATE})+
-      '<div class="charts"><figure class="ch-wide"><figcaption><b>Tu camino en la carrera'+(simular?' · simulado':'')+'</b>'+SateUI.leyendaGrafica([['cuadro','var(--accent)','Acreditado'],['rayado','var(--accent)',simular?'Simulado':'En curso'],['cuadro','var(--line)','Te falta'],['marca','var(--accent)','Estimado a tu ritmo']],esc)+'</figcaption><div id="ch-camino">'+camino+'</div></figure></div>'+
+      '<div class="charts"><figure class="ch-wide"><figcaption><b>Tu camino en la carrera'+(simular?' · simulado':'')+'</b>'+SateUI.leyendaGrafica([['cuadro','var(--ipn-acento)','Acreditado'],['rayado','var(--ipn-acento)',simular?'Simulado':'En curso'],['cuadro','var(--ipn-linea)','Te falta'],['marca','var(--ipn-acento)','Estimado a tu ritmo']],esc)+'</figcaption><div id="ch-camino">'+camino+'</div></figure></div>'+
       '<details class="trayectoria-plegable" id="trayectoria-kardex"'+abierto('trayectoria-kardex')+'><summary>Tu kárdex por periodo<small>'+D.rows.length+' materias acreditadas</small></summary><div class="charts"><figure class="ch-wide"><figcaption>'+SateUI.leyendaGrafica([['grado','','Calificación'],['letra','E','Extraordinario'],['letra','T','ETS'],['letra','R','Recurse']],esc)+'</figcaption><div id="ch-kx">'+kardex+'</div></figure></div></details>'+escenario(D)+'</div>';
     if(D.avisos.length)console.debug('SATE genérico: cobertura de analítica',{unidad,materias:D.rows.length,periodos:D.porPer.length,avisos:D.avisos});
   }

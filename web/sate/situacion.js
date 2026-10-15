@@ -64,7 +64,7 @@
       const leyenda=el('div',null,'mm-leg');leyenda.innerHTML=mini.leyenda;vista.appendChild(leyenda);box.appendChild(vista);
     }
     const principal=lista[0];
-    box.appendChild(SateUI.aviso({estado:principal.estado,titulo:tt('siguiente_paso'),cuerpo:principal.titulo+': '+principal.cuerpo,accion:{texto:tx(principal.id==='actualizacion'?'usar_lector':'que_hacer'),onclick:()=>abrirTramite(principal)}}));
+    box.appendChild(SateUI.aviso({estado:principal.estado,titulo:tt('siguiente_paso'),cuerpo:principal.titulo+': '+principal.cuerpo,accion:{texto:tx(principal.id==='actualizacion'?'usar_lector':config().tramites.includes(principal.tramite)?'que_hacer':'ver_detalles'),onclick:()=>abrirTramite(principal)}}));
     box.appendChild(el('h3',tx('pendientes')));
     box.appendChild(SateUI.chips(lista.filter(x=>x!==principal&&x.estado!=='ok').map(x=>({id:x.id,estado:x.estado,texto:x.titulo+' ⓘ',abre:()=>detalle(x)}))));
     const planear=el('button',SATE.texto('sate.planeacion.titulo'),'sate-enlace');planear.type='button';planear.onclick=()=>SATE.ir('mapa');box.appendChild(planear);

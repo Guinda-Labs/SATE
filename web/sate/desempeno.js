@@ -1,7 +1,7 @@
 /* Render y controles propios de Desempeño; el motor académico permanece compartido. */
-const FORMA_COLOR={Ordinario:'--ok',Extraordinario:'--warn',ETS:'--ch-alert',Recurse:'--rel-pre',Equivalencia:'--muted',Revalidación:'--n4',Dictamen:'--n6','No identificada':'--line'};
-const LIB_PLOT=[['https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js','sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i'],
-  ['https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/dist/plot.umd.min.js','sha384-JUpn2GgRr0gxU0xOBd8D8P634jhRCwobtG8G2MMEkX1RnGJ7/FJNnuukpfT+H2w1']];
+const FORMA_COLOR={Ordinario:'--ipn-ok',Extraordinario:'--ipn-aviso',ETS:'--ch-alert',Recurse:'--rel-pre',Equivalencia:'--ipn-tenue',Revalidación:'--n4',Dictamen:'--n6','No identificada':'--ipn-linea'};
+const LIB_PLOT=[['../assets/vendor/d3-7.9.0.min.js','sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i'],
+  ['../assets/vendor/plot-0.6.17.min.js','sha384-JUpn2GgRr0gxU0xOBd8D8P634jhRCwobtG8G2MMEkX1RnGJ7/FJNnuukpfT+H2w1']];
 let PLOT_P=null;
 const cargarPlot=()=>window.Plot?Promise.resolve():PLOT_P||(PLOT_P=LIB_PLOT.reduce((p,[src,sri])=>p.then(()=>new Promise((ok,no)=>{
   const s=document.createElement('script');s.src=src;s.integrity=sri;s.crossOrigin='anonymous';s.onload=ok;s.onerror=()=>{
@@ -144,10 +144,10 @@ async function renderStatsVista(){
   $('#sate-trayectoria').appendChild($('#desempeno-simulacion'));
   box.innerHTML=`${D.avisos.length?`<p class="st-note">${D.avisos.map(esc).join(' ')}</p>`:''}${SateUI.indicadoresTrayectoria(D,{esc,fmtCr,info,SATE})}
     <div class="charts">
-      <figure class="ch-wide"><figcaption><b>Tu camino en la carrera ${simTag('camino')}</b>${ley([['cuadro','var(--accent)','Acreditado'],['rayado','var(--accent)',Dc.simulado?'Simulado':'En curso'],['cuadro','var(--line)','Te falta'],['marca','var(--accent)','Estimado a tu ritmo'],...(totalPer!=null&&plazo.max&&totalPer>plazo.max?[['anillo','var(--ch-alert)','Rebasa el plazo']]:[])])}</figcaption><div id="ch-camino"></div></figure>
+      <figure class="ch-wide"><figcaption><b>Tu camino en la carrera ${simTag('camino')}</b>${ley([['cuadro','var(--ipn-acento)','Acreditado'],['rayado','var(--ipn-acento)',Dc.simulado?'Simulado':'En curso'],['cuadro','var(--ipn-linea)','Te falta'],['marca','var(--ipn-acento)','Estimado a tu ritmo'],...(totalPer!=null&&plazo.max&&totalPer>plazo.max?[['anillo','var(--ch-alert)','Rebasa el plazo']]:[])])}</figcaption><div id="ch-camino"></div></figure>
     </div>
     <details class="trayectoria-plegable" id="trayectoria-kardex"><summary>${esc(SATE.texto('sate.trayectoria.kardex'))}<small>${esc(SATE.texto('sate.trayectoria.kardex_resumen',{n:Dk.rows.length}))}</small></summary><div class="charts">
-      <figure class="ch-wide"><figcaption>${simTag('kardex')}${ley([['grado','','Calificación'],...[['E','Extraordinario'],['T','ETS'],['R','Recurse']].filter(([l])=>Dk.rows.some(r=>({EXT:'E',ETS:'T',REC:'R'})[r.codigo]===l)).map(([l,t])=>['letra',l,t]),...(Dk.rows.some(r=>r.sim)?[['simulada','var(--fg)','Simulada']]:[])])}</figcaption><div id="ch-kx"></div></figure>
+      <figure class="ch-wide"><figcaption>${simTag('kardex')}${ley([['grado','','Calificación'],...[['E','Extraordinario'],['T','ETS'],['R','Recurse']].filter(([l])=>Dk.rows.some(r=>({EXT:'E',ETS:'T',REC:'R'})[r.codigo]===l)).map(([l,t])=>['letra',l,t]),...(Dk.rows.some(r=>r.sim)?[['simulada','var(--ipn-texto)','Simulada']]:[])])}</figcaption><div id="ch-kx"></div></figure>
     </div></details>
     <div id="trayectoria-sim-slot"></div>
     <details class="trayectoria-plegable" id="trayectoria-escenario"><summary id="trayectoria-escenario-titulo">${esc(SATE.texto('sate.trayectoria.y_si'))}<small>${esc(SATE.texto('sate.trayectoria.y_si_resumen'))}</small></summary><div>

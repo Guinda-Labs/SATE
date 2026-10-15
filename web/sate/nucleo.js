@@ -6,7 +6,7 @@ const planPasos=()=>PLAN_DOS_PERIODOS?[0,1]:[0];
 const DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'], DAYN=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
 /* Dispositivo: tocar selecciona; las materias del otro periodo abren sus acciones explícitas.
    En teléfono vertical la trayectoria se muestra en lista y el horario como agenda por día (el usuario puede cambiarlo). */
-const MQ_PHONE=matchMedia('(max-width: 720px)'), MQ_NOHOVER=matchMedia('(hover: none)');
+const MQ_PHONE=matchMedia('(max-width: 639px)'), MQ_NOHOVER=matchMedia('(hover: none)');
 let PT=MQ_NOHOVER.matches?'touch':'mouse';
 document.addEventListener('pointerdown',e=>{PT=e.pointerType||'mouse'},true);
 const tactil=()=>PT!=='mouse';
@@ -1167,6 +1167,10 @@ document.addEventListener('click',e=>{const b=e.target.closest?.('[data-simtgl]'
   requestAnimationFrame(fija);setTimeout(fija,450);setTimeout(fija,1200)});
 $('#b-none').addEventListener('click',()=>{planOlvidar();conSim(usaSim('sugg'),()=>conPlan(()=>{tr().want=[...tr().oblig];saveT()}));renderTray()});
 document.querySelectorAll('[data-plan-paso]').forEach(b=>b.addEventListener('click',()=>{S.planPaso=PLAN_DOS_PERIODOS?+b.dataset.planPaso:0;S.mapHover=null;S.mapFocus=false;renderTray()}));
+$('#map-simbologia').addEventListener('click',()=>{
+  const leyenda=document.createElement('div');leyenda.className='legend';leyenda.innerHTML=leyendaMapa(true);
+  SateUI.modal(SATE.texto('sate.horarios.simbologia'),leyenda,{pequeno:true});
+});
 $('#map-ayuda').addEventListener('click',()=>{
   const cuerpo=document.createElement('div'), intro=document.createElement('p'), notas=document.createElement('ul');
   intro.textContent=PLAN_DOS_PERIODOS?`Elige el periodo que quieres planear. Toca una materia para agregarla o quitarla de ${planEtiqueta(S.planPaso)}. Las del otro periodo abren el inspector; usa «Mover a» para cambiarlas.`:SATE.texto('sate.planeacion.'+(tactil()?'explorar_tactil':'explorar_cursor'));

@@ -61,10 +61,12 @@ $('#b-horario').addEventListener('click',()=>{
   // Mover la vista real conserva la selección, los eventos y la vista previa sin duplicar ids.
   for(const s of ['.calwrap','#agenda'])$('#horario-compacto-cuerpo').appendChild($(s));
   dlg.showModal();
+  renderCal();
 });
 $('#horario-compacto-cerrar').addEventListener('click',()=>$('#horario-compacto').close());
 $('#horario-compacto').addEventListener('close',()=>{
   for(const s of ['.calwrap','#agenda'])$('.planner').insertBefore($(s),$('.planner .summary'));
+  renderCal();
   $('#b-horario').focus();
 });
 $('#offer').addEventListener('pointerover',e=>{if(e.pointerType!=='mouse'||e.target.closest('.note'))return;const o=e.target.closest('.opt');const k=o?o.dataset.k:null;if(k!==S.hover){S.hover=k;renderCal()}});
@@ -392,7 +394,7 @@ function renderGTime(){
   document.querySelectorAll('[data-gdays]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gdays===String(GT.days||''))));
   document.querySelectorAll('[data-gsrc]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gsrc===String(GT.src||''))));
   document.querySelectorAll('[data-gn]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.gn===String(GT.n||''))));
-  $('#gbreaks').innerHTML=GT.breaks.map((b,i)=>`<div class="gbrk" data-brk="${i}">${esc(txH('descanso_al_menos'))}<select data-f="d" aria-label="${esc(txH('descanso_duracion'))}">${[30,60,90,120].map(m=>`<option value="${m}"${+b.d===m?' selected':''}>${({30:txH('minutos_30'),60:txH('hora_1'),90:txH('hora_media'),120:txH('horas_2')})[m]}</option>`).join('')}</select>${esc(txH('descanso_entre'))}<input type="time" step="1800" data-f="a" value="${esc(b.a)}" aria-label="${esc(txH('desde'))}"> ${esc(txH('y'))} <input type="time" step="1800" data-f="b" value="${esc(b.b)}" aria-label="${esc(txH('hasta'))}"><span class="brkdays" role="group" aria-label="${esc(txH('descanso_dias'))}"><button type="button" class="chip" data-bday="all" aria-pressed="${!(b.days||[]).length}">${esc(txH('todos_dias'))}</button>${DAYS.slice(0,6).map((n,d)=>`<button type="button" class="chip" data-bday="${d}" aria-pressed="${(b.days||[]).includes(d)}">${n}</button>`).join('')}</span><button type="button" class="x" data-unbrk="${i}" aria-label="${esc(txH('quitar_descanso'))}">×</button></div>`).join('')+
+  $('#gbreaks').innerHTML=GT.breaks.map((b,i)=>`<div class="gbrk" data-brk="${i}"><label class="field"><span>${esc(txH('descanso_duracion'))}</span><select data-f="d" aria-label="${esc(txH('descanso_duracion'))}">${[30,60,90,120].map(m=>`<option value="${m}"${+b.d===m?' selected':''}>${({30:txH('minutos_30'),60:txH('hora_1'),90:txH('hora_media'),120:txH('horas_2')})[m]}</option>`).join('')}</select></label><div class="gbrk-horas"><label class="field"><span>${esc(txH('desde'))}</span><input type="time" step="1800" data-f="a" value="${esc(b.a)}" aria-label="${esc(txH('desde'))}"></label><label class="field"><span>${esc(txH('hasta'))}</span><input type="time" step="1800" data-f="b" value="${esc(b.b)}" aria-label="${esc(txH('hasta'))}"></label></div><span class="brkdays" role="group" aria-label="${esc(txH('descanso_dias'))}"><button type="button" class="chip" data-bday="all" aria-pressed="${!(b.days||[]).length}">${esc(txH('todos_dias'))}</button>${DAYS.slice(0,6).map((n,d)=>`<button type="button" class="chip" data-bday="${d}" aria-pressed="${(b.days||[]).includes(d)}">${n}</button>`).join('')}</span><button type="button" class="x" data-unbrk="${i}" aria-label="${esc(txH('quitar_descanso'))}">×</button></div>`).join('')+
     `<button type="button" class="link" id="b-addbrk">${esc(txH('agregar_descanso'))}</button>`;
 }
 // ¿cada día con clases deja un hueco de al menos d minutos dentro de [a,b]?
@@ -686,7 +688,7 @@ function renderCal(){
   const reducida=document.documentElement.dataset.vista==='cupos';
   const items=SateUI.cuadriculaHorario(all,{S,slots,START,BLOCK,SLOT,SLOTPX,$,DAYS,hm,esc,txH,hue,keyOf,name,profs,roomAt,ghost,soloLectura:reducida,insignia:reducida?CUPOS.insignia:null});
   if(typeof CUPOS!=='undefined')for(const b of document.querySelectorAll('#cal .blk[data-k]')){const c=byKey(b.dataset.k);if(c)b.insertAdjacentHTML('beforeend',CUPOS.insignia(c))}
-  const cv=reducida&&MQ_PHONE.matches?'dia':cview();document.querySelectorAll('[data-cview]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cview===cv)));
+  const cv=(reducida||$('#horario-compacto').open)&&MQ_PHONE.matches?'dia':cview();document.querySelectorAll('[data-cview]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cview===cv)));
   $('.calwrap').hidden=cv==='dia';$('#agenda').hidden=cv!=='dia';
   if(cv==='dia')$('#agenda').innerHTML=agendaHorario(items,reducida);
   const cr=sel.reduce((s,c)=>s+c[7],0);

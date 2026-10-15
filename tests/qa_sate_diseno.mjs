@@ -75,11 +75,12 @@ assert.match(css,/\.sate-grupo-inicio::before.*width:1px/);
 assert.match(css,/\.sate-pestana:focus-visible,\.sate-barra__btn:focus-visible,\.trayectoria-minimapa button:focus-visible/);
 assert.ok(css.includes('.trayectoria-resumen{grid-column:1 / -1}'));   // resumen a todo el ancho
 assert.ok(css.includes('.trayectoria-minimapa{grid-column:2;grid-row:2 / span 4;align-self:stretch'));   // minimapa a la derecha, misma altura que el contenido
-assert.match(css,/@media\(max-width:720px\).*\.trayectoria-minimapa\{grid-column:1;grid-row:2/);
+assert.match(css,/@media\(max-width:639px\).*\.trayectoria-minimapa\{grid-column:1;grid-row:2/);
 // Contraste de texto AA y de puntos/foco ≥3:1 con los tokens efectivos de ambos temas.
 const fuente=leer('web/sate/cascaron.html');
 const temas=[...fuente.matchAll(/(?:^:root|:root\[data-theme="dark"\]|:root:not\(\[data-theme="light"\]\))\{([^}]+)\}/gm)].map(m=>Object.fromEntries([...m[1].matchAll(/--([\w-]+):(#[\da-f]+);/g)].map(x=>[x[1],x[2]])));
 assert.equal(temas.length,3);
+for(const tema of temas)for(const [viejo,nuevo] of Object.entries({bg:'fondo',surface:'superficie',sunken:'hundido',fg:'texto',muted:'tenue',ok:'ok'}))tema[viejo]=tema['ipn-'+nuevo];
 const lum=hex=>hex.slice(1).match(/../g).map(h=>parseInt(h,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
 const contraste=(a,b)=>(Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05);
 // El catálogo es la única fuente de color; superficies efectivas del cascarón y tokens comunes.
@@ -91,21 +92,21 @@ const tokens=leer('vendor/ipn-comun/dist/tokens.css');
 const declaraciones=s=>Object.fromEntries([...s.matchAll(/(--[\w-]+):\s*([^;\n}]+)/g)].map(m=>[m[1],m[2].trim()]));
 const base=declaraciones(fuente.match(/^:root\{([^}]+)\}/m)[1]);
 const puente=declaraciones(fuente.match(/:root,:root\[data-theme\],:root:not\(\[data-theme\]\)\{([^}]+)\}/)[1]);
-assert.equal(base['--accent'],'var(--sate-realce)');
-assert.equal(base['--accent-fg'],'var(--sate-sobre-realce)');
-assert.equal(puente['--ipn-acento'],'var(--accent)');
-assert.equal(puente['--ipn-sobre-acento'],'var(--sate-sobre-realce)');
-assert.equal(puente['--ipn-acento-fuerte'],'var(--accent-strong)');
-assert.equal(puente['--ipn-acento-suave'],'var(--accent-soft)');
+assert.equal(base['--ipn-acento'],'var(--sate-realce)');
+assert.equal(base['--ipn-sobre-acento'],'var(--sate-sobre-realce)');
+assert.equal(puente['--accent'],'var(--ipn-acento)');
+assert.equal(puente['--accent-fg'],'var(--ipn-sobre-acento)');
+assert.equal(puente['--accent-strong'],'var(--ipn-acento-fuerte)');
+assert.equal(puente['--accent-soft'],'var(--ipn-acento-suave)');
 assert.equal(puente['--ipn-cal-academico'],'var(--sate-acento-base)','La categoría académica conserva su color');
-assert.match(base['--accent-strong'],/color-mix.*var\(--sate-realce\)/);
-assert.match(base['--accent-soft'],/color-mix.*var\(--sate-realce\)/);
+assert.match(base['--ipn-acento-fuerte'],/color-mix.*var\(--sate-realce\)/);
+assert.match(base['--ipn-acento-suave'],/color-mix.*var\(--sate-realce\)/);
 // Pleca institucional, Opinar (componente común), pestaña, segmento, bandeja y botón principal.
 assert.match(leer('tools/institucional.py'),/\.inst\{[^}]*border-bottom:3px solid var\(--sate-realce,var\(--accent\)\)/);
 assert.match(leer('tools/encuesta.py'),/\.enc-btn svg\{[^}]*color:var\(--accent\)/);
-assert.match(fuente,/\.seg button\[aria-pressed="true"\][^{]*\{background:var\(--accent-soft\);color:var\(--accent\)/);
-assert.match(fuente,/\.plan-resumen span\{[^}]*border-left:4px solid var\(--accent\)/);
-assert.match(fuente,/\.btn.primary\{[^}]*background:var\(--accent\)[^}]*color:var\(--accent-fg\)/);
+assert.match(fuente,/\.seg button\[aria-pressed="true"\][^{]*\{background:var\(--ipn-acento-suave\);color:var\(--ipn-acento\)/);
+assert.match(fuente,/\.plan-resumen span\{[^}]*border-left:4px solid var\(--ipn-acento\)/);
+assert.match(fuente,/\.btn.primary\{[^}]*background:var\(--ipn-acento\)[^}]*color:var\(--ipn-sobre-acento\)/);
 assert.match(css,/\.sate-pestana\[aria-selected=true\]\{color:var\(--ipn-acento\)/);
 assert.match(css,/\.sate-btn--primario\{[^}]*color:var\(--sate-sobre-realce\)/);
 assert.match(css,/\.tramite-chips \[aria-pressed=true\]\{[^}]*color:var\(--sate-sobre-realce\)/);
@@ -118,7 +119,7 @@ for(const [i,modo] of ['claro','oscuro'].entries()){
   for(const [u,cfg] of Object.entries(catalogo)){
     const colores={...base,...puente,'--sate-realce':cfg.realce[modo]};
     const resolver=k=>colores[k].startsWith('var(')?resolver(colores[k].slice(4,-1)):colores[k];
-    assert.equal(resolver('--accent'),cfg.realce[modo]);
+    assert.equal(resolver('--accent'),cfg.realce[modo],'Los módulos inyectados conservan el realce por el alias');
     assert.equal(resolver('--ipn-acento'),cfg.realce[modo],`${u}/${modo}: botones, Opinar y navegación sin guinda`);
     // La selección con fondo suave conserva texto del realce, en vez del texto sobre fondo sólido.
     const rgb=h=>h.slice(1).match(/../g).map(v=>parseInt(v,16));

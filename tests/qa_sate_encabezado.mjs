@@ -84,7 +84,7 @@ assert.match(estilosIdentidad,/\.sate-logo-halo\{[^}]*position:relative;display:
 assert.match(estilosIdentidad,/\.sate-logo-halo::before\{content:none\}/);
 assert.doesNotMatch(estilosIdentidad,/\.sate-logo-unidad\{[^}]*radial-gradient/);   // el degradado se veía dentro del logo (dueño)
 assert.match(estilosIdentidad,/\.sate-selector-unidad \.sate-logo-unidad\{max-height:24px;max-width:24px\}/);
-assert.match(estilosIdentidad,/@media\(max-width:720px\)\{\s*#sate-titulo \.sate-logo-unidad\{max-height:28px\}/);
+assert.match(estilosIdentidad,/@media\(max-width:639px\)\{\s*#sate-titulo \.sate-logo-unidad\{max-height:28px\}/);
 const interaccion = inicio.slice(inicio.indexOf('  if (cfg.leyenda) {'), inicio.indexOf('  const nombreUnidad'));
 for (const unidad of Object.keys(config.unidades)) {
   const boton = {setAttribute(k,v){this[k]=v}};
@@ -121,12 +121,12 @@ assert.match(core,/Modo demostración[\s\S]*Salir del modo demostración/);
 assert.match(core,/sessionStorage.removeItem\('ipnt.demo'\)/);
 const css=leer('web/sate/componentes.css');
 assert.match(fila,/class="sate-texto-corto">Traer datos/,'H: etiqueta móvil inicial en catálogo');
-assert.match(css,/@media\(max-width:720px\)\{[\s\S]*\.sate-fila-avisos\{flex-wrap:nowrap;overflow-x:auto/,'F: avisos y SAES en una fila desplazable');
+assert.match(css,/@media\(max-width:639px\)\{[\s\S]*\.sate-fila-avisos\{flex-wrap:nowrap;overflow-x:auto/,'F: avisos y SAES en una fila desplazable');
 assert.match(css,/#sate-avisos-globales \.sate-chips\{flex-wrap:nowrap/);
 assert.match(css,/header\.top\{border-bottom:0/);
 assert.match(css,/\.bar-top\{border-bottom:0/);
 assert.match(css,/\.sate-navegacion\{display:flex;align-items:center/);
-assert.match(css,/@media\(max-width:720px\)\{[\s\S]*\.sate-controles\{flex:1;width:100%\}/);
+assert.match(css,/@media\(max-width:639px\)\{[\s\S]*\.sate-controles\{flex:1;width:100%\}/);
 assert.match(css,/\.sate-datos\{[^}]*margin-left:auto/);
 assert.match(css,/:is\(#sate-tabs,\.sate-medicion\) \.sate-pestana__texto\{white-space:nowrap;overflow-wrap:normal\}/);
 assert.match(css,/data-controles-separados=true\]>#sate-tabs\{flex-basis:100%\}/);

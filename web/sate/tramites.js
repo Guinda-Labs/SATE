@@ -167,6 +167,7 @@
       n.onblur=()=>{error.textContent=validarDatos(k,n.value,n.required);n.setAttribute('aria-invalid',String(!!error.textContent))};
       controles[k]=n;l.appendChild(el('span',tx('dato_'+k)));l.appendChild(n);l.appendChild(error);form.appendChild(l);
     }
+    form.appendChild(el('p',tx('apellidos_aviso'),'tramite-apellidos-aviso'));
     const acciones=el('div',null,'tramite-acciones');
     if(nombre)acciones.appendChild(boton('Corregir',()=>{for(const n of Object.values(controles))n.readOnly=false;controles.paterno.focus()}));
     const confirmar=el('button',nombre?'Sí, guardar':'Guardar','sate-btn');confirmar.type='submit';acciones.appendChild(confirmar);form.appendChild(acciones);

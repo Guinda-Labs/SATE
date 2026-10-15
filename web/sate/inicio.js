@@ -143,7 +143,7 @@
       document.body.classList.toggle('sate-flotante', escalon === 'flotante');
       // Si el cambio oculta el botón enfocado, conservar el foco en la navegación equivalente.
       if (escalon === 'flotante' && tabs.contains(foco)) barra.querySelector('[data-id="'+foco.dataset.id+'"]').focus();
-      else if (escalon !== 'flotante' && !(typeof matchMedia === 'function' && matchMedia('(max-width:720px)').matches) && barra.contains(foco)) tabs.querySelector('[data-id="'+foco.dataset.id+'"]').focus();
+      else if (escalon !== 'flotante' && !(typeof matchMedia === 'function' && matchMedia('(max-width:639px)').matches) && barra.contains(foco)) tabs.querySelector('[data-id="'+foco.dataset.id+'"]').focus();
     }
     function programar() { if (!pendiente) { pendiente = true; requestAnimationFrame(calcular); } }
     recalcularPestanas=programar;

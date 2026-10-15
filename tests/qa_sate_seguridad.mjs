@@ -28,6 +28,14 @@ function entorno(datos={},sesion={}){
   return {c,api:c.IPNT,local,session,dl,casilla,boton,get recargas(){return recargas}};
 }
 const perfil=JSON.stringify({upiita_saes:1,acreditadas:[],carrera:'ficticia',carrera_nombre:'<img src=x onerror=alert(1)>',leido:'ficticio'});
+for(const preferencias of [{'ipnt.encuesta':'contestada'},{'ipnt.unidad':'unidad-ficticia'},{'ipnt.encuesta':'contestada','ipnt.unidad':'unidad-ficticia'}]){
+  const visita=entorno(preferencias);
+  assert.equal(visita.local.getItem('ipnt.persistir'),null,'Preferencias de navegación no son un perfil anterior');
+  visita.api.set('saes.alumno',perfil);
+  assert.equal(visita.dl.open,true);assert.equal(visita.casilla.checked,false);
+  assert.equal(visita.local.getItem('saes.alumno'),null);
+  assert.equal(visita.session.getItem('saes.alumno'),perfil);
+}
 const nuevo=entorno();nuevo.api.set('hu.tab','mapa');assert.equal(nuevo.dl.open,false,'Cambiar de pestaña no pide guardar datos');nuevo.api.set('saes.alumno',perfil);
 assert.equal(nuevo.local.getItem('saes.alumno'),null);assert.equal(nuevo.session.getItem('saes.alumno'),perfil);
 assert.equal(nuevo.dl.open,true);assert.equal(nuevo.casilla.checked,false);
