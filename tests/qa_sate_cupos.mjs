@@ -208,16 +208,21 @@ const menuCtx=vm.createContext({document:{getElementById:()=>null,createElement:
 menuCtx.window=menuCtx;menuCtx.elegir=v=>accion=v;
 const menuSrc=leer('tools/sate_saes.js').replace('__CUPOS_TEXTOS__',JSON.stringify(config.textos)).replace('/*__SATE_LECTOR__*/',"window.elegir('lector');").replace('/*__SATE_CUPOS__*/',"window.elegir('cupos');");
 vm.runInContext(menuSrc,menuCtx);
-assert.deepEqual(botones.map(b=>b.textContent),['Traer mis datos del SAES','Consultar cupos','Cerrar menú']);
+assert.deepEqual(botones.map(b=>b.textContent),['Traer mis datos del SAES','Consultar cupos','Cerrar menú','Modo: en el SAES','Modo: ventana de SATE']);
 botones[0].onclick();assert.equal(accion,'lector');
-menuCtx.IPNTSate();botones.at(-2).onclick();assert.equal(accion,'cupos');
+menuCtx.IPNTSate();botones.at(-4).onclick();assert.equal(accion,'cupos');
+let modoManual;menuCtx.localStorage={setItem:(k,v)=>{assert.equal(k,'ipnt.cupos.modo');modoManual=v}};
+menuCtx.IPNCuposCambiarModo=m=>assert.equal(m,'saes');botones.at(-2).onclick();assert.equal(modoManual,'saes');
 for(const archivo of ['lector','cupos'])assert.match(leer('web/dist/'+archivo+'.js'),/sate\.js\?v=/);
 // Barra real ejecutada desde Inicio.aspx, sin selects ni tabla en la página visible.
 let panelMessage,peticionesPanel=0,tiempo=Date.now(),intervalos=[],visibilidad,aperturas=0;
 const nodes=new Map(),node=k=>{if(!nodes.has(k))nodes.set(k,{value:'',innerHTML:'',style:{setProperty(){}}});return nodes.get(k)};
-const panel={setAttribute(){},focus(){},addEventListener(){},querySelector:s=>node(s),style:{setProperty(){}},remove(){}};
+const atributos={};const panel={setAttribute(k,v){atributos[k]=v},focus(){},addEventListener(){},querySelector:s=>node(s),style:{setProperty(){}},remove(){}};
+const sesionPanel=new Map(),preferenciaPanel=new Map();let anchoFino=true;
 let receptor={closed:false,postMessage(){}};
 const mc=vm.createContext({URL,URLSearchParams,Date:class extends Date{static now(){return tiempo}},console,
+  matchMedia:q=>{assert.equal(q,'(min-width: 900px) and (pointer: fine)');return {matches:anchoFino}},
+  localStorage:{getItem:k=>preferenciaPanel.get(k),setItem:(k,v)=>preferenciaPanel.set(k,v)},sessionStorage:{getItem:k=>sesionPanel.get(k),setItem:(k,v)=>sesionPanel.set(k,v)},
   location:{origin:new URL(url).origin,hostname:new URL(url).hostname,pathname:'/Inicio.aspx'},
   document:{hidden:false,addEventListener:(k,f)=>{visibilidad=f},removeEventListener(){},getElementById:()=>null,createElement:k=>k==='style'?{remove(){}}:panel,head:{appendChild(){}},body:{appendChild(){}},querySelector:()=>null},
   setInterval:(f,ms)=>{assert.equal(ms,1000);intervalos.push(f);return intervalos.length},clearInterval(){},DOMParser:class{parseFromString(s){return documento(s)}}});
@@ -229,7 +234,7 @@ const ejecutar=()=>vm.runInContext(fuente.replace("'__CUPOS_URL__'",JSON.stringi
 const esperar=async()=>{for(let i=0;i<40;i++)await Promise.resolve()};
 const mensaje=d=>panelMessage({origin:'https://sate.test',source:receptor,data:d});
 ejecutar();assert.equal(peticionesPanel,0);assert.equal(aperturas,1);
-assert.doesNotMatch(panel.innerHTML,/<table|data-c="tabla"|data-c="tarjetas"|data-c="carrera"/);
+assert.equal(atributos['data-modo'],'ventana');assert.equal(node('[data-c="hoja"]').hidden,true);
 mensaje({tipo:'ipnt.cupos.hola'});mensaje({tipo:'ipnt.cupos.seleccion',v:1,carrera:'B',plan:'09',grupos:seleccion});await esperar();
 assert.equal(peticionesPanel,3);assert.match(node('[data-c="estado"]').textContent,/conectado a SATE/);
 await node('[data-c="actualizar"]').onclick();assert.equal(peticionesPanel,3);
@@ -257,8 +262,52 @@ node('[data-c="cerrar"]').onclick();
 // Reapertura de marcador conserva el mínimo manual, y bloqueo se explica sin alert().
 mc.open=()=>null;ejecutar();assert.match(node('[data-c="estado"]').textContent,/permite las ventanas emergentes/);
 assert.equal(node('[data-c="abrir"]').hidden,false);
+node('[data-c="cerrar"]').onclick();
+// CUP6: teléfono y tableta táctil, contexto de sesión, detalle de un solo envío.
+anchoFino=false;tiempo+=60000;nodes.clear();let enviadosMovil=[],vibraciones=0;
+mc.navigator={vibrate:()=>vibraciones++};mc.open=()=>{aperturas++;return receptor={closed:false,postMessage:d=>enviadosMovil.push(d)}};
+const abiertas=aperturas;ejecutar();await esperar();
+assert.equal(atributos['data-modo'],'saes');assert.equal(aperturas,abiertas);assert.equal(node('[data-c="hoja"]').hidden,false);
+assert.match(node('[data-c="grupos"]').innerHTML,/Grupos elegidos|Buscar alternativas/);
+assert.match(node('[data-c="grupos"]').innerHTML,/1BM3/);assert.match(node('[data-c="ultima"]').textContent,/Última consulta:/);
+node('[data-c="detalle"]').onclick();assert.equal(aperturas,abiertas+1);
+assert.equal(enviadosMovil.filter(d=>d.tipo==='ipnt.cupos.datos').length,0);
+mensaje({tipo:'ipnt.cupos.hola'});mensaje({tipo:'ipnt.cupos.hola'});
+assert.equal(enviadosMovil.filter(d=>d.tipo==='ipnt.cupos.datos').length,1);
+let permisosMovil=0;mc.Notification=class{static permission='default';static async requestPermission(){permisosMovil++;this.permission='granted'}};
+await node('[data-c="permitir"]').onclick();assert.equal(permisosMovil,1);assert.equal(node('[data-c="permitir"]').hidden,true);
+delete mc.Notification;
+node('[data-c="plegar"]').onclick();assert.equal(node('[data-c="hoja"]').hidden,true);
+node('[data-c="filtro"]').value='B205';node('[data-c="filtro"]').oninput();assert.equal(node('[data-c="hoja"]').hidden,true);
+assert.doesNotMatch(node('[data-c="tabla"]').innerHTML,/1BM3/);
+node('[data-c="auto"]').checked=true;node('[data-c="auto"]').onchange();const movilAntes=peticionesPanel;
+mc.document.hidden=true;tiempo+=60000;await visibilidad();await esperar();assert.equal(peticionesPanel,movilAntes);
+mc.document.hidden=false;await visibilidad();await esperar();assert.equal(peticionesPanel,movilAntes+3);
+assert.equal(enviadosMovil.filter(d=>d.tipo==='ipnt.cupos.datos').length,1);
+// Cambios de cupos sobre grupos elegidos: resaltado, título y vibración.
+mc.fetch=async()=>({ok:true,url,text:async()=>fixture.replace('<td>0</td></tr>','<td>2</td></tr>')});
+tiempo+=60000;await visibilidad();await esperar();assert.ok(vibraciones>0);assert.match(mc.document.title,/Cupos/);assert.ok(node('[data-c="aviso"]').textContent);
+mc.IPNCuposCambiarModo('ventana');assert.equal(atributos['data-modo'],'ventana');assert.equal(aperturas,abiertas+2);
+node('[data-c="cerrar"]').onclick();
+// Preferencia manual prevalece sobre el dispositivo; sin contexto ofrece tabla y sincronización.
+preferenciaPanel.set('ipnt.cupos.modo','saes');sesionPanel.clear();anchoFino=true;tiempo+=60000;ejecutar();await esperar();
+assert.equal(atributos['data-modo'],'saes');assert.match(node('[data-c="sincronizar"]').textContent,/Abre SATE una vez/);assert.match(node('[data-c="tabla"]').innerHTML,/<table/);
+node('[data-c="cerrar"]').onclick();
+// Capacidad de notificación: registro existente, constructor ausente o no utilizable.
+let persistentes=0,directas=0;
+c.Notification=class{static permission='granted';constructor(){directas++}};
+c.navigator={serviceWorker:{getRegistration:async()=>({}),ready:Promise.resolve({showNotification:async()=>persistentes++})}};
+C.notificar('Cupos',{});await esperar();assert.equal(persistentes,1);assert.equal(directas,0);
+c.navigator={};C.notificar('Cupos',{});assert.equal(directas,1);
+delete c.Notification;assert.doesNotThrow(()=>C.notificar('Cupos',{}));
+c.Notification=class{static permission='granted';constructor(){throw Error('No admite constructor')}};assert.doesNotThrow(()=>C.notificar('Cupos',{}));
+// Contratos estáticos para 375 px. El DOM en memoria no mide layout ni orientación.
+assert.match(fuente,/width:calc\(100% - 16px\)/);assert.match(fuente,/minmax\(0,1fr\) 7rem/);
+assert.match(fuente,/max-width:100%;overflow:auto/);assert.match(fuente,/prefers-color-scheme:dark/);
+assert.match(fuente,/max-height:calc\(100dvh - 16px\)/);assert.match(fuente,/min-height:44px/);
+const htmlCupos=leer('web/sate/cupos.html');assert.match(htmlCupos,/box-sizing:border-box/);assert.match(htmlCupos,/position:sticky;right:0/);assert.match(htmlCupos,/minmax\(min\(100%,300px\),1fr\)/);
 assert.doesNotMatch(fuente,/alert\(|ipnt-elegido|originales/);
 assert.doesNotMatch(fuente+leer('web/sate/cupos-receptor.js'),/postMessage\([^\n]*['"]\*['"]/);
 for(const p of ['web/dist/sate.js','web/dist/lector.js','web/dist/cupos.js','web/dist/sate/cupos.js','web/dist/sate/cupos-receptor.js'])assert.doesNotThrow(()=>new Function(leer(p)));
 assert.doesNotMatch(leer('web/dist/sate.js'),/__CUPOS_URL__|__CUPOS_TEXTOS__|__SATE_LECTOR__|__SATE_CUPOS__/);
-console.log('OK CUP4: menú único, compatibilidad, WebForms desde Inicio, barra sin tabla, ICU, cierre/reapertura, bloqueo, manual ≥15 s, automático 60 s/30 min, permisos y sincronización');
+console.log('OK CUP6: modos por capacidad y preferencia, hoja y contexto de sesión, transferencia única, pausa/reanudación, vibración, notificaciones por capacidad, contratos CSS a 375 px; compatibilidad CUP4/CUP5. Sin navegador ni red.');

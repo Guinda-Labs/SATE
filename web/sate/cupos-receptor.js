@@ -3,7 +3,8 @@
   const C=window.IPNCupos,cfg=window.CUPOS_CONFIG,u=new URL(location.href).searchParams.get('unidad'),conf=cfg.unidades[u];
   const tx=(k,v)=>C.texto(cfg.textos,k,v),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const resumen=document.getElementById('cupos-resumen'),estado=document.getElementById('cupos-nube');
-  document.getElementById('cupos-dejar').textContent=tx('dejar_abierta');
+  const enSaes=new URL(location.href).searchParams.get('modo')==='saes';
+  document.getElementById('cupos-dejar').textContent=tx(enSaes?'detalle_unico':'dejar_abierta');
   document.title=tx('titulo');document.getElementById('cupos-titulo').textContent=tx('titulo');document.getElementById('cupos-volver').textContent=tx('marcador');
   SateUI.usarTextos((k,v)=>cfg.textos[k]||k);
   if(!conf){resumen.textContent=tx('error_seleccion');return}
@@ -16,12 +17,13 @@
   controles.innerHTML=['carrera','plan'].map(k=>`<label>${esc(tx(k))} <select data-r="${k}"></select></label>`).join('')+
     `<button data-r="consultar">${esc(tx('consultar'))}</button><label>${esc(tx('filtro'))} <input type="search" data-r="filtro"></label><label>${esc(tx('orden'))} <select data-r="orden"><option value="desc">${esc(tx('orden_mas'))}</option><option value="asc">${esc(tx('orden_menos'))}</option></select></label><label><input type="checkbox" data-r="sonido"> ${esc(tx('sonido'))}</label><label><input type="checkbox" data-r="notificacion" checked> ${esc(tx('notificacion'))}</label>`;
   const el=k=>controles.querySelector('[data-r="'+k+'"]');
+  for(const k of ['carrera','plan','consultar'])el(k).disabled=enSaes;
   el('filtro').oninput=pintar;el('orden').onchange=pintar;
   el('consultar').onclick=()=>window.opener?.postMessage({tipo:'ipnt.cupos.consultar',v:1,carrera:el('carrera').value,plan:el('plan').value},origen);
   el('carrera').onchange=()=>{el('plan').innerHTML=''};
   el('notificacion').onchange=()=>{notificacion=el('notificacion').checked;permiso()};
   el('sonido').onchange=()=>{try{const Audio=window.AudioContext||window.webkitAudioContext;if(el('sonido').checked&&Audio){audio=audio||new Audio();audio.resume().catch(e=>console.warn('SATE Cupos: audio suspendido',e))}}catch(e){console.warn('SATE Cupos: audio no disponible',e)}};
-  function sonar(){if(!el('sonido').checked||!audio||audio.state!=='running')return;try{const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;o.frequency.value=660;g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.2)}catch(e){console.warn('SATE Cupos: sonido fallido',e)}}
+  function sonar(){if(document.hidden||!el('sonido').checked||!audio||audio.state!=='running')return;try{const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;o.frequency.value=660;g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.2)}catch(e){console.warn('SATE Cupos: sonido fallido',e)}}
   const permitir=document.getElementById('cupos-permitir'),aviso=document.getElementById('cupos-aviso');
   permitir.textContent=tx('permitir');
   function permiso(){const p=typeof Notification==='function'?Notification.permission:'denied';
@@ -35,11 +37,10 @@
     if(!ctx||ctx.carrera!==d.carrera||ctx.plan&&ctx.plan!==d.plan||!Array.isArray(ctx.grupos))return;
     const cambios=C.cambios(antes,d,ctx.grupos);if(!cambios.length)return;
     sonar();
+    try{window.navigator?.vibrate?.([150,80,150])}catch(e){}
     avisos+=cambios.length;document.title=tx('titulo_avisos',{n:avisos});aviso.textContent=cambios.map(f=>tx('aviso',{...f,n:f.disponibles})).join(' · ');
     if(!notificacion||typeof Notification!=='function'||Notification.permission!=='granted')return;
-    for(const f of cambios)try{const n=new Notification(tx('titulo'),{body:tx('aviso',{...f,n:f.disponibles}),tag:u+'|'+C.clave(f)});
-      n.onclick=()=>{window.focus();n.close()};
-    }catch(e){console.warn('SATE Cupos: notificación no disponible',{unidad:u,error:e.message});aviso.textContent=tx('permiso_panel')}
+    for(const f of cambios)C.notificar(tx('titulo'),{body:tx('aviso',{...f,n:f.disponibles}),tag:u+'|'+C.clave(f)});
   }
   function pintar(){
     resumen.textContent=datos?tx('ultima',{hora:C.fecha(datos)})+' · '+tx('grupos',{n:datos.filas.length}):tx('esperando');
@@ -78,7 +79,7 @@
     else if(d.tipo==='ipnt.cupos.avisos'&&d.v===1&&Number.isFinite(d.hasta)&&typeof d.notificacion==='boolean'){
       hasta=Math.min(d.hasta,Date.now()+30*60000);notificacion=d.notificacion&&el('notificacion').checked;permiso()}
     else if(d.tipo==='ipnt.cupos.opciones'&&d.v===1&&d.opciones){for(const k of ['carrera','plan']){const opciones=d.opciones[k];if(!Array.isArray(opciones)||opciones.length>200||!opciones.every(o=>typeof o.valor==='string'&&typeof o.texto==='string'))continue;el(k).innerHTML=opciones.map(o=>`<option value="${esc(o.valor)}">${esc(o.texto)}</option>`).join('');el(k).value=opciones.find(o=>o.elegido)?.valor||opciones[0]?.valor||''}}
-    else if(d.tipo==='ipnt.cupos.ritmo'&&d.v===1&&Number.isInteger(d.n)&&d.n>=0&&d.n<=15){el('consultar').textContent=tx(d.n?'cuenta':'consultar',{n:d.n});el('consultar').disabled=d.busy===true||d.n>0}
+    else if(d.tipo==='ipnt.cupos.ritmo'&&d.v===1&&Number.isInteger(d.n)&&d.n>=0&&d.n<=15){el('consultar').textContent=tx(d.n?'cuenta':'consultar',{n:d.n});el('consultar').disabled=enSaes||d.busy===true||d.n>0}
     else if(C.validar(d)){conectado=true;const antes=datos;if(guardar(d))alertar(antes,d);seleccion();nube()}
   });
   window.addEventListener('storage',e=>{if(e.key===conf.prefijo+'cuposContexto')seleccion();if(e.key===clave){try{guardar(JSON.parse(e.newValue))}catch(err){}}});
