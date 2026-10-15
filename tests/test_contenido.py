@@ -1,5 +1,5 @@
 """Pruebas de tools/contenido.py (validador de textos TOML y data/sate.json)."""
-import json, pathlib, sys, tempfile, unittest
+import json, pathlib, re, sys, tempfile, unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "tools"))
@@ -17,6 +17,30 @@ def validar_texto(toml, extra=None):
 
 
 class TestContenido(unittest.TestCase):
+    def test_nombres_visibles_compilados(self):
+        dist = pathlib.Path(__file__).resolve().parent.parent / 'web' / 'dist'
+        archivos = sorted(p for p in dist.rglob('*') if p.suffix in ('.html', '.js'))
+        self.assertTrue(archivos, 'Compila las tres unidades antes de revisar los textos visibles')
+        for path in archivos:
+            with self.subTest(archivo=str(path.relative_to(dist))):
+                texto = re.sub(r'<!--[\s\S]*?-->', '', path.read_text(encoding='utf-8'))
+                texto = re.sub(r'/\*[\s\S]*?\*/', '', texto)
+                texto = re.sub(r'(?m)^\s*//[^\n]*|(?<=\s)//[^\n]*', '', texto)
+                # Compatibilidad: repositorios, rutas, archivos y metadato del perfil ipnt 1.
+                texto = re.sub(r'''https?://[^\s<>"']+|\bipn-tools-(?:icono|og|respaldo)[^\s<>"']*|app:\s*'IPN-tools' ''', '', texto, flags=re.X)
+                antiguos = re.findall(r'(?i).{0,60}(?:IPN[- ]tools|\bel lector\b).{0,60}', texto)
+                self.assertEqual(antiguos, [], 'Textos visibles antiguos: ' + repr(antiguos))
+
+    def test_mismo_marcador_en_ambas_instrucciones(self):
+        import saes
+        textos = contenido.objeto_t()
+        clave = 'sate.lector.mismo_marcador'
+        self.assertEqual(textos[clave], 'Es el mismo marcador SATE que usas para traer tus datos del SAES; si ya lo tienes, no necesitas agregarlo otra vez.')
+        self.assertIn(textos[clave], saes.card('javascript:void(0)', 'horarios'))
+        raiz = pathlib.Path(__file__).resolve().parent.parent
+        self.assertIn("SATE.texto('" + clave + "')", (raiz / 'web/sate/cupos.js').read_text(encoding='utf-8'))
+        self.assertEqual(textos['sate.cupos.traer'], 'Traer mis datos del SAES')
+
     def test_los_textos_reales_son_validos(self):
         self.assertEqual(contenido.validar(), [])
 

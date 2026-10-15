@@ -69,8 +69,8 @@ var IPNT=window.IPNT=(()=>{
     return {ipnt:1,tipo:'perfil',app:'IPN-tools',version:CFG.version||'',unidad:CFG.unidad||'',guardado:new Date().toISOString(),claves,borrados};
   }
   function validar(d){
-    if(!d||typeof d!=='object'||d.tipo!=='perfil'||typeof d.claves!=='object') throw new Error('El archivo no es un perfil de IPN-tools.');
-    if(!(d.ipnt>=1)) throw new Error('El archivo no es un perfil de IPN-tools.');
+    if(!d||typeof d!=='object'||d.tipo!=='perfil'||typeof d.claves!=='object') throw new Error('El archivo no es un perfil de SATE.');
+    if(!(d.ipnt>=1)) throw new Error('El archivo no es un perfil de SATE.');
     if(d.ipnt>1) throw new Error('El perfil se guardó con una versión más nueva de la herramienta. Actualiza la página.');
     return d;
   }
@@ -499,7 +499,7 @@ UI = """<button class="ipnt-btn" id="ipnt-open" type="button" aria-haspopup="dia
   <p class="saes-note" style="margin:0 0 8px">Descarga tus datos para guardarlos o pasarlos a otro navegador. Restaurar reemplaza los datos de este navegador por los del archivo.</p>
   <div class="row"><button class="btn" id="ipnt-down" type="button">Descargar respaldo</button><label class="btn ipnt-file">Restaurar desde archivo<input type="file" id="ipnt-file" accept=".json,application/json"></label></div>
   <p class="ipnt-state" id="ipnt-filemsg" aria-live="polite"></p>
-  <p class="saes-note" style="margin:14px 0 0">Tus datos se guardan en tu propia nube: en OneDrive, en la carpeta <b>Aplicaciones › IPN-tools</b>; en Google Drive, en un espacio privado de la aplicación que no aparece entre tus archivos. La herramienta solo tiene acceso a ese espacio. No hay servidor intermedio: nadie más puede consultarlos. <a href="privacidad.html" target="_blank" rel="noopener">Aviso de privacidad</a> · <a href="condiciones.html" target="_blank" rel="noopener">Condiciones de uso</a></p>
+  <p class="saes-note" style="margin:14px 0 0">Tus datos se guardan en tu propia nube: en OneDrive, en la <b>carpeta de la aplicación</b>; en Google Drive, en un espacio privado de la aplicación que no aparece entre tus archivos. La herramienta solo tiene acceso a ese espacio. No hay servidor intermedio: nadie más puede consultarlos. <a href="privacidad.html" target="_blank" rel="noopener">Aviso de privacidad</a> · <a href="condiciones.html" target="_blank" rel="noopener">Condiciones de uso</a></p>
 </dialog>
 <dialog class="saes-dlg ipnt-dlg" id="ipnt-conf" aria-labelledby="ipnt-conf-h">
   <div class="dl-head"><h2 id="ipnt-conf-h">Ya hay datos en tu cuenta</h2></div>

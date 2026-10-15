@@ -84,7 +84,7 @@ assert.equal(C.limpiar({...payload,identidad:'dato inventado'}).identidad,undefi
 for(const unidad of ['upiita','escom','upibi']){
   const prefix=unidad==='upiita'?'hu.':'hu.'+unidad+'.',origin=new URL(config.unidades[unidad].saes).origin;
   const eventos={},storage=new Map(),difundidos=[],enviados=[],graph=[],nodos=new Map(),modales=[];
-  const nuevo=()=>({hijos:[],appendChild(n){this.hijos.push(n)},removeAttribute(){},cloneNode(){return nuevo()}});
+  const nuevo=tag=>({tagName:tag?.toUpperCase(),hijos:[],appendChild(n){this.hijos.push(n)},removeAttribute(){},cloneNode(){return nuevo(this.tagName)}});
   const nodo=id=>{if(!nodos.has(id))nodos.set(id,{...nuevo(),value:'',checked:true,innerHTML:'',querySelector:nodo,textContent:'',classList:{toggle(){}},focus(){},scrollIntoView(){throw Error('Cupos no debe desplazar la página')}});return nodos.get(id)};
   const opener={postMessage:(d,o)=>enviados.push({d,o})};let sesion=false,nube=null;
   const ipnt={get cuenta(){return sesion?{}:null},get proveedor(){return sesion?'ms':null},set:(k,v)=>storage.set(k,v),cupos:async(u,d)=>{graph.push({u,d});if(d)nube=d;return nube}};
@@ -121,14 +121,17 @@ for(const unidad of ['upiita','escom','upibi']){
   // Horarios real: elige la más reciente, avisa a 61 min y conserva la consulta al recargar.
   const handlers={};let renders=0;
   Object.assign(ctx,{UNIDAD:unidad,HU:prefix,DATA:{opciones_plan:{B:{carrera:'B',plan:'09'}}},S:{car:'B',gen:null},
-    SATE:{texto:(k,v={})=>C.texto(config.textos,k.replace('sate.cupos.',''),v)},name:c=>c[8],profs:()=>'',DAYS:['Lun'],hm:String,
+    SATE:{texto:(k,v={})=>k==='sate.lector.mismo_marcador'?config.textos[k]:C.texto(config.textos,k.replace('sate.cupos.',''),v)},name:c=>c[8],profs:()=>'',DAYS:['Lun'],hm:String,
     document:{hidden:false,documentElement:{},createElement:nuevo,querySelectorAll:()=>[nodo('ayuda-cupos')]},getComputedStyle:()=>({getPropertyValue:()=>''}),
     setInterval(){},selected:()=>[['B','M',1,'1BM4',0,[],[[0,540,600]],4,'B105']],classes:()=>[],
     $:nodo,esc:String,renderOffer:()=>renders++,renderCal(){},renderGen(){}});
   ctx.addEventListener=(k,f)=>handlers[k]=f;
   vm.runInContext(leer('web/sate/cupos.js')+';globalThis.cupos=CUPOS',ctx);
   ctx.cupos.montar();await new Promise(ok=>setImmediate(ok));
-  nodo('ayuda-cupos').onclick();assert.equal(modales.at(-1)[0],'Consultar cupos');assert.equal(modales.at(-1)[1].hijos[1].hijos.length,3);
+  nodo('ayuda-cupos').onclick();assert.equal(modales.at(-1)[0],'Consultar cupos');
+  const cuerpo=modales.at(-1)[1];
+  assert.equal(cuerpo.hijos.find(n=>n.tagName==='OL').hijos.length,3);
+  assert.equal(cuerpo.hijos[1].textContent,config.textos['sate.lector.mismo_marcador']);
   assert.match(nodo('#cupos-estado').textContent,/Última consulta:/);assert.equal(nodo('#cupos-omitir').checked,true);
   nube={...d,hora:new Date(t+2000).toISOString()};await handlers['ipnt-sincronizado']();
   assert.equal(JSON.parse(storage.get(prefix+'cupos')).hora,nube.hora);
@@ -205,7 +208,7 @@ const menuCtx=vm.createContext({document:{getElementById:()=>null,createElement:
 menuCtx.window=menuCtx;menuCtx.elegir=v=>accion=v;
 const menuSrc=leer('tools/sate_saes.js').replace('__CUPOS_TEXTOS__',JSON.stringify(config.textos)).replace('/*__SATE_LECTOR__*/',"window.elegir('lector');").replace('/*__SATE_CUPOS__*/',"window.elegir('cupos');");
 vm.runInContext(menuSrc,menuCtx);
-assert.deepEqual(botones.map(b=>b.textContent),['Traer mis datos a SATE','Consultar cupos','Cerrar menú']);
+assert.deepEqual(botones.map(b=>b.textContent),['Traer mis datos del SAES','Consultar cupos','Cerrar menú']);
 botones[0].onclick();assert.equal(accion,'lector');
 menuCtx.IPNTSate();botones.at(-2).onclick();assert.equal(accion,'cupos');
 for(const archivo of ['lector','cupos'])assert.match(leer('web/dist/'+archivo+'.js'),/sate\.js\?v=/);

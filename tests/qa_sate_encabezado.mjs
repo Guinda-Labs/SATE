@@ -14,7 +14,7 @@ assert.match(encabezado, /<label class="field"><span class="sate-sr">Carrera<\/s
 assert.equal((html.match(/id="f-carrera"/g) || []).length, 1);
 assert.equal((html.match(/id="saes-open"/g) || []).length, 1);
 const fila = encabezado.slice(encabezado.indexOf('class="sate-fila-avisos"'),encabezado.indexOf('class="sate-navegacion"'));
-assert.match(fila,/id="sate-avisos-globales"[\s\S]*id="saes-open"[^>]*data-saes-open[\s\S]*Cargar datos del SAES[\s\S]*id="sate-saes-indicador"[^>]*role="status"[^>]*aria-label="Sin datos del SAES: puedes usar el mapa y los horarios"/);
+assert.match(fila,/id="sate-avisos-globales"[\s\S]*id="saes-open"[^>]*data-saes-open[\s\S]*Traer mis datos del SAES[\s\S]*id="sate-saes-indicador"[^>]*role="status"[^>]*aria-label="Sin datos del SAES: puedes usar el mapa y los horarios"/);
 assert.ok(!encabezado.slice(encabezado.indexOf('class="sate-navegacion"')).includes('saes-open'));
 assert.ok(!html.includes('sate-datos-menu'));
 for (const archivo of ['index.html','nucleo.js','inicio.js','mapa.js','situacion.js','desempeno.js','saes-dialogo.js']) {
@@ -110,8 +110,8 @@ const c=vm.createContext({SATE:{texto},document:{getElementById:id=>id==='saes-o
 vm.runInContext(saes+'\nglobalThis.estado=SAES.status;',c);
 for (const datos of [null,{leido:'2026-10-07T12:00:00Z'},{leido:'2026-10-08T15:00:00Z'},null,{demo:true,leido:'2026-10-07T12:00:00Z'}]) {
   const usando=!!datos&&!datos.demo;
-  c.estado(datos);assert.equal(clases.on,usando);assert.equal(span.textContent,usando?'Actualizar datos del SAES':'Cargar datos del SAES');
-  assert.equal(corto.textContent,usando?'Actualizar SAES':'Cargar SAES');
+  c.estado(datos);assert.equal(clases.on,usando);assert.equal(span.textContent,'Traer mis datos del SAES');
+  assert.equal(corto.textContent,'Traer datos');
   const esperado=usando?texto('sate.encabezado.usando_datos',{fecha:new Date(datos.leido).toLocaleString('es-MX',{dateStyle:'medium',timeStyle:'short'})}):texto('sate.encabezado.sin_datos');
   assert.equal(indicador.title,esperado);assert.equal(indicador['aria-label'],esperado);
 }
@@ -120,7 +120,7 @@ assert.match(core,/if\(location.hash==='#demo'\)/);
 assert.match(core,/Modo demostración[\s\S]*Salir del modo demostración/);
 assert.match(core,/sessionStorage.removeItem\('ipnt.demo'\)/);
 const css=leer('web/sate/componentes.css');
-assert.match(fila,/class="sate-texto-corto">Cargar SAES/,'H: etiqueta móvil inicial en catálogo');
+assert.match(fila,/class="sate-texto-corto">Traer datos/,'H: etiqueta móvil inicial en catálogo');
 assert.match(css,/@media\(max-width:720px\)\{[\s\S]*\.sate-fila-avisos\{flex-wrap:nowrap;overflow-x:auto/,'F: avisos y SAES en una fila desplazable');
 assert.match(css,/#sate-avisos-globales \.sate-chips\{flex-wrap:nowrap/);
 assert.match(css,/header\.top\{border-bottom:0/);

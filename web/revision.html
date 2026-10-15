@@ -75,7 +75,7 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-si
     <li><b>Con datos del SAES</b> (opcional), incorporan el avance del alumno: acreditadas, reprobadas, desfase, materias en curso, carga autorizada y cita.</li>
     <li>Toda la información se procesa y almacena en el navegador de quien la usa; no se envía a ningún servidor.</li>
   </ul>
-  <p class="note ok">El marcador <b>Lector IPN-tools</b> solo realiza consultas de lectura dentro del SAES (Kárdex, Estado general, Cita de reinscripción y horario actual). No captura contraseñas ni ejecuta trámites.</p>
+  <p class="note ok">El marcador <b>SATE</b> solo realiza consultas de lectura dentro del SAES (Kárdex, Estado general, Cita de reinscripción y horario actual). No captura contraseñas ni ejecuta trámites.</p>
 
   <h2 id="requisitos">2. Requisitos</h2>
   <ul>
@@ -94,9 +94,9 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-si
   </ol>
   <h3>3.2 Incorporar los datos del SAES</h3>
   <ol class="steps">
-    <li>Pulse <b>Usar mis datos del SAES</b> (parte superior). Arrastre el botón <b>Lector IPN-tools</b> a la barra de marcadores; la ventana incluye instrucciones para mostrar la barra y para la instalación manual.</li>
+    <li>Pulse <b>Traer mis datos del SAES</b> (parte superior). Arrastre el botón <b>SATE</b> a la barra de marcadores; la ventana incluye instrucciones para mostrar la barra y para la instalación manual.</li>
     <li>Inicie sesión en el SAES y pulse el marcador. Revise el resumen y pulse <b>Copiar mis datos</b>.</li>
-    <li>Regrese a Horarios, abra <b>Usar mis datos del SAES</b> y pegue con <kbd>Ctrl</kbd>+<kbd>V</kbd>. Aparece el panel <i>Estado general</i> sobre el mapa.</li>
+    <li>Regrese a Horarios, abra <b>Traer mis datos del SAES</b> y pegue con <kbd>Ctrl</kbd>+<kbd>V</kbd>. Aparece el panel <i>Estado general</i> sobre el mapa.</li>
     <li>Sin cuenta del SAES, pegue en el mismo recuadro el <a href="#demo">perfil de demostración</a>.</li>
   </ol>
   <h3>3.3 Armar el horario</h3>
@@ -114,7 +114,7 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-si
   </ol>
   <h3>3.5 Electivas</h3>
   <ol class="steps">
-    <li>Abra <a href="sate/index.html#/upiita/tramites/electivas" target="_blank" rel="noopener">Ventanilla de Electivas</a>, elija la carrera y capture sus datos (o use <b>Usar mis datos del SAES</b>).</li>
+    <li>Abra <a href="sate/index.html#/upiita/tramites/electivas" target="_blank" rel="noopener">Ventanilla de Electivas</a>, elija la carrera y capture sus datos (o use <b>Traer mis datos del SAES</b>).</li>
     <li>Describa las actividades realizadas en la búsqueda o consulte el catálogo; registre las horas.</li>
     <li>Responda el formulario y descargue el DIE-03 y el formulario llenos.</li>
   </ol>
@@ -122,7 +122,7 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-si
   <h2 id="demo">4. Perfil de demostración</h2>
   <p>Alumno ficticio de Ingeniería Biónica con dos materias reprobadas (una desfasada), dos materias en curso y horario inscrito. Permite probar todas las funciones que requieren datos del SAES.</p>
   <div class="row"><button class="btn primary" id="b-demo" type="button">Copiar perfil de demostración</button><span id="demo-msg" aria-live="polite"></span></div>
-  <p class="note">Después de copiarlo, abra Horarios o Electivas, pulse <b>Usar mis datos del SAES</b> y pegue con <kbd>Ctrl</kbd>+<kbd>V</kbd>. Para retirarlo, use <b>Borrar mis datos</b> en la misma ventana.</p>
+  <p class="note">Después de copiarlo, abra Horarios o Electivas, pulse <b>Traer mis datos del SAES</b> y pegue con <kbd>Ctrl</kbd>+<kbd>V</kbd>. Para retirarlo, use <b>Borrar mis datos</b> en la misma ventana.</p>
   <textarea id="demo-txt" readonly hidden aria-label="Perfil de demostración"></textarea>
 
   <h2 id="casos">5. Casos de prueba</h2>
@@ -144,7 +144,7 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-si
     <tr><td>Sistemas Automotrices</td><td>Se muestra solo la opción terminal impartida en la UPIITA (7.º a 9.º semestre).</td></tr>
     <tr><td>Carga por créditos</td><td>Los límites mínimo, medio y máximo se toman de la Cita de reinscripción de cada alumno; sin datos del SAES solo están confirmados los de Ingeniería Biónica.</td></tr>
     <tr><td>Desfase</td><td>Se calcula con la regla del SAES (reprobada con más de dos periodos sin acreditar); el dato oficial es el de la Cita de reinscripción.</td></tr>
-    <tr><td>Marcador</td><td>Si cambia la estructura de las páginas del SAES, el Lector puede requerir actualización. En teléfono, la instalación del marcador es manual; funciona en Firefox (Android e iOS) y en Safari (iOS), donde se crea editando un marcador y se ejecuta desde la barra de direcciones. En Chrome para Android se ejecuta escribiendo su nombre en la barra de direcciones; en Chrome para iOS, desde el marcador con el SAES abierto.</td></tr>
+    <tr><td>Marcador</td><td>Si cambia la estructura de las páginas del SAES, el marcador SATE puede requerir actualización. En teléfono, la instalación del marcador es manual; funciona en Firefox (Android e iOS) y en Safari (iOS), donde se crea editando un marcador y se ejecuta desde la barra de direcciones. En Chrome para Android se ejecuta escribiendo su nombre en la barra de direcciones; en Chrome para iOS, desde el marcador con el SAES abierto.</td></tr>
   </table>
 
   <footer>Herramientas de consulta para la planeación académica. La reinscripción oficial se realiza en el SAES.</footer>
@@ -164,7 +164,7 @@ const DEMO={upiita_saes:1,leido:"2026-10-01T12:00:00Z",boleta:"2099000000",nombr
   en_curso:["B302","B315"],
   horario_inscrito:[["3BV1","B302","DISPOSITIVOS ELECTRONICOS","",[[1,1140,1230],[2,1140,1230],[3,1140,1230]]],["3BV2","B315","SENSORES Y ACTUADORES","",[[0,1230,1320],[3,1050,1140],[4,1050,1140]]]],
   acreditadas:"B101 B102 B103 B104 B105 B106 B107 B108 B109 B110 B111 B112 B114 B201 B202 B205 B301 B303".split(" ").map((k,i)=>[k,[9,8,9,10,9,10,10,10,6,9,7,10,10,10,10,8,8,10][i],"25/1","ORD"])};
-$('#b-demo').addEventListener('click',async()=>{const t=JSON.stringify(DEMO);try{await navigator.clipboard.writeText(t);$('#demo-msg').textContent='Copiado. Péguelo en «Usar mis datos del SAES».'}
+$('#b-demo').addEventListener('click',async()=>{const t=JSON.stringify(DEMO);try{await navigator.clipboard.writeText(t);$('#demo-msg').textContent='Copiado. Péguelo en «Traer mis datos del SAES».'}
   catch(e){const a=$('#demo-txt');a.hidden=false;a.value=t;a.select();$('#demo-msg').textContent='Seleccione el texto y cópielo con Ctrl+C.'}});
 
 /* casos de prueba: [id, grupo, título, pasos, resultado esperado] */
@@ -175,15 +175,15 @@ const T=[
  ['H-03','H','Mapa de Sistemas Automotrices',['Elegir «Ing. en Sistemas Automotrices».'],'Se muestran solo 7.º, 8.º y 9.º semestre (13 materias) y la nota de opción terminal.'],
  ['H-04','H','Mapa de Ingeniería en Energía',['Elegir Ingeniería en Energía.'],'El mapa muestra áreas, seriación punteada y la nota de propuesta sujeta a validación.'],
  ['H-05','H','Tema claro y oscuro',['Pulsar el botón junto al título.','Recargar la página.'],'Cambia entre claro y oscuro y conserva la elección al recargar.'],
- ['S-01','S','Instalación del marcador',['Pulsar «Usar mis datos del SAES».','Arrastrar «Lector IPN-tools» a la barra de marcadores (o seguir la instalación manual).'],'El marcador queda guardado en el navegador.'],
- ['S-02','S','Lectura en el SAES',['Iniciar sesión en el SAES.','Pulsar el marcador «Lector IPN-tools».'],'Aparece un resumen con boleta, carrera, promedio, materias acreditadas y en curso, y la cita; el botón «Copiar mis datos» copia la información.'],
- ['S-03','S','Carga de datos y Estado general',['Pegar los datos (reales o del perfil de demostración) en «Usar mis datos del SAES».'],'Sobre el mapa aparece «Estado general» con promedio, créditos, periodo que se planea, carga autorizada, desfase oficial y cita.'],
+ ['S-01','S','Instalación del marcador',['Pulsar «Traer mis datos del SAES».','Arrastrar «SATE» a la barra de marcadores (o seguir la instalación manual).'],'El marcador queda guardado en el navegador.'],
+ ['S-02','S','Lectura en el SAES',['Iniciar sesión en el SAES.','Pulsar el marcador «SATE».'],'Aparece un resumen con boleta, carrera, promedio, materias acreditadas y en curso, y la cita; el botón «Copiar mis datos» copia la información.'],
+ ['S-03','S','Carga de datos y Estado general',['Pegar los datos (reales o del perfil de demostración) en «Traer mis datos del SAES».'],'Sobre el mapa aparece «Estado general» con promedio, créditos, periodo que se planea, carga autorizada, desfase oficial y cita.'],
  ['S-04','S','Desfase con el perfil de demostración',['Cargar el perfil de demostración.'],'«Desfase oficial»: 1 materia (Teoría de los circuitos, desfasada en 27/1); Física moderna y óptica: debe acreditarse en 27/1.'],
  ['S-05','S','Colores del mapa con datos',['Con datos cargados, revisar el mapa y su simbología.','Apagar «Ver sugeridas».'],'Verde: puede cursarse; anillo: sugerida; gris con punto: en curso; rojo: reprobada o desfasada. Al apagar «Ver sugeridas» desaparece solo el anillo.'],
  ['S-06','S','Materia desfasada y carga con reprobadas',['Con el perfil de demostración, revisar «Materias que quieres cursar».','Intentar quitar Teoría de los circuitos desde el mapa.','En «Planeación de horario», agregar solo dos grupos de materias nuevas y revisar la barra de carga.'],'La desfasada aparece con la etiqueta «obligatoria» y no puede retirarse. La carga total suma los 16.5 créditos retenidos por las reprobadas más los de las materias nuevas; al agregar una reprobada la carga total no aumenta.'],
  ['S-07','S','Simulación de fin de semestre',['Activar «Simular fin de semestre».','Marcar «Dispositivos electrónicos» como reprobada.'],'Aparece la etiqueta «Simulación»; cambian los créditos al terminar, el mapa, las sugerencias y la lista de reprobadas.'],
  ['S-08','S','Otra carrera con datos cargados',['Con datos de Biónica, elegir Mecatrónica.','Pulsar «Volver a …».'],'Se muestra un aviso de que los datos corresponden a otra carrera; el botón regresa a Biónica.'],
- ['S-09','S','Borrado de datos',['Abrir «Actualizar mis datos del SAES» y pulsar «Borrar mis datos» (confirmar).'],'Desaparece «Estado general» y la página vuelve al modo de exploración.'],
+ ['S-09','S','Borrado de datos',['Abrir «Traer mis datos del SAES» y pulsar «Borrar mis datos» (confirmar).'],'Desaparece «Estado general» y la página vuelve al modo de exploración.'],
  ['A-01','A','Orden de la oferta',['Con el perfil de demostración, abrir «Planeación de horario».'],'La oferta muestra primero la materia desfasada y después las reprobadas.'],
  ['A-02','A','Excluir profesores',['Escribir y seleccionar un profesor en «Excluir profesores».','Activar «Ocultar las marcadas como No».'],'Sus grupos aparecen como «profesor excluido» y se ocultan al activar la casilla.'],
  ['A-03','A','Horario en la escuela',['Definir «En la escuela» de 09:00 a 15:00.'],'La oferta deja de mostrar grupos fuera de ese rango.'],
@@ -198,7 +198,7 @@ const T=[
  ['E-03','E','Excel',['Descargar «Excel» y abrirlo en Excel o Google Sheets.'],'Hojas «Horario» y «Profesores» con celdas unidas, bordes, rellenos y suma de créditos.'],
  ['E-04','E','Color de extracurriculares',['Cambiar el color de resalte y volver a exportar.'],'Las actividades extracurriculares usan el color elegido en las tres salidas.'],
  ['L-01','L','Búsqueda de actividades',['Abrir Electivas y escribir «congreso» en la búsqueda.'],'Se muestra la actividad del instructivo, su clave y la equivalencia de horas por crédito.'],
- ['L-02','L','Datos desde el SAES',['Pulsar «Usar mis datos del SAES» y pegar los datos.'],'Se llenan nombre, apellidos, boleta y carrera.'],
+ ['L-02','L','Datos desde el SAES',['Pulsar «Traer mis datos del SAES» y pegar los datos.'],'Se llenan nombre, apellidos, boleta y carrera.'],
  ['L-03','L','Formatos llenos',['Registrar una actividad con horas, completar datos y responder el formulario.','Descargar el DIE-03 y el formulario.'],'El PDF contiene los formatos oficiales con los datos y los créditos calculados.'],
  ['X-01','X','Uso en teléfono',['Abrir ambas páginas en un teléfono.'],'El contenido es legible y no requiere desplazamiento horizontal.'],
  ['X-02','X','Textos y redacción',['Revisar los textos de ambas páginas.'],'Redacción clara, profesional y sin errores.'],

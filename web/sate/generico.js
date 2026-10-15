@@ -121,7 +121,7 @@ window.IPNT_UNIDAD = window.SATE_UNIDAD;
     if(conectado){$('saes-status').hidden=!hay;$('saes-steps').hidden=hay;$('saes-clear').hidden=!hay;
       $('saes-who').textContent=hay?(alumno.carrera_nombre||'')+' · leídos el '+fecha:'';}
   }
-  const aviso = d => '<p class="muted">Tu trayectoria con los datos del SAES.</p>'+(d.viejo&&alumno?'<p role="status">Actualiza tus datos con el Lector para ver los nombres de las materias.</p>':'');
+  const aviso = d => '<p class="muted">Tu trayectoria con los datos del SAES.</p>'+(d.viejo&&alumno?'<p role="status">Actualiza tus datos con el marcador SATE para ver los nombres de las materias.</p>':'');
   function representacion(d){
     const cols=Math.max(1,...d.grupos.map(([,ms])=>ms.length)), boxes=[],rows=[];
     d.grupos.forEach(([g,ms],i)=>{rows.push([g,32+i*76]);ms.forEach((m,j)=>boxes.push([150+j*138,10+i*76,128,56,m.clave]));});
@@ -149,10 +149,10 @@ window.IPNT_UNIDAD = window.SATE_UNIDAD;
       '<svg width="'+L.w*sc+'" height="'+L.h*sc+'" viewBox="0 0 '+L.w+' '+L.h+'" aria-hidden="true">'+L.rows.map(([n,y],i)=>'<rect class="band" x="0" y="'+(i*76)+'" width="'+L.w+'" height="76"/><text class="rowlbl" x="12" y="'+y+'">'+esc(n)+'</text>').join('')+'</svg>'+
       L.boxes.map(([x,y,w,h,k])=>SateUI.cajaMateria(ctx,k,x,y,w,h,sc)).join('')+'</div>';
   }
-  function vacio() {return '<p>Usa el Lector desde el SAES de tu unidad y pega tus datos para ver tu trayectoria.</p><button class="btn primary" type="button" data-saes-open>Cargar datos del SAES</button>'}
+  function vacio() {return '<p>Usa el marcador SATE desde el SAES de tu unidad y pega tus datos para ver tu trayectoria.</p><button class="btn primary" type="button" data-saes-open>Traer mis datos del SAES</button>'}
   function mapa() {
     const d=datos(alumno);
-    if(!alumno||!d.materias.length){$('v-tray').innerHTML='<h2>Mapa curricular</h2>'+aviso(d)+(alumno?'<p>El SAES no informó materias. Actualiza tus datos con el Lector.</p>':vacio());return}
+    if(!alumno||!d.materias.length){$('v-tray').innerHTML='<h2>Mapa curricular</h2>'+aviso(d)+(alumno?'<p>El SAES no informó materias. Actualiza tus datos con el marcador SATE.</p>':vacio());return}
     const {mini}=representacion(d), mostrar=pendientes?{...d}:d;
     // Filtrar la representación, conservando el estado real y los grupos del SAES.
     if(pendientes){mostrar.materias=d.materias.filter(m=>m.estado!=='Acreditada');mostrar.grupos=d.grupos.map(([g,ms])=>[g,ms.filter(m=>m.estado!=='Acreditada')]).filter(([,ms])=>ms.length);}
@@ -230,7 +230,7 @@ window.IPNT_UNIDAD = window.SATE_UNIDAD;
     const col=(t,rs)=>SateUI.fichasKardex(t,rs.length+' '+(rs.length===1?'materia':'materias')+' · promedio '+(rs.reduce((s,r)=>s+r.cal,0)/rs.length).toFixed(2)+(rs.every(r=>r.cr!=null)?' · '+fmtCr(rs.reduce((s,r)=>s+r.cr,0))+' cr':''),rs,esc);
     const eq=D.rows.filter(r=>r.eqv);
     const kardex='<div class="kx">'+(eq.length?col('Equivalencias',eq):'')+periodos.map(p=>col(p==null?'Sin periodo':perName(p),D.rows.filter(r=>!r.eqv&&r.per===p))).join('')+'</div>';
-    const desfase=(a.desfasadas_saes||[]).length?'Desfasadas según el SAES: '+(a.desfasadas_saes||[]).length:a.desfasadas_saes!=null?'El SAES no lista materias desfasadas.':'Desfase sin confirmar: actualiza el Estado General con el Lector.';
+    const desfase=(a.desfasadas_saes||[]).length?'Desfasadas según el SAES: '+(a.desfasadas_saes||[]).length:a.desfasadas_saes!=null?'El SAES no lista materias desfasadas.':'Desfase sin confirmar: actualiza el Estado General con el marcador SATE.';
     $('sate-trayectoria').innerHTML='<h2>Mi trayectoria</h2><div id="sate-presente"><p class="trayectoria-resumen">'+esc(a.carrera_nombre||'')+(a.plan?' · Plan '+esc(a.plan):'')+' · '+(D.total>0&&numero(a.avance?.obtenidos)!=null?Math.round(a.avance.obtenidos/D.total*100)+' % de avance':'Avance sin informar')+'</p>'+minimapa(d,true)+
       '<div class="trayectoria-datos"><p>'+esc(desfase)+'</p><p>Promedio del SAES: '+dato(a.promedio)+'</p><p>Periodos cursados: '+dato(a.avance?.cursados)+' · Duración: '+dato(a.carga?.duracion)+' · Duración máxima: '+dato(a.carga?.duracion_max)+'</p><p>Carga mínima: '+dato(a.carga?.min)+' · Media: '+dato(a.carga?.media)+' · Máxima: '+dato(a.carga?.max)+'</p></div></div>'+aviso(d)+
       '<div class="kstats" id="kstats">'+(D.avisos.length?'<p class="st-note">'+D.avisos.map(esc).join(' ')+'</p>':'')+SateUI.indicadoresTrayectoria(D,{esc,fmtCr,info,SATE})+

@@ -19,7 +19,7 @@ const desempe=leer('web/dist/sate/desempeno.js');
 const montar=desempe.slice(desempe.indexOf('  montar(){')+11,desempe.indexOf('\n  },',desempe.indexOf('  montar(){')));
 let destino,abierto=false;
 vm.runInNewContext(montar,{$:nodo,prepararSeccion(){},SAES:{open(){abierto=true}},SATE:{texto,ir:id=>destino=id}});
-assert.equal(nodo('#desempeno-lector').textContent,'Cargar datos del SAES');
+assert.equal(nodo('#desempeno-lector').textContent,'Traer mis datos del SAES');
 assert.equal(nodo('#desempeno-explorar').textContent,'Explorar el mapa');
 nodo('#desempeno-lector').eventos.click();assert.equal(abierto,true);
 nodo('#desempeno-explorar').eventos.click();assert.equal(destino,'mapa');
@@ -43,7 +43,7 @@ vm.runInNewContext(leer('web/dist/sate/saes-dialogo.js'),{
   document:{body:{insertAdjacentHTML(pos,texto){assert.equal(pos,'beforeend');dialogo=texto}},querySelector(){return null}},
   navigator:{userAgent:'Android',maxTouchPoints:1}
 });
-assert.match(dialogo,/<h2 id="saes-h">Cargar datos del SAES<\/h2>/);
+assert.match(dialogo,/<h2 id="saes-h">Traer mis datos del SAES<\/h2>/);
 assert.ok(dialogo.includes('Trae tu avance del SAES en 3 pasos. Solo se lee; nada se envía a ningún servidor.'));
 assert.doesNotMatch(dialogo,/saes-aviso/);
 assert.doesNotMatch(dialogo,/<details[^>]*\bopen\b/,'Las ayudas y los videos empiezan cerrados');

@@ -200,7 +200,7 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
       assert.equal(JSON.stringify(c.SATE.alumno()),original,'La simulación conserva el SAES en memoria');
       cambio({id:'gen-sim',checked:false});assert.doesNotMatch(tray.innerHTML,/kx-c g10 sim/);
     }
-    if(modo==='viejo')assert.match(tray.innerHTML,/Actualiza tus datos con el Lector/);
+    if(modo==='viejo')assert.match(tray.innerHTML,/Actualiza tus datos con el marcador SATE/);
     if(modo==='actual')assert.match(tray.innerHTML,/Álgebra ficticia/);
   }
   location.hash='#/'+unidad+'/mapa';eventos.hashchange();await vaciar();
@@ -211,7 +211,7 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
     assert.equal((mapa.match(new RegExp('class="box '+st+'"','g'))||[]).length,1,'Una caja por estado SAES: '+st);
   }
   if(modo==='periodos'){assert.match(mapa,/Periodo 25\/1/);assert.match(mapa,/Por cursar/);}
-  if(modo==='vacio')assert.match(mapa,/Cargar datos del SAES/);
+  if(modo==='vacio')assert.match(mapa,/Traer mis datos del SAES/);
   assert.equal(c.SateGenerico.datos({...perfil,desfasadas_saes:[],reprobadas_periodo:[['Z201','10/1',10,2]]}).materias.find(m=>m.clave==='Z201').estado,'Reprobada','La antigüedad no inventa desfase');
   assert.equal(c.SateGenerico.datos({...perfil,reprobadas_periodo:null,reprobadas:[['FÍSICA FICTICIA',20]]}).materias.find(m=>m.clave==='Z201').estado,'Reprobada','Reprobadas de la cita si no se leyó Estado General');
   if(!(config.pestanasOcultas||[]).includes('calendario')){
@@ -278,7 +278,7 @@ for(const ancho of [1440,375])for(const modo of ['actual','viejo','periodos','va
   assert.equal(document.getElementById('v-hor').hidden,true);
   assert.ok(!c.SATE_CONFIG.unidades[unidad].pestanas.includes('horarios'));
   c.recargar(null);await vaciar();
-  assert.match(tray.innerHTML,/Cargar datos del SAES/);
+  assert.match(tray.innerHTML,/Traer mis datos del SAES/);
   assert.doesNotMatch(tray.innerHTML,/Calificación|<circle|<progress/);
   assert.ok(!archivos.includes('nucleo.js'));
 }

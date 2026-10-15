@@ -48,7 +48,7 @@ h1{font-size:1.2rem;margin:0 0 8px}p{color:var(--tenue);margin:8px 0}a{color:var
       estado.textContent='Listo: '+nuevos+' datos traídos'+(conservados?' ('+conservados+' ya existían aquí y se conservaron)':'')+'.';
       window.opener.postMessage({tipo:'ipnt.migrar.hecho',v:1,nuevos},ANTES);
     }catch(error){
-      estado.textContent='No se pudieron guardar tus datos en este navegador. Puedes volver a cargarlos con el Lector del SAES.';
+      estado.textContent='No se pudieron guardar tus datos en este navegador. Puedes volver a cargarlos con el marcador SATE del SAES.';
       console.error('Migración: fallo al guardar',error);
     }
     setTimeout(()=>location.replace(destino),900);

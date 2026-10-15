@@ -58,7 +58,7 @@ Reglas del Manual de Identidad Gráfica IPN 2026:
 
 
 # enlace a la página principal del sitio (solo en la versión publicada; la compartida no tiene a dónde volver)
-HOME = """<a class="ipnt-home" href="./" title="Ir a la página principal de IPN-tools"><img src="assets/icono/ipn-tools-icono-120.png" alt="" width="22" height="22"><span>IPN-tools</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+HOME = """<a class="ipnt-home" href="./" title="Ir a la página principal de GuindaLabs"><img src="assets/icono/ipn-tools-icono-120.png" alt="" width="22" height="22"><span>GuindaLabs</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 <style>.ipnt-home{display:inline-flex;align-items:center;gap:6px;margin:0 0 6px;padding:2px 8px 2px 2px;border-radius:999px;color:var(--muted);font-size:.86rem;font-weight:600;text-decoration:none}
 .ipnt-home:hover{color:var(--accent);background:var(--surface)}.ipnt-home img{border-radius:6px}</style>"""
 
@@ -77,7 +77,7 @@ def write_dist(name, html, title_suffix=" | UPIITA IPN", unidad=None):
     identidad = identidades().get((unidad or {}).get('id', 'upiita'), {})
     head = head.replace('/*__UNIDAD_NOMBRE__*/', identidad.get('nombre', (unidad or {}).get('nombre', identidad.get('siglas', ''))))
     html = html.replace("<!--__INST_HEADER__-->", head, 1)
-    html = html.replace("<!--__IPNT_HOME__-->", HOME, 1)   # regreso a la página principal de IPN-tools
+    html = html.replace("<!--__IPNT_HOME__-->", HOME, 1)   # regreso a la página principal de GuindaLabs
     # pleca SEP | IPN al pie: retirada a petición del equipo (2026-10-01); FOOTER se conserva por si se vuelve a requerir
     # "Horarios UPIITA" -> "Horarios | UPIITA IPN" (manual web: nombre de la marca al final del título)
     sig = re.escape((unidad or {}).get("siglas", "UPIITA"))

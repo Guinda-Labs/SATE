@@ -41,6 +41,7 @@ const CUPOS=(()=>{
     for(const n of document.querySelectorAll('[data-cupos-ayuda]'))n.onclick=()=>{
       const cuerpo=document.createElement('div'),enlace=$('#cupos-instalar').cloneNode(true);enlace.removeAttribute('id');
       const p=document.createElement('p');p.textContent=tx('que_hace');cuerpo.appendChild(p);
+      const mismo=document.createElement('p');mismo.textContent=SATE.texto('sate.lector.mismo_marcador');cuerpo.appendChild(mismo);
       const pasos=document.createElement('ol');for(const k of ['paso_instalar','paso_saes','paso_consultar']){const li=document.createElement('li');li.textContent=tx(k);if(k==='paso_instalar')li.appendChild(enlace);pasos.appendChild(li)}cuerpo.appendChild(pasos);
       if(datos){const ultima=document.createElement('p');ultima.textContent=tx('ultima',{hora:C.fecha(datos)});cuerpo.appendChild(ultima)}
       SateUI.modal(tx('consultar'),cuerpo);

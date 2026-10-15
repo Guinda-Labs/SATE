@@ -1,9 +1,9 @@
-"""Conexión con el SAES (v2) sin servidores: marcador "Lector IPN-tools" + carga por pegado en las páginas.
+"""Conexión con el SAES (v2) sin servidores: marcador "SATE" + carga por pegado en las páginas.
 
 - bookmarklet(tool_url): convierte tools/lector_saes.js en un enlace javascript: (solo lectura en el SAES).
 - JS/CSS/HTML comunes que se inyectan en las plantillas:
     /*__SAES_JS__*/        objeto SAES: guardar/leer/borrar los datos del alumno (solo en este navegador)
-    <!--__SAES_CARD__-->   botón "Usar mis datos del SAES" + ventana con instrucciones y área para pegar
+    <!--__SAES_CARD__-->   botón "Traer mis datos del SAES" + ventana con instrucciones y área para pegar
                            (la ventana es un <dialog>: no ocupa lugar en la página ni la desplaza)
     Cualquier elemento con [data-saes-open] también abre la ventana.
 """
@@ -15,11 +15,11 @@ SAES_URL = "https://www.saes.upiita.ipn.mx/"
 
 
 def lector_js(tool_url=""):
-    """Código del Lector IPN-tools sin comentarios (para el marcador completo o para publicarlo como lector.js)."""
+    """Código del SATE sin comentarios (para el marcador completo o para publicarlo como lector.js)."""
     js = SRC.read_text(encoding="utf-8")
     js = re.sub(r"/\*.*?\*/", "", js, flags=re.S)          # el código no usa comentarios de línea
     js = "\n".join(l.strip() for l in js.splitlines() if l.strip())
-    # versión = huella del código del Lector: cambia solo cuando cambia el Lector (se cruza con git log del archivo)
+    # versión = huella del código del marcador SATE: cambia solo cuando cambia el marcador SATE (se cruza con git log del archivo)
     import hashlib
     ver = hashlib.sha1(SRC.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:7]
     unidades = json.loads((ROOT / 'data/sate.json').read_text(encoding='utf-8'))['unidades']
@@ -61,7 +61,7 @@ const SAES={
     document.addEventListener('click',e=>{if(!e.target.closest?.('[data-saes-open]'))return;e.preventDefault();SAES.open()});
     dl.querySelector('#saes-x').addEventListener('click',()=>SAES.close());
     dl.addEventListener('click',e=>{if(e.target===dl)SAES.close()});   // clic fuera de la ventana
-    const take=async t=>{const d=SAES.parse(t);if(!d){msg.innerHTML='<span class="bad">El contenido no corresponde al Lector IPN-tools. Ejecuta el marcador en el SAES y selecciona «Copiar mis datos».</span>';return}
+    const take=async t=>{const d=SAES.parse(t);if(!d){msg.innerHTML='<span class="bad">El contenido no corresponde al marcador SATE. Ejecuta el marcador en el SAES y selecciona «Copiar mis datos».</span>';return}
       // Datos de otra unidad: se guardan y se abre el SATE de esa unidad (cualquier unidad tiene SATE).
       const suya=String(d.unidad||'upiita');
       if(suya!==SAES.U()&&/^[a-z0-9-]+$/.test(suya)){SAES.save(d);paste.value='';
@@ -115,7 +115,7 @@ const SAES={
   },
   status(d){
     const st=document.getElementById('saes-status'), btn=document.getElementById('saes-open');
-    if(btn){btn.classList.toggle('on',!!d);btn.querySelector('span').textContent=d?'Actualizar mis datos del SAES':'Usar mis datos del SAES';
+    if(btn){btn.classList.toggle('on',!!d);btn.querySelector('span').textContent='Traer mis datos del SAES';
       btn.title=d?'Datos del SAES cargados. Selecciona para actualizarlos o eliminarlos.':'Incorpora tu avance desde el SAES (opcional)'}
     if(!st)return;
     st.hidden=!d;document.getElementById('saes-steps').hidden=!!d;document.getElementById('saes-clear').hidden=!d;
@@ -167,7 +167,7 @@ CSS = r"""
 """
 
 
-# videos de YouTube con el uso del Lector por dispositivo (canal del proyecto)
+# videos de YouTube con el uso del marcador SATE por dispositivo (canal del proyecto)
 VIDEOS = [("pc", "Computadora", "https://youtu.be/YQPi4SeE-qc"),
           ("ios", "iPhone o iPad", "https://youtube.com/shorts/gLHEFATT9tA"),
           ("android", "Android", "https://youtu.be/eoJX2uPvyqU")]
@@ -179,7 +179,7 @@ def card(bm_href, page="horarios", short="", u=None):
     textos = contenido.objeto_t()
     # en el sitio publicado, el código para teléfono es el marcador corto (descarga lector.js)
     code_text = html.escape(short or bm_href)
-    copy_note = " (versión corta: descarga el Lector desde este sitio)" if short else ""
+    copy_note = " (versión corta: descarga el marcador SATE desde este sitio)" if short else ""
     version = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")   # para saber si el navegador ya cargó la última versión
     demo = ('<button class="link demo-open" type="button" data-demo-open title="Perfil de un alumno ficticio: '
             'conoce la herramienta sin usar tus datos del SAES">Probar con datos de ejemplo</button>') if page == "horarios" else ""
@@ -188,10 +188,11 @@ def card(bm_href, page="horarios", short="", u=None):
     aviso = f'<p class="saes-note" id="saes-reminder" style="margin:10px 0 0">{recordatorio}</p>' if page == "horarios" else ""
     play = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>'
     videos = "".join(f'<a class="saes-vid" data-dev="{d}" href="{u}" target="_blank" rel="noopener">{play}{t}</a>' for d, t, u in VIDEOS)
-    out = f"""<button class="btn saes-open" id="saes-open" type="button" data-saes-open aria-haspopup="dialog"><span>Usar mis datos del SAES</span></button>{demo}
+    out = f"""<button class="btn saes-open" id="saes-open" type="button" data-saes-open aria-haspopup="dialog"><span>Traer mis datos del SAES</span></button>{demo}
 <dialog class="saes-dlg" id="saes-dlg" aria-labelledby="saes-h">
-  <div class="dl-head"><h2 id="saes-h">Cargar datos del SAES</h2><button class="x" id="saes-x" type="button" aria-label="Cerrar">×</button></div>
+  <div class="dl-head"><h2 id="saes-h">Traer mis datos del SAES</h2><button class="x" id="saes-x" type="button" aria-label="Cerrar">×</button></div>
   <p style="margin:0;font-size:.92rem">Trae tu avance del SAES en 3 pasos. Solo se lee; nada se envía a ningún servidor.</p>
+  <p class="saes-note">{html.escape(textos['sate.lector.mismo_marcador'])}</p>
   <p class="saes-note" id="saes-stale" style="margin:6px 0 0" hidden>{recordatorio}</p>
   <div id="saes-status" hidden><p style="margin:10px 0 0;font-size:.92rem"><b>Datos del SAES cargados.</b> <span class="muted" id="saes-who"></span></p>
     <p class="saes-note" style="margin:4px 0 0">{html.escape(textos['sate.cupos.paso_datos'])}</p>
@@ -202,7 +203,7 @@ def card(bm_href, page="horarios", short="", u=None):
       <li><p class="saes-arrastre"><b>Arrastra a tu barra de marcadores:</b> <a class="saes-bm" id="saes-bm" href="{bm_href}" draggable="true" onclick="event.preventDefault()">{html.escape(textos['sate.cupos.marcador'])}</a></p>
         <p class="saes-tactil"><b>{html.escape(textos['sate.cupos.guardar'])}</b> <button class="link" id="saes-install" type="button">{html.escape(textos['sate.lector.tactil'])}</button></p>
         <details><summary>¿Qué es un marcador? ¿Cómo muestro la barra?</summary>
-        <p>Un marcador es un favorito guardado en tu navegador. Este lee tu SAES; guárdalo solo una vez. Sirve para todas las unidades del IPN; el «Lector UPIITA» también funciona.</p><ul>
+        <p>Un marcador es un favorito guardado en tu navegador. El marcador SATE lee tu SAES y sirve para todas las unidades del IPN; guárdalo solo una vez.</p><ul>
           <li><b>Chrome, Edge, Brave u Opera:</b> pulsa <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (en Mac, <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>).</li>
           <li><b>Firefox:</b> clic derecho en la barra superior › Barra de marcadores › Mostrar siempre.</li>
           <li><b>Safari:</b> menú Visualización › Mostrar barra de favoritos (<kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>).</li>
@@ -244,6 +245,6 @@ def inject(html, page, tool_url="", u=None):
     bm = bookmarklet(tool_url)
     short = loader(tool_url.rsplit("/", 1)[0] + "/") if tool_url.startswith("https://") and "claude.ai" not in tool_url else ""
     html = html.replace("/*__SAES_JS__*/", JS, 1).replace("/*__SAES_CSS__*/", CSS, 1)
-    # en el sitio publicado, el botón para arrastrar también es el marcador corto: descarga la versión vigente del Lector
+    # en el sitio publicado, el botón para arrastrar también es el marcador corto: descarga la versión vigente del marcador SATE
     # cada vez, así las mejoras llegan sin volver a guardar el marcador (el completo queda para versiones sin sitio)
     return html.replace("<!--__SAES_CARD__-->", card(short or bm, page, short, u), 1)

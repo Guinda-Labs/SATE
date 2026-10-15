@@ -928,12 +928,12 @@ const tr=()=>{
 function avisoActualizar(A){
   const leido=new Date(A?.leido);if(isNaN(leido))return '';
   const m=String(A?.cita?.inicio||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/), cita=m?new Date(+m[3],+m[2]-1,+m[1]):null;
-  if(cita&&citaPasada(A)&&leido<cita)return 'Ya pasó tu cita de reinscripción y estos datos son de antes. Si ya te inscribiste, vuelve a usar el Lector para traer tu horario definitivo.';
+  if(cita&&citaPasada(A)&&leido<cita)return 'Ya pasó tu cita de reinscripción y estos datos son de antes. Si ya te inscribiste, vuelve a usar el marcador SATE para traer tu horario definitivo.';
   // citas del nuevo periodo publicadas (calendario de Gestión Escolar) después de la última lectura
   const pub=DATA.calendario?.citas?new Date(DATA.calendario.citas+'T00:00:00'):null;
-  if(pub&&Date.now()>=pub&&leido<pub)return `Las citas de reinscripción ${esc(DATA.calendario.periodo||'')} se publicaron en el SAES el ${pub.toLocaleDateString('es-MX',{day:'numeric',month:'long'})}. Vuelve a usar el Lector para traer tu nueva cita.`;
+  if(pub&&Date.now()>=pub&&leido<pub)return `Las citas de reinscripción ${esc(DATA.calendario.periodo||'')} se publicaron en el SAES el ${pub.toLocaleDateString('es-MX',{day:'numeric',month:'long'})}. Vuelve a usar el marcador SATE para traer tu nueva cita.`;
   const dias=Math.floor((Date.now()-leido)/864e5);
-  if(dias>=21)return `Estos datos tienen ${dias} días y no se actualizan solos. Vuelve a usar el Lector después de inscribirte o cuando cierre el semestre y se publiquen tus calificaciones (tus materias pasan del horario a tu kárdex).`;
+  if(dias>=21)return `Estos datos tienen ${dias} días y no se actualizan solos. Vuelve a usar el marcador SATE después de inscribirte o cuando cierre el semestre y se publiquen tus calificaciones (tus materias pasan del horario a tu kárdex).`;
   return '';
 }
 const citaPasada=A=>{const m=String(A?.cita?.fin||A?.cita?.inicio||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);return !!m&&new Date(+m[3],+m[2]-1,+m[1]+1)<new Date()};
@@ -1509,7 +1509,7 @@ function renderSide0(){
       (()=>{const po=promOficialSim();
         if(po)return tile(po.exacto?'Promedio oficial (simulación)':'Promedio oficial (estimado)',po.despues.toFixed(2),`hoy ${po.antes.toFixed(2)} · ${po.despues>=po.antes?'+':''}${(po.despues-po.antes).toFixed(2)} con tu simulación`,'',
           po.exacto?`Promedio de todo tu kárdex (aprobadas y reprobadas), como lo calcula el SAES, más las materias de tu simulación. Las reprobadas simuladas cuentan con la calificación que elegiste (0 a 5).`
-          :`Estimación: con tus datos actuales no se conocen las reprobadas de tu kárdex, así que se deducen de tu promedio oficial suponiendo ${REPROB_CAL} en cada una. Vuelve a usar el Lector para calcularlo exacto. Las reprobadas simuladas cuentan con la calificación que elegiste (0 a 5).`);
+          :`Estimación: con tus datos actuales no se conocen las reprobadas de tu kárdex, así que se deducen de tu promedio oficial suponiendo ${REPROB_CAL} en cada una. Vuelve a usar el marcador SATE para calcularlo exacto. Las reprobadas simuladas cuentan con la calificación que elegiste (0 a 5).`);
         return tile('Promedio oficial',A.promedio??'—',A.promedio==null?'El SAES no lo mostró: suele aparecer con tu cita de reinscripción; actualiza tus datos cuando se publique':tr().sim?'La simulación no permite estimar tu promedio oficial con estos datos':'')})()+
       tile(tr().sim?'Créditos (simulación)':'Créditos',`${obt==null?'—':fmtCr(obt)}${tot?`<small> / ${fmtCr(tot)}</small>`:''}`,tot&&obt!=null?`<span class="minibar"><i style="width:${Math.min(100,obt/tot*100)}%"></i></span>`:'')+
       tile('Periodo que planeas',meta!=null?perName(meta):'—',semNow()?`${semNow()}.º${plazoReferencia(A).dur?' de '+plazoReferencia(A).dur:''} periodos`:'','',
@@ -2060,9 +2060,9 @@ function simKardex(){
 // Sin el denominador oficial no es posible reconstruir el promedio del SAES desde sus acreditaciones.
 function promEstimado(){return ALUMNO?.promedio??null}
 /* Promedio oficial (el del SAES): promedio de todo lo que aparece en el kárdex, aprobadas y reprobadas.
-   Exacto: si el Lector trajo los renglones reprobados del kárdex (kardex_reprobadas) y su promedio junto con las aprobadas
+   Exacto: si el marcador SATE trajo los renglones reprobados del kárdex (kardex_reprobadas) y su promedio junto con las aprobadas
    coincide con el promedio oficial, se suman las materias simuladas (aprobadas con su calificación, reprobadas con
-   REPROB_CAL). Estimado: con datos de un Lector anterior se deduce cuántas reprobadas pesan suponiendo REPROB_CAL.
+   REPROB_CAL). Estimado: con datos de una versión anterior del marcador SATE se deduce cuántas reprobadas pesan suponiendo REPROB_CAL.
    Devuelve null si no se puede calcular. */
 const REPROB_CAL=5;
 function promOficialSim(){
@@ -3006,7 +3006,7 @@ $('#b-copy').addEventListener('click',async()=>{
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(S.tab==='tray'&&ZOOM==null)renderMap()},150)});
 drawCals();
 $('#foot-info').textContent='Herramienta de consulta para que el alumno planee su reinscripción. Los datos del SAES se consultan en modo de solo lectura y se almacenan únicamente en este navegador, al igual que las materias seleccionadas, marcas, notas y horarios. La reinscripción oficial se realiza en el SAES, donde deben verificarse la cita, la carga autorizada y el cupo. ';
-{const b=document.createElement('button');b.type='button';b.className='enc-link';b.dataset.encuesta='';b.textContent='Dar mi opinión sobre IPN-tools';$('#foot').appendChild(b)}
+{const b=document.createElement('button');b.type='button';b.className='enc-link';b.dataset.encuesta='';b.textContent='Dar mi opinión sobre SATE';$('#foot').appendChild(b)}
 // contexto anónimo para la encuesta (tools/encuesta.py): sin nombre, boleta ni calificaciones
 window.ENCUESTA_CTX=()=>({carrera:S.car,demo:DEMO,conDatos:isPersonal(),elegidas:tr().want.length,enHorario:selected().length,
   lector:DEMO||!ALUMNO?'':ALUMNO.lector||'anterior',datosDias:ALUMNO?.leido&&!DEMO?Math.floor((Date.now()-new Date(ALUMNO.leido))/864e5):null});

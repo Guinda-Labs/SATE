@@ -110,10 +110,10 @@ function formulario(tipo){
     <fieldset><legend>Cuéntanos</legend><textarea name="comentario" maxlength="1000" required placeholder="Qué pasó o qué te gustaría que tuviera"></textarea></fieldset>`;
   if(tipo==='seguimiento') return `
     <fieldset><legend>¿Ya te inscribiste en el SAES?</legend>${opciones('inscrito','radio',[...INSCRITO.slice(0,3),['no','No me inscribí este periodo']],true)}</fieldset>
-    <fieldset><legend>¿Qué tan útil fue IPN-tools para llegar a tu cita con el horario listo?</legend>${escala(5,'util_cita',['Nada útil','Muy útil'])}</fieldset>
+    <fieldset><legend>¿Qué tan útil fue SATE para llegar a tu cita con el horario listo?</legend>${escala(5,'util_cita',['Nada útil','Muy útil'])}</fieldset>
     <fieldset><legend>¿Algo que quieras agregar? <small>(opcional)</small></legend><textarea name="comentario" maxlength="1000"></textarea></fieldset>`;
   return `
-    <fieldset><legend>En general, ¿qué tan satisfecho estás con IPN-tools?</legend>${escala(5,'satisfaccion',['Nada satisfecho','Muy satisfecho'])}</fieldset>
+    <fieldset><legend>En general, ¿qué tan satisfecho estás con SATE?</legend>${escala(5,'satisfaccion',['Nada satisfecho','Muy satisfecho'])}</fieldset>
     <fieldset><legend>¿Qué tan útil fue para armar tu horario?</legend>${escala(5,'util_horario',['Nada útil','Muy útil'],`<div class="enc-opc"><label><input type="radio" name="util_horario" value="na"><span>No la usé para eso</span></label></div>`)}</fieldset>
     <fieldset><legend>¿Qué funciones usaste? <small>(elige las que apliquen)</small></legend>${opciones('funciones','checkbox',FUNCIONES)}</fieldset>
     <fieldset><legend>Comparado con como armabas tu horario antes, el tiempo que te tomó fue…</legend>${opciones('tiempo','radio',[['mucho_menor','Mucho menor'],['menor','Menor'],['igual','Igual'],['mayor','Mayor'],['primera','Es mi primera reinscripción']],true)}</fieldset>
@@ -128,7 +128,7 @@ function abrir(tipo,motivo){
   dlg?.remove();
   dlg=document.createElement('dialog');dlg.className='saes-dlg enc-dlg';dlg.setAttribute('aria-labelledby','enc-h');
   const seg=tipo==='seguimiento', com=tipo==='comentario', otra=E.pos>=1&&motivo!=='manual';
-  dlg.innerHTML=`<div class="dl-head"><h2 id="enc-h">${com?'Danos tu opinión':seg?'Dos preguntas rápidas':'¿Te está sirviendo IPN-tools?'}</h2><button class="x" type="button" data-enc-cerrar aria-label="Cerrar">×</button></div>
+  dlg.innerHTML=`<div class="dl-head"><h2 id="enc-h">${com?'Danos tu opinión':seg?'Dos preguntas rápidas':'¿Te está sirviendo SATE?'}</h2><button class="x" type="button" data-enc-cerrar aria-label="Cerrar">×</button></div>
     <p class="enc-intro">${com?'Ya contestaste la encuesta, ¡gracias! Aquí puedes reportar un error o dejarnos una sugerencia cuando quieras.':seg?'Nos ayuda a saber si la herramienta sirvió en tu reinscripción. Son 30 segundos.':'Estamos en fase de pruebas. Tus respuestas, anónimas, nos ayudan a saber si la herramienta te sirve y qué mejorar. Son 2 minutos.'}</p>
     <form novalidate>${formulario(tipo)}
       <div class="enc-hp" aria-hidden="true"><label>No llenar <input name="web" tabindex="-1" autocomplete="off"></label></div>
@@ -179,7 +179,7 @@ async function enviar(tipo,motivo,f){
   if(tipo==='seguimiento')E.seg=ahora();else if(tipo==='completa')E.resp={t:ahora(),inscrito:r.inscrito};
   E.hasta=0;guardar();enlaces();
   dlg.querySelector('.enc-apoyo-pie')?.remove();   // el agradecimiento ya trae el enlace
-  f.outerHTML='<div class="enc-gracias"><b>¡Gracias por tu respuesta!</b>'+(r.inscrito==='aun'&&tipo==='completa'?'Cuando cierre la reinscripción te haremos una última pregunta.':'Nos ayuda a mejorar IPN-tools para todo el alumnado.')+APOYO+'</div>';
+  f.outerHTML='<div class="enc-gracias"><b>¡Gracias por tu respuesta!</b>'+(r.inscrito==='aun'&&tipo==='completa'?'Cuando cierre la reinscripción te haremos una última pregunta.':'Nos ayuda a mejorar SATE para todo el alumnado.')+APOYO+'</div>';
   // Se conserva el cierre manual para dar tiempo a leer el aviso y usar el enlace.
 }
 

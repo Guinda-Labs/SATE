@@ -785,9 +785,9 @@ function simKardex(){
 // Sin el denominador oficial no es posible reconstruir el promedio del SAES desde sus acreditaciones.
 function promEstimado(){return ALUMNO?.promedio??null}
 /* Promedio oficial (el del SAES): promedio de todo lo que aparece en el kárdex, aprobadas y reprobadas.
-   Exacto: si el Lector trajo los renglones reprobados del kárdex (kardex_reprobadas) y su promedio junto con las aprobadas
+   Exacto: si el marcador SATE trajo los renglones reprobados del kárdex (kardex_reprobadas) y su promedio junto con las aprobadas
    coincide con el promedio oficial, se suman las materias simuladas (aprobadas con su calificación, reprobadas con
-   REPROB_CAL). Estimado: con datos de un Lector anterior se deduce cuántas reprobadas pesan suponiendo REPROB_CAL.
+   REPROB_CAL). Estimado: con datos de una versión anterior del marcador SATE se deduce cuántas reprobadas pesan suponiendo REPROB_CAL.
    Devuelve null si no se puede calcular. */
 const REPROB_CAL=5;
 function promOficialSim(){
@@ -1207,7 +1207,7 @@ $('#b-go').addEventListener('click',()=>{S.onlyWant=true;store.set('onlyWant',tr
 })();
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(SATE.modulos.mapa&&S.tab==='tray'&&ZOOM==null)renderMap()},150)});
 $('#foot-info').textContent=SATE.texto('sate.pie')+' ';
-{const b=document.createElement('button');b.type='button';b.className='enc-link';b.dataset.encuesta='';b.textContent='Dar mi opinión sobre IPN-tools';$('#foot').appendChild(b)}
+{const b=document.createElement('button');b.type='button';b.className='enc-link';b.dataset.encuesta='';b.textContent='Dar mi opinión sobre SATE';$('#foot').appendChild(b)}
 // contexto anónimo para la encuesta (tools/encuesta.py): sin nombre, boleta ni calificaciones
 window.ENCUESTA_CTX=()=>({carrera:S.car,demo:DEMO,conDatos:isPersonal(),elegidas:tr().want.length,enHorario:selected().length,
   lector:DEMO||!ALUMNO?'':ALUMNO.lector||'anterior',datosDias:ALUMNO?.leido&&!DEMO?Math.floor((Date.now()-new Date(ALUMNO.leido))/864e5):null});

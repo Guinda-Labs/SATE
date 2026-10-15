@@ -1050,7 +1050,7 @@ def escribir_sate(data):
     site = os.environ.get("UPIITA_SITE", "")
     html = saes.inject(html, "horarios", site + "horarios-upiita.html" if site else "")
     # Solo SATE separa la acción del indicador; el diálogo compartido conserva sus ids.
-    html = html.replace('<span>Usar mis datos del SAES</span>',
+    html = html.replace('<span>Traer mis datos del SAES</span>',
         '<span class="sate-texto-largo">' + textos['sate.encabezado.cargar'] + '</span><span class="sate-texto-corto">' + textos['sate.encabezado.cargar_corto'] + '</span>', 1)
     html = re.sub(r'<button class="link demo-open"[^>]*>.*?</button>', '', html, count=1)
     # El marcador completo y las instrucciones del SAES solo se descargan al abrirlos.
