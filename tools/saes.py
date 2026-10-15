@@ -35,9 +35,9 @@ def bookmarklet(tool_url=""):
 
 
 def loader(base):
-    """Marcador corto (~180 caracteres) que descarga lector.js del sitio: Chrome para Android corta los marcadores largos."""
+    """Marcador corto que descarga sate.js vigente; también funciona en Chrome para Android."""
     return ("javascript:(function(){var s=document.createElement('script');"
-            "s.src='" + base + "lector.js?v='+Date.now();document.head.appendChild(s)})()")
+            "s.src='" + base + "sate.js?v='+Date.now();document.head.appendChild(s)})()")
 
 
 JS = r"""
@@ -194,13 +194,13 @@ def card(bm_href, page="horarios", short="", u=None):
   <p style="margin:0;font-size:.92rem">Trae tu avance del SAES en 3 pasos. Solo se lee; nada se envía a ningún servidor.</p>
   <p class="saes-note" id="saes-stale" style="margin:6px 0 0" hidden>{recordatorio}</p>
   <div id="saes-status" hidden><p style="margin:10px 0 0;font-size:.92rem"><b>Datos del SAES cargados.</b> <span class="muted" id="saes-who"></span></p>
-    <p class="saes-note" style="margin:4px 0 0">En el SAES, usa tu Lector IPN-tools, elige «Copiar mis datos» y pega aquí.</p>
+    <p class="saes-note" style="margin:4px 0 0">{html.escape(textos['sate.cupos.paso_datos'])}</p>
     <p class="saes-note" style="margin:4px 0 0"><button class="link" id="saes-again" type="button">Ver los pasos de nuevo</button></p></div>
   <details><summary>¿Prefieres verlo? Video paso a paso</summary><div class="saes-videos" id="saes-videos">{videos}<a class="saes-vlist" href="{VIDEOS_LISTA}" target="_blank" rel="noopener">Ver todos</a></div></details>
   <div id="saes-steps">
     <ol>
-      <li><p class="saes-arrastre"><b>Arrastra a tu barra de marcadores:</b> <a class="saes-bm" id="saes-bm" href="{bm_href}" draggable="true" onclick="event.preventDefault()">Lector IPN-tools</a></p>
-        <p class="saes-tactil"><b>Guarda el Lector:</b> <button class="link" id="saes-install" type="button">{html.escape(textos['sate.lector.tactil'])}</button></p>
+      <li><p class="saes-arrastre"><b>Arrastra a tu barra de marcadores:</b> <a class="saes-bm" id="saes-bm" href="{bm_href}" draggable="true" onclick="event.preventDefault()">{html.escape(textos['sate.cupos.marcador'])}</a></p>
+        <p class="saes-tactil"><b>{html.escape(textos['sate.cupos.guardar'])}</b> <button class="link" id="saes-install" type="button">{html.escape(textos['sate.lector.tactil'])}</button></p>
         <details><summary>¿Qué es un marcador? ¿Cómo muestro la barra?</summary>
         <p>Un marcador es un favorito guardado en tu navegador. Este lee tu SAES; guárdalo solo una vez. Sirve para todas las unidades del IPN; el «Lector UPIITA» también funciona.</p><ul>
           <li><b>Chrome, Edge, Brave u Opera:</b> pulsa <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (en Mac, <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>).</li>
@@ -214,16 +214,16 @@ def card(bm_href, page="horarios", short="", u=None):
                 <button class="btn primary" id="saes-copybm" type="button">Copiar</button></div>
               <small class="saes-note" id="saes-copymsg" aria-live="polite">Si el botón no copia, mantén presionado el recuadro y elige «Seleccionar todo» y después «Copiar».</small></li>
             <li>Guarda cualquier página como marcador (<kbd>Ctrl</kbd>+<kbd>D</kbd> o la estrella de la barra de direcciones).</li>
-            <li>Edita el marcador: asigna el nombre <b>Lector IPN-tools</b> y sustituye la <b>dirección (URL)</b> por el código copiado.</li>
+            <li>Edita el marcador: asigna el nombre <b>{html.escape(textos['sate.cupos.marcador'])}</b> y sustituye la <b>dirección (URL)</b> por el código copiado.</li>
           </ol>
           <p><b>Cómo usarlo según el navegador del teléfono:</b></p>
           <ul>
-            <li><b>Firefox (Android, iPhone o iPad):</b> con el SAES abierto, abre tus marcadores y elige <b>Lector IPN-tools</b>.</li>
-            <li><b>Safari (iPhone o iPad):</b> en cualquier página, toca <b>Compartir</b> › <b>Agregar marcador</b> y guárdalo con el nombre <b>Lector IPN-tools</b>. Abre <b>Marcadores</b> › <b>Editar</b>, toca ese marcador y sustituye su dirección por el código copiado. Con el SAES abierto, toca la barra de direcciones y elige <b>Lector IPN-tools</b> en la sección de marcadores (aparece como guardado recientemente).</li>
-            <li><b>Chrome (Android):</b> abrirlo desde la lista de marcadores no funciona. Con el SAES abierto, toca la barra de direcciones, escribe <b>Lector IPN-tools</b> y elige el marcador en las sugerencias.</li>
-            <li><b>Chrome (iPhone o iPad):</b> guarda cualquier página como marcador, edítalo con el nombre <b>Lector IPN-tools</b> y sustituye su dirección por el código copiado. Con el SAES abierto, ejecuta el marcador.</li>
+            <li><b>Firefox (Android, iPhone o iPad):</b> con el SAES abierto, abre tus marcadores y elige <b>{html.escape(textos['sate.cupos.marcador'])}</b>.</li>
+            <li><b>Safari (iPhone o iPad):</b> en cualquier página, toca <b>Compartir</b> › <b>Agregar marcador</b> y guárdalo con el nombre <b>{html.escape(textos['sate.cupos.marcador'])}</b>. Abre <b>Marcadores</b> › <b>Editar</b>, toca ese marcador y sustituye su dirección por el código copiado. Con el SAES abierto, toca la barra de direcciones y elige <b>{html.escape(textos['sate.cupos.marcador'])}</b> en la sección de marcadores (aparece como guardado recientemente).</li>
+            <li><b>Chrome (Android):</b> abrirlo desde la lista de marcadores no funciona. Con el SAES abierto, toca la barra de direcciones, escribe <b>{html.escape(textos['sate.cupos.marcador'])}</b> y elige el marcador en las sugerencias.</li>
+            <li><b>Chrome (iPhone o iPad):</b> guarda cualquier página como marcador, edítalo con el nombre <b>{html.escape(textos['sate.cupos.marcador'])}</b> y sustituye su dirección por el código copiado. Con el SAES abierto, ejecuta el marcador.</li>
           </ul></details></li>
-      <li><a href="{SAES_URL}" target="_blank" rel="noopener">Entra al SAES</a>, usa el Lector y elige <b>Copiar mis datos</b>.</li>
+      <li><a href="{SAES_URL}" target="_blank" rel="noopener">Entra al SAES</a>, {html.escape(textos['sate.cupos.paso_datos'])}</li>
     </ol>
   </div>
   <ol start="3"><li><b>Pega aquí</b> <button class="btn primary" id="saes-paste-clip" type="button" data-fallback="{html.escape(textos['sate.lector.pegado_manual'], quote=True)}">{html.escape(textos['sate.lector.pegar'])}</button></li></ol>

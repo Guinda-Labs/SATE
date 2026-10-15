@@ -883,7 +883,7 @@ def main():
         if f.suffix in (".png", ".ico", ".svg") and (f.name.startswith(("ipn-tools-icono", "ipn-tools-og")) or f.name == "favicon.ico"):   # no los bocetos
             shutil.copy(f, ico / f.name)   # retorno del inicio de sesión (ventana emergente)
     if site:   # Lector publicado como archivo para el marcador corto (Chrome para Android corta los marcadores largos)
-        (ROOT / "web" / "dist" / "lector.js").write_text(saes.lector_js(site + "horarios-upiita.html"), encoding="utf-8")
+        # lector.js es una entrada compatible al marcador único, generada por escribir_sate.
         # capturador de la oferta del SAES (cualquier unidad) para el marcador corto
         (ROOT / "web" / "dist" / "captura.js").write_text((ROOT / "tools" / "captura_saes.js").read_text(encoding="utf-8"), encoding="utf-8")  # versión con encabezado institucional para el servidor de la UPIITA
     print("SATE", UNIDAD, {k: len(v) for k, v in data["periodos"].items()})
@@ -1007,9 +1007,10 @@ def escribir_sate(data):
     site_cupos = os.environ.get('UPIITA_SITE', '')
     url_cupos = site_cupos + 'sate/cupos.html' if site_cupos else ''
     import urllib.parse, html as html_escape
-    textos_cupos = {k: v for k, v in contenido.objeto_t().items() if k.startswith('sate.cupos.')}
+    textos_cupos = {k: v for k, v in contenido.objeto_t().items() if k.startswith(('sate.cupos.', 'componentes.'))}
     (destino / 'cupos-comun.js').write_text(cupos.split('/*__CUPOS_PANEL__*/')[0], encoding='utf-8')
     shutil.copy(fuente / 'cupos-receptor.js', destino / 'cupos-receptor.js')
+    shutil.copy(fuente / 'componentes.css', destino / 'componentes.css')
     receptor_cfg = {'unidades': {u: {'saes': c['saes'], 'prefijo': 'hu.' if u == 'upiita' else 'hu.' + u + '.'}
                                 for u, c in cfg['unidades'].items() if c.get('cupos')}, 'textos': textos_cupos}
     receptor = (fuente / 'cupos.html').read_text(encoding='utf-8')
@@ -1017,8 +1018,16 @@ def escribir_sate(data):
     receptor = cuenta.inject(receptor).replace("new URL('auth.html',location.href)", "new URL('../auth.html',location.href)")
     (destino / 'cupos.html').write_text(receptor, encoding='utf-8')
     marcador = cupos.replace("'__CUPOS_URL__'", json.dumps(url_cupos)).replace('__CUPOS_TEXTOS__', json.dumps(textos_cupos, ensure_ascii=False))
-    (dist / 'cupos.js').write_text(marcador, encoding='utf-8')
-    enlace_cupos = ('javascript:(function(){var s=document.createElement("script");s.src=' + json.dumps(site_cupos + 'cupos.js?v=') + '+Date.now();document.head.appendChild(s)})()') if site_cupos else 'javascript:' + urllib.parse.quote(marcador, safe='')
+    sate = (ROOT / 'tools/sate_saes.js').read_text(encoding='utf-8')
+    sate = sate.replace('__CUPOS_TEXTOS__', json.dumps(textos_cupos, ensure_ascii=False))
+    sate = sate.replace('/*__SATE_LECTOR__*/', saes.lector_js(site_cupos + 'horarios-upiita.html'))
+    sate = sate.replace('/*__SATE_CUPOS__*/', marcador)
+    (dist / 'sate.js').write_text(sate, encoding='utf-8')
+    for archivo, accion in [('lector.js', 'lector'), ('cupos.js', 'cupos')]:
+        entrada = ('(()=>{window.IPNTSateAccion=' + json.dumps(accion) + ';var s=document.createElement("script");s.src='
+                   + json.dumps(site_cupos + 'sate.js?v=') + '+Date.now();document.head.appendChild(s)})()')
+        (dist / archivo).write_text(entrada if site_cupos else 'window.IPNTSateAccion='+json.dumps(accion)+';'+sate, encoding='utf-8')
+    enlace_cupos = saes.loader(site_cupos) if site_cupos else 'javascript:' + urllib.parse.quote(sate, safe='')
     interior_hor = interior_hor.replace('/*__CUPOS_MARCADOR__*/', html_escape.escape(enlace_cupos, quote=True))
     (destino / "horarios.js").write_text("document.getElementById('v-hor').innerHTML=" + json.dumps(interior_hor, ensure_ascii=False) + ";\n" + (fuente / "horarios.js").read_text(encoding="utf-8"), encoding="utf-8")
     (destino / "exportacion.js").write_text("document.body.insertAdjacentHTML('beforeend'," + json.dumps(html_exportacion, ensure_ascii=False) + ");\n" + (fuente / "exportacion.js").read_text(encoding="utf-8"), encoding="utf-8")

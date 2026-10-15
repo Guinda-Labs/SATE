@@ -9,9 +9,9 @@ const CUPOS=(()=>{
   function insignia(c){const f=fila(c);return f?`<span class="cupos-insignia${C.antigua(datos)?' cupos-vieja':''}">${esc(tx(f.disponibles===0?'lleno':'lugares',{n:f.disponibles}))}</span>`:''}
   function excluir(c){return omitir&&fila(c)?.disponibles===0}
   function seleccion(){
-    const simple=c=>({grupo:c[3],materia:c[8],horas:c[6]});
+    const simple=c=>({grupo:c[3],materia:c[8],horas:c[6],nombre:name(c),profesor:profs(c),horario:c[6].map(([d,a,b])=>DAYS[d]+' '+hm(a)+'–'+hm(b)).join(' · ')});
     const tokens={};for(const k of ['texto','superficie','linea','acento'])tokens[k]=getComputedStyle(document.documentElement).getPropertyValue('--ipn-'+k).trim();
-    const ctx={...contexto(),grupos:selected().map(simple),oferta:classes().filter(c=>c[0]===S.car).map(simple),tokens};
+    const ctx={...contexto(),periodo:S.per,grupos:selected().map(simple),oferta:classes().filter(c=>c[0]===S.car).map(simple),tokens};
     const s=JSON.stringify(ctx);if(s!==ultimoContexto){ultimoContexto=s;IPNT.set(HU+'cuposContexto',s);canal?.postMessage({tipo:'contexto',unidad:UNIDAD})}
   }
   function pintar(){const ayuda=$('#cupos-ayuda'),op=$('#cupos-omitir');if(!ayuda||!op)return;
@@ -19,7 +19,7 @@ const CUPOS=(()=>{
     if(v!==version){version=v;omitir=!!hay&&!vieja}if(vieja&&!eraAntigua)omitir=false;eraAntigua=vieja;
     op.disabled=!hay;op.checked=omitir;op.title=vieja?tx('antigua_ayuda'):'';
     $('#cupos-omitir-ayuda').textContent=hay&&vieja?tx('antigua_ayuda'):'';
-    const estado=hay?tx('ultima',{hora:C.fecha(datos)})+(vieja?' · '+tx('antigua'):''):tx('consultar');
+    const estado=hay?tx('ultima',{hora:C.fecha(datos)})+(vieja?' · '+tx('antigua'):''):'';
     for(const id of ['#cupos-estado','#cupos-estado-horario']){const n=$(id);if(n){n.textContent=estado;n.classList.toggle('cupos-antigua',!!hay&&vieja)}}
     ayuda.textContent=tx('ayuda')+(hay&&vieja?' '+tx('antigua_ayuda'):'');
     const aviso=$('#cupos-llenos');if(aviso){aviso.hidden=!selected().some(c=>fila(c)?.disponibles===0);$('#cupos-llenos-texto').textContent=tx('horario_lleno')}
@@ -36,9 +36,15 @@ const CUPOS=(()=>{
   if(canal)canal.onmessage=e=>{if(e.data?.unidad===UNIDAD)leer()};
   function montar(){const op=$('#cupos-omitir');if(!op)return;
     op.onchange=()=>{omitir=op.checked;if(S.gen){S.gen=generate();renderGen()}};
-    $('#cupos-instalar').textContent=tx('titulo');$('#cupos-omitir-texto').textContent=tx('omitir');
+    $('#cupos-instalar').textContent=tx('marcador');$('#cupos-omitir-texto').textContent=tx('omitir');
     $('#cupos-alternativas').textContent=tx('alternativas');$('#cupos-alternativas').onclick=()=>{omitir=true;op.checked=true;$('#gen').open=true;S.gen=generate([...new Set(selected().map(c=>c[8]))]);renderGen();$('#cupos-omitir').scrollIntoView({block:'center'})};
-    for(const n of document.querySelectorAll('[data-cupos-ayuda]'))n.onclick=()=>{const a=$('#cupos-instrucciones');a.open=true;a.scrollIntoView({block:'center'});$('#cupos-instalar').focus()};
+    for(const n of document.querySelectorAll('[data-cupos-ayuda]'))n.onclick=()=>{
+      const cuerpo=document.createElement('div'),enlace=$('#cupos-instalar').cloneNode(true);enlace.removeAttribute('id');
+      const p=document.createElement('p');p.textContent=tx('que_hace');cuerpo.appendChild(p);
+      const pasos=document.createElement('ol');for(const k of ['paso_instalar','paso_saes','paso_consultar']){const li=document.createElement('li');li.textContent=tx(k);if(k==='paso_instalar')li.appendChild(enlace);pasos.appendChild(li)}cuerpo.appendChild(pasos);
+      if(datos){const ultima=document.createElement('p');ultima.textContent=tx('ultima',{hora:C.fecha(datos)});cuerpo.appendChild(ultima)}
+      SateUI.modal(tx('consultar'),cuerpo);
+    };
     pintar();nube();
   }
   leer();

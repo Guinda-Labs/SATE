@@ -26,11 +26,12 @@
       typeof d.carrera==='string'&&d.carrera.length<=40&&typeof d.plan==='string'&&d.plan.length<=40&&typeof d.hora==='string'&&Number.isFinite(Date.parse(d.hora))&&
       Date.parse(d.hora)<=Date.now()+60000&&Array.isArray(d.filas)&&d.filas.length<=5000&&d.filas.every(f=>
         f&&typeof f.grupo==='string'&&f.grupo.length<=40&&typeof f.materia==='string'&&f.materia.length<=40&&
+        ['nombre','nivel'].every(k=>f[k]===undefined||typeof f[k]==='string'&&f[k].length<=500)&&
         ['cupo','inscritos','disponibles'].every(k=>Number.isSafeInteger(f[k])&&f[k]>=0));
   }
   const antigua=d=>!d||Date.now()-Date.parse(d.hora)>3600000;
   const limpiar=d=>({tipo:'ipnt.cupos.datos',v:1,unidad:d.unidad,carrera:d.carrera,plan:d.plan,hora:d.hora,
-    filas:d.filas.map(({grupo,materia,cupo,inscritos,disponibles})=>({grupo,materia,cupo,inscritos,disponibles}))});
+    filas:d.filas.map(({grupo,materia,cupo,inscritos,disponibles,nombre,nivel})=>({grupo,materia,cupo,inscritos,disponibles,...(nombre===undefined?{}:{nombre}),...(nivel===undefined?{}:{nivel})}))});
   const reciente=(a,b)=>validar(b)&&(!validar(a)||Date.parse(b.hora)>Date.parse(a.hora))?b:a;
   const fecha=d=>new Date(d.hora).toLocaleString('es-MX',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   function cambios(antes,despues,grupos){
@@ -78,118 +79,91 @@
     if(select('dpdcarrera').value!==carrera||select('dpdplan').value!==plan||!doc.querySelector('[name="ctl00$mainCopy$rblEsquema"][value="1"]:checked'))throw new Error('seleccion');
     return {carrera,plan,filas:parsear(doc)};
   }
-  raiz.IPNCupos={origenSaes,origenSate,clave,parsear,validar,limpiar,antigua,reciente,fecha,tarjetas,consultar,cambios};
+  function texto(textos,k,v={}){
+    const s=textos['sate.cupos.'+k]||k;
+    return s.replace(/\{(\w+),\s*plural,\s*((?:[^{}]*\{[^{}]*\})+)\s*\}/g,(_,key,cuerpo)=>{
+      const n=Number(v[key]),op={};cuerpo.replace(/(=?\w+)\s*\{([^{}]*)\}/g,(_,c,t)=>{op[c]=t});
+      return (op['='+n]??op[new Intl.PluralRules('es-MX').select(n)]??op.other??'').replace(/#/g,new Intl.NumberFormat('es-MX').format(n));
+    }).replace(/\{(\w+)\}/g,(_,key)=>v[key]??'');
+  }
+  raiz.IPNCupos={texto,origenSaes,origenSate,clave,parsear,validar,limpiar,antigua,reciente,fecha,tarjetas,consultar,cambios};
 })(typeof window==='undefined'?globalThis:window);
 
 /*__CUPOS_PANEL__*/
 (function(){
   'use strict';
   const URL_SATE='__CUPOS_URL__',textos=__CUPOS_TEXTOS__;
-  const C=window.IPNCupos,tx=(k,v={})=>(textos['sate.cupos.'+k]||k).replace(/\{(\w+)\}/g,(_,k)=>v[k]??''),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  if(!C.origenSaes(location.origin)){alert(tx('solo_saes'));return}
+  const C=window.IPNCupos,tx=(k,v)=>C.texto(textos,k,v),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   if(document.getElementById('ipnt-cupos')){document.getElementById('ipnt-cupos').focus();return}
-  const unidad=location.hostname.match(/saes\.([a-z0-9]+)\.ipn\.mx$/)[1],origin=URL_SATE?new URL(URL_SATE).origin:null;
-  let sate=null,seleccion=[],oferta=[],datos=null,anterior=new Map(),busy=false,destruido=false,ultima=window.IPNCuposUltimaConsulta??null,conexion=null;
-  const originales=new Map();
-  const titulo=document.title;
-  let automatico=false,hasta=0,reloj=null,audio=null,avisos=0;
+  const permitido=C.origenSaes(location.origin),unidad=permitido?location.hostname.match(/saes\.([a-z0-9]+)\.ipn\.mx$/)[1]:'',origin=URL_SATE?new URL(URL_SATE).origin:null;
+  let sate=null,datos=null,carrera='',plan='',contexto='',busy=false,destruido=false,ultima=window.IPNCuposUltimaConsulta??null;
+  let automatico=false,hasta=0,proxima=0,conectado=false,consultaInicial=false;
   const panel=document.createElement('section');panel.id='ipnt-cupos';panel.tabIndex=-1;panel.setAttribute('aria-label',tx('titulo'));
-  const estilo=document.createElement('style');estilo.id='ipnt-cupos-estilo';estilo.textContent=`
-  #ipnt-cupos{--ipn-texto:#29252b;--ipn-superficie:#fff;--ipn-linea:#ded8dc;--ipn-acento:#71334c;position:fixed;z-index:2147483646;right:12px;bottom:12px;width:min(620px,calc(100vw - 24px));max-height:85vh;overflow:auto;background:var(--ipn-superficie);color:var(--ipn-texto);border:1px solid var(--ipn-linea);border-radius:16px;padding:18px;box-shadow:0 8px 32px #0003;font:14px/1.5 system-ui;box-sizing:border-box}
+  const estilo=document.createElement('style');estilo.textContent=`
+  #ipnt-cupos{--ipn-texto:#29252b;--ipn-superficie:#fff;--ipn-linea:#ded8dc;--ipn-acento:#71334c;position:fixed;z-index:2147483646;right:12px;bottom:12px;max-width:calc(100vw - 24px);background:var(--ipn-superficie);color:var(--ipn-texto);border:1px solid var(--ipn-linea);border-radius:12px;padding:10px 12px;box-shadow:0 4px 20px #0003;font:14px/1.5 system-ui;display:flex;flex-wrap:wrap;align-items:center;gap:8px;box-sizing:border-box}
   @media(prefers-color-scheme:dark){#ipnt-cupos{--ipn-texto:#eee8eb;--ipn-superficie:#211e22;--ipn-linea:#61565e;--ipn-acento:#efb7ce}}
-  #ipnt-cupos *{box-sizing:border-box}#ipnt-cupos header{display:flex;gap:12px;align-items:center}#ipnt-cupos h2{flex:1;margin:0;font-size:20px}#ipnt-cupos button,#ipnt-cupos select,#ipnt-cupos input{font:inherit;color:inherit;background:var(--ipn-superficie);border:1px solid var(--ipn-linea);border-radius:8px;padding:7px}#ipnt-cupos button{cursor:pointer}#ipnt-cupos :focus-visible{outline:3px solid var(--ipn-acento);outline-offset:2px}#ipnt-cupos label{display:inline-block;margin:8px 6px 8px 0}#ipnt-cupos .tabla{overflow:auto}#ipnt-cupos table{width:100%;border-collapse:collapse;font-size:13px}#ipnt-cupos th,#ipnt-cupos td{padding:6px;text-align:left;border-bottom:1px solid var(--ipn-linea)}#ipnt-cupos article{padding:10px;border:1px solid var(--ipn-linea);border-radius:10px;margin:8px 0}
-  #ipnt-cupos tr.elegido{font-weight:600;background:color-mix(in srgb,var(--ipn-acento) 12%,var(--ipn-superficie))}.ipnt-cupo-barra{display:block;height:6px;border-radius:4px;background:#ddd;min-width:70px;margin-top:4px}.ipnt-cupo-barra i{display:block;height:100%;border-radius:4px;background:var(--ocupacion)}#ctl00_mainCopy_GrvOcupabilidad tr.ipnt-elegido{outline:2px solid #71334c;outline-offset:-2px}`;
+  #ipnt-cupos button{font:inherit;color:inherit;background:var(--ipn-superficie);border:1px solid var(--ipn-linea);border-radius:8px;padding:6px;cursor:pointer}#ipnt-cupos :focus-visible{outline:3px solid var(--ipn-acento);outline-offset:2px}#ipnt-cupos [hidden]{display:none}`;
   document.head.appendChild(estilo);
-  panel.innerHTML=`<header><h2>${esc(tx('titulo'))}</h2><button data-c="cerrar" aria-label="${esc(tx('cerrar'))}">×</button></header><p>${esc(tx('limites'))}</p>
-  <label>${esc(tx('carrera'))} <select data-c="carrera"></select></label><label>${esc(tx('plan'))} <select data-c="plan"></select></label>
-  <p><button data-c="actualizar">${esc(tx('consultar'))}</button></p>
-  <label><input type="checkbox" data-c="auto"> ${esc(tx('auto'))}</label>
-  <label><input type="checkbox" data-c="sonido"> ${esc(tx('sonido'))}</label>
-  <label><input type="checkbox" data-c="notificacion"> ${esc(tx('notificacion'))}</label>
-  <p data-c="automatico" role="status" aria-live="polite"></p><button data-c="seguir" hidden>${esc(tx('seguir'))}</button>
-  <p data-c="aviso" role="status" aria-live="polite"></p>
-  <p data-c="estado" role="status" aria-live="polite">${esc(tx('inicio'))}</p><div data-c="tarjetas"></div>
-  <label>${esc(tx('filtro'))} <input type="search" data-c="filtro"></label><label>${esc(tx('nivel'))} <select data-c="nivel"><option value="">${esc(tx('todos_niveles'))}</option></select></label>
-  <label>${esc(tx('orden'))} <select data-c="orden"><option value="desc">${esc(tx('orden_mas'))}</option><option value="asc">${esc(tx('orden_menos'))}</option></select></label><div class="tabla" data-c="tabla"></div>`;
+  panel.innerHTML=`<span data-c="estado" role="status" aria-live="polite">${esc(tx('conectando'))}</span>
+    <button data-c="actualizar">${esc(tx('consultar'))}</button><button data-c="abrir" hidden>${esc(tx('reabrir'))}</button>
+    <label><input type="checkbox" data-c="auto"> ${esc(tx('auto'))}</label>
+    <span data-c="automatico" role="status"></span><button data-c="seguir" hidden>${esc(tx('seguir'))}</button>
+    <button data-c="cerrar" aria-label="${esc(tx('cerrar'))}">×</button>`;
   document.body.appendChild(panel);panel.focus();const el=k=>panel.querySelector('[data-c="'+k+'"]');
-  function opciones(doc){for(const k of ['carrera','plan']){const s=doc.querySelector('[name="ctl00$mainCopy$dpd'+k+'"]');if(s){el(k).innerHTML=[...s.options].map(o=>`<option value="${esc(o.value)}">${esc(o.textContent)}</option>`).join('');el(k).value=s.value}}}
-  opciones(document);
   function enviar(d){if(sate&&!sate.closed)sate.postMessage(d,origin)}
-  function preferencias(){enviar({tipo:'ipnt.cupos.avisos',v:1,unidad,hasta:automatico?hasta:0,notificacion:el('notificacion').checked===true})}
-  function sonido(){if(!automatico||!el('sonido').checked||!audio||audio.state!=='running')return;
-    try{const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;
-      o.frequency.value=660;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.18);
-      o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.2);
-    }catch(e){console.warn('IPN Cupos: sonido no disponible',e)}}
-  function detener(vencido=false){automatico=false;el('auto').checked=false;clearInterval(reloj);reloj=null;preferencias();
-    el('automatico').textContent=tx(vencido?'auto_fin':'auto_apagada');el('seguir').hidden=!vencido}
-  function pulso(){if(!automatico)return;if(Date.now()>=hasta){detener(true);return}
-    el('automatico').textContent=tx(document.hidden?'auto_pausa':'auto_activa');
-    if(!document.hidden&&(ultima===null||Date.now()-ultima>=60000))return actualizar();
+  function preferencias(){enviar({tipo:'ipnt.cupos.avisos',v:1,unidad,hasta:automatico?hasta:0,notificacion:automatico})}
+  function enviarDatos(){if(datos)enviar(C.limpiar(datos))}
+  function estado(){
+    if(sate?.closed){conectado=false;el('estado').textContent=tx('cerrada');el('abrir').hidden=false;return false}
+    return !!sate;
   }
-  function activar(){automatico=true;hasta=Date.now()+30*60000;el('auto').checked=true;
-    el('sonido').checked=true;el('notificacion').checked=true;el('seguir').hidden=true;
-    // El contexto se crea y reanuda exclusivamente dentro del clic de activación.
-    try{const Audio=window.AudioContext||window.webkitAudioContext;if(Audio){audio=audio||new Audio();audio.resume().catch(e=>console.warn('IPN Cupos: audio suspendido',e))}}
-    catch(e){console.warn('IPN Cupos: audio no disponible',e)}
-    if(!sate||sate.closed)abrir();preferencias();clearInterval(reloj);reloj=setInterval(pulso,60000);pulso();
+  function abrir(){
+    if(!permitido){el('estado').textContent=tx('solo_saes');return}
+    if(!URL_SATE){el('estado').textContent=tx('sin_sitio');return}
+    const url=new URL(URL_SATE);url.searchParams.set('unidad',unidad);conectado=false;
+    sate=window.open(url.href,'sate-cupos','width=1024,height=760');
+    el('abrir').hidden=!!sate;el('estado').textContent=tx(sate?'conectando':'ventana');
+    if(sate)enviar({tipo:'ipnt.cupos.hola',v:1,unidad});
   }
-  function abrir(){if(!URL_SATE)return;const url=new URL(URL_SATE);url.searchParams.set('unidad',unidad);
-    sate=window.open(url.href,'sate-cupos','width=420,height=560');
-    if(!sate){el('estado').textContent=tx('ventana');return}
-    clearInterval(conexion);let n=0;conexion=setInterval(()=>{enviar({tipo:'ipnt.cupos.hola',v:1,unidad});if(++n>=15)clearInterval(conexion)},500);
-  }
-  function barra(f){const n=f.cupo?Math.min(100,Math.round(f.inscritos/f.cupo*100)):100;return `<span class="ipnt-cupo-barra" aria-hidden="true"><i style="width:${n}%;--ocupacion:${f.disponibles===0?'var(--ipn-acento)':n>=80?'#ab751b':'#35805a'}"></i></span>`}
-  function disponibilidad(f){return tx(f.disponibles===0?'lleno':'lugares',{n:f.disponibles})}
-  function pintar(){if(!datos)return;const q=el('filtro').value.toLocaleLowerCase(),nivel=el('nivel').value;
-    const elegido=f=>seleccion.some(s=>C.clave(s)===C.clave(f));
-    const filas=datos.filas.filter(f=>(!nivel||f.nivel===nivel)&&(!q||(f.grupo+' '+f.materia+' '+f.nombre).toLocaleLowerCase().includes(q))).sort((a,b)=>Number(elegido(b))-Number(elegido(a))+(elegido(a)===elegido(b)?(el('orden').value==='asc'?a.disponibles-b.disponibles:b.disponibles-a.disponibles):0));
-    el('tabla').innerHTML=`<table><caption>${esc(tx('todos'))}</caption><thead><tr>${['grupo','materia','disponibles','cambio'].map(k=>`<th scope="col">${esc(tx(k))}</th>`).join('')}</tr></thead><tbody>${filas.map(f=>{const a=anterior.get(C.clave(f)),delta=a==null?null:f.disponibles-a;return `<tr class="${elegido(f)?'elegido':''}"><th scope="row">${esc(f.grupo)}${elegido(f)?' · '+esc(tx('tu_grupo')):''}</th><td>${esc(f.materia)}<br>${esc(f.nombre)}</td><td>${esc(disponibilidad(f))} · ${f.inscritos}/${f.cupo}${barra(f)}</td><td>${delta==null?'':delta>0?'▲ '+delta:delta<0?'▼ '+Math.abs(delta):'='}</td></tr>`}).join('')}</tbody></table>`;
-    el('tarjetas').innerHTML=seleccion.length?`<h3>${esc(tx('tu_horario'))}</h3>`+C.tarjetas(datos,seleccion,oferta).map(s=>`<article><b>${esc(s.materia)} · ${esc(s.grupo)}</b><p>${esc(s.fila?disponibilidad(s.fila):tx('sin_dato'))}</p>${s.fila?.disponibles===0?s.alternativas.map(a=>`<p>${esc(a.grupo)} · ${esc(disponibilidad(a))} · ${esc(tx(a.choque===null?'sin_horas':a.choque?'con_choque':'sin_choque'))}</p>`).join(''):''}</article>`).join(''):'';
-    // Se conservan las filas y sus valores originales para restaurarlos al cerrar el panel.
-    const tabla=document.getElementById('ctl00_mainCopy_GrvOcupabilidad');if(tabla)for(const r of [...tabla.querySelectorAll('tr')].slice(1)){
-      const f=datos.filas.find(f=>f.grupo===r.children[0]?.textContent.trim()&&f.materia===r.children[1]?.textContent.trim());if(!f)continue;
-      if(!originales.has(r))originales.set(r,{padre:r.parentNode,hidden:r.hidden,celdas:[...r.children].slice(4).map(c=>c.innerHTML)});
-      r.hidden=!filas.includes(f);r.classList.toggle('ipnt-elegido',elegido(f));
-      r.children[4].textContent=f.cupo;r.children[5].textContent=f.inscritos;
-      const a=anterior.get(C.clave(f)),delta=a==null?null:f.disponibles-a;
-      r.children[6].innerHTML=esc(disponibilidad(f))+(elegido(f)?' · '+esc(tx('tu_grupo')):'')+(delta>0?' ▲ '+delta:delta<0?' ▼ '+Math.abs(delta):'')+barra(f);
-    }
-    if(tabla){const orden=new Map(datos.filas.map(f=>[C.clave(f),f]));const rows=[...originales.keys()].filter(r=>r.isConnected!==false);
-      rows.sort((a,b)=>{const fa=orden.get(a.children[0].textContent.trim()+'|'+a.children[1].textContent.trim()),fb=orden.get(b.children[0].textContent.trim()+'|'+b.children[1].textContent.trim());return fa&&fb?Number(elegido(fb))-Number(elegido(fa))+(elegido(fa)===elegido(fb)?(el('orden').value==='asc'?fa.disponibles-fb.disponibles:fb.disponibles-fa.disponibles):0):0});
-      for(const r of rows)r.parentNode.appendChild(r);
-    }
-  }
-  async function actualizar(){if(busy||destruido)return;
-    if(ultima!==null&&Date.now()-ultima<60000){el('estado').textContent=tx('esperar');return}
-    if(!sate||sate.closed)abrir();busy=true;ultima=Date.now();window.IPNCuposUltimaConsulta=ultima;el('actualizar').disabled=true;el('estado').textContent=tx('consultando');
-    const carrera=el('carrera').value,plan=el('plan').value;
-    try{const r=await C.consultar({fetch:window.fetch.bind(window),parser:s=>new DOMParser().parseFromString(s,'text/html'),url:location.origin+'/Academica/Ocupabilidad_grupos.aspx',carrera,plan,opciones});if(destruido)return;
-      anterior=new Map(datos&&datos.carrera===r.carrera&&datos.plan===r.plan?datos.filas.map(f=>[C.clave(f),f.disponibles]):[]);
-      const nuevos={tipo:'ipnt.cupos.datos',v:1,unidad,...r,hora:new Date().toISOString()},cambios=C.cambios(datos,nuevos,seleccion);
-      datos=nuevos;el('estado').textContent=tx('ultima',{hora:C.fecha(datos)});
-      if(automatico&&Date.now()<hasta&&cambios.length){avisos+=cambios.length;el('aviso').textContent=cambios.map(f=>tx('aviso',{...f,n:f.disponibles})).join(' · ');document.title=tx('titulo_avisos',{n:avisos});sonido()}
-      el('nivel').innerHTML=`<option value="">${esc(tx('todos_niveles'))}</option>`+[...new Set(r.filas.map(f=>f.nivel))].map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');pintar();enviarDatos();
+  function detener(vencido=false){automatico=false;el('auto').checked=false;preferencias();el('automatico').textContent=tx(vencido?'auto_fin':'auto_apagada');el('seguir').hidden=!vencido}
+  function activar(){automatico=true;hasta=Date.now()+30*60000;proxima=Math.max(Date.now(),(ultima??0)+60000);el('auto').checked=true;el('seguir').hidden=true;preferencias();pulso()}
+  async function actualizar(){
+    if(busy||destruido||!permitido||!estado()||!conectado)return;
+    if(ultima!==null&&Date.now()-ultima<15000){cuenta();return}
+    busy=true;ultima=Date.now();window.IPNCuposUltimaConsulta=ultima;proxima=ultima+60000;el('actualizar').disabled=true;el('estado').textContent=tx('consultando');
+    try{
+      const r=await C.consultar({fetch:window.fetch.bind(window),parser:s=>new DOMParser().parseFromString(s,'text/html'),url:location.origin+'/Academica/Ocupabilidad_grupos.aspx',carrera,plan,
+        opciones(doc){enviar({tipo:'ipnt.cupos.opciones',v:1,unidad,opciones:Object.fromEntries(['carrera','plan'].map(k=>{const s=doc.querySelector('[name="ctl00$mainCopy$dpd'+k+'"]');return [k,s?[...s.options].map(o=>({valor:o.value,texto:o.textContent,elegido:o.value===s.value})):[]]}))})}});
+      if(destruido)return;
+      const nuevos={tipo:'ipnt.cupos.datos',v:1,unidad,...r,hora:new Date().toISOString()};
+      datos=nuevos;carrera=r.carrera;plan=r.plan;
+      enviarDatos();if(estado())el('estado').textContent=tx('conectada',{hora:new Date(datos.hora).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})});
     }catch(e){console.warn('IPN Cupos: consulta fallida',{unidad,carrera,plan,codigo:e.message,etapa:e.etapa,estado:e.estado,pila:e.stack});el('estado').textContent=tx('error_'+(textos['sate.cupos.error_'+e.message]?e.message:'red'))}
-    finally{busy=false;if(!destruido)el('actualizar').disabled=false}
+    finally{busy=false;if(!destruido)cuenta()}
   }
-  function enviarDatos(){if(datos)enviar({...datos,filas:datos.filas.map(({grupo,materia,cupo,inscritos,disponibles})=>({grupo,materia,cupo,inscritos,disponibles}))})}
-  function mensaje(e){if(!C.origenSate(e.origin,URL_SATE)||e.source!==sate)return;const d=e.data;
-    if(d?.tipo==='ipnt.cupos.hola'){clearInterval(conexion);preferencias();enviarDatos()}
-    if(d?.tipo==='ipnt.cupos.permiso'&&d.v===1)el('aviso').textContent=tx(d.permiso==='granted'?'permiso_listo':'permiso_panel');
-    if(d?.tipo==='ipnt.cupos.seleccion'&&d.v===1&&Array.isArray(d.grupos)&&Array.isArray(d.oferta)&&d.grupos.length<=500&&d.oferta.length<=10000){
-      const valida=g=>typeof g.grupo==='string'&&typeof g.materia==='string'&&Array.isArray(g.horas)&&g.horas.every(h=>Array.isArray(h)&&h.length===3&&h.every(Number.isFinite));
-      if(!d.grupos.every(valida)||!d.oferta.every(valida))return;seleccion=d.grupos;oferta=d.oferta;
-      for(const k of ['texto','superficie','linea','acento'])if(/^#[a-f0-9]{3,8}$/i.test(d.tokens?.[k]||''))panel.style.setProperty('--ipn-'+k,d.tokens[k]);pintar();
+  function cuenta(){const n=ultima===null?0:Math.max(0,Math.ceil((15000-Date.now()+ultima)/1000));el('actualizar').textContent=tx(n?'cuenta':'consultar',{n});el('actualizar').disabled=busy||n>0;enviar({tipo:'ipnt.cupos.ritmo',v:1,unidad,n,busy})}
+  function pulso(){
+    if(destruido)return;cuenta();estado();
+    if(!conectado&&sate&&!sate.closed)enviar({tipo:'ipnt.cupos.hola',v:1,unidad});
+    if(!automatico)return;if(Date.now()>=hasta){detener(true);return}
+    el('automatico').textContent=tx(document.hidden?'auto_pausa':'auto_activa');
+    if(!document.hidden&&Date.now()>=proxima&&conectado&&estado())return actualizar();
+  }
+  function mensaje(e){
+    if(!C.origenSate(e.origin,URL_SATE)||e.source!==sate)return;const d=e.data;
+    if(d?.tipo==='ipnt.cupos.hola'){conectado=true;el('estado').textContent=datos?tx('conectada',{hora:new Date(datos.hora).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})}):tx('conectado');preferencias();enviarDatos()}
+    if(d?.tipo==='ipnt.cupos.seleccion'&&d.v===1&&Array.isArray(d.grupos)&&d.grupos.length<=500){
+      const nuevo=JSON.stringify([d.carrera,d.plan]);
+      if(contexto!==nuevo){contexto=nuevo;if(typeof d.carrera==='string'&&d.carrera.length<=40)carrera=d.carrera;if(typeof d.plan==='string'&&d.plan.length<=40)plan=d.plan}
+      for(const k of ['texto','superficie','linea','acento'])if(/^#[a-f0-9]{3,8}$/i.test(d.tokens?.[k]||''))panel.style.setProperty('--ipn-'+k,d.tokens[k]);
+      if(!consultaInicial){consultaInicial=true;actualizar()}
     }
+    if(d?.tipo==='ipnt.cupos.consultar'&&d.v===1){if(typeof d.carrera==='string'&&typeof d.plan==='string'&&d.carrera.length<=40&&d.plan.length<=40){carrera=d.carrera;plan=d.plan;actualizar()}}
+
   }
-  window.addEventListener('message',mensaje);el('actualizar').onclick=actualizar;for(const k of ['filtro','nivel','orden'])el(k).oninput=pintar;
+  window.addEventListener('message',mensaje);el('actualizar').onclick=actualizar;el('abrir').onclick=abrir;
   el('auto').onchange=()=>el('auto').checked?activar():detener();el('seguir').onclick=activar;
-  el('notificacion').onchange=preferencias;document.addEventListener('visibilitychange',pulso);
-  el('carrera').onchange=()=>{el('plan').innerHTML=''};
-  function cerrar(){detener();destruido=true;clearInterval(conexion);document.removeEventListener('visibilitychange',pulso);window.removeEventListener('message',mensaje);document.title=titulo;if(audio)audio.close().catch(e=>console.warn('IPN Cupos: cierre de audio',e));panel.remove();estilo.remove();
-    for(const [r,o] of originales){r.hidden=o.hidden;r.classList.remove('ipnt-elegido');o.celdas.forEach((html,i)=>r.children[4+i].innerHTML=html);o.padre.appendChild(r)}
-  }
-  el('cerrar').onclick=cerrar;panel.addEventListener('keydown',e=>{if(e.key==='Escape')cerrar()});
-  abrir();
+  document.addEventListener('visibilitychange',pulso);const reloj=setInterval(pulso,1000);
+  function cerrar(){detener();destruido=true;clearInterval(reloj);document.removeEventListener('visibilitychange',pulso);window.removeEventListener('message',mensaje);panel.remove();estilo.remove()}
+  el('cerrar').onclick=cerrar;panel.addEventListener('keydown',e=>{if(e.key==='Escape')cerrar()});abrir();
 })();

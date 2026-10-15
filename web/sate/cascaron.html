@@ -265,6 +265,7 @@ input[type=number]{width:5rem}
 .cupos-vieja{opacity:.75}
 .cupos-antigua{color:var(--warn);font-weight:600}
 .cupos-cabecera{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.85rem;margin:8px 0}
+a.saes-bm,a.saes-bm:visited,a.saes-bm:hover,.sate-modal__cuerpo a.saes-bm{color:var(--accent-fg);text-decoration:none}
 .cal-b{position:absolute;top:10px;right:10px;font-style:normal;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 8px;background:var(--accent);color:var(--accent-fg)}
 .cal-b.si{background:var(--surface);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .cal-det{margin:0;padding:10px 14px;border-radius:10px;background:var(--sunken);font-size:.86rem;line-height:1.5;max-width:100ch}
@@ -813,7 +814,7 @@ body.sate-flotante:has(.sate-barra) .plan-bandeja{bottom:calc(96px + env(safe-ar
 
   <!-- ============ PANTALLA 2: HORARIO ============ -->
   <section id="v-hor" data-view-panel="hor" role="tabpanel" aria-labelledby="t-hor" hidden>
-    <details class="cupos-ayuda" id="cupos-instrucciones"><summary>Instalar y usar Cupos</summary><p id="cupos-ayuda"></p><a id="cupos-instalar" class="saes-bm" href="/*__CUPOS_MARCADOR__*/" draggable="true" onclick="event.preventDefault()"></a></details>
+    <div hidden><p id="cupos-ayuda"></p><a id="cupos-instalar" class="saes-bm" href="/*__CUPOS_MARCADOR__*/" draggable="true" onclick="event.preventDefault()"></a></div>
     <div class="est-eqv" id="est-eqv" hidden></div>
     <section class="filters" aria-label="Filtros">
       <div class="field"><span>Turno</span><div class="chips" id="f-turno"></div></div>

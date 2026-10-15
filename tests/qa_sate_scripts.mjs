@@ -15,8 +15,10 @@ for(const f of archivos){
 for(const f of readdirSync('web/dist/sate').filter(f=>f.endsWith('.js')))
   assert.doesNotThrow(()=>new Function(readFileSync('web/dist/sate/'+f,'utf8')),f);
 const lector=readFileSync('web/dist/lector.js','utf8');
+for(const m of readFileSync('web/dist/sate/cupos.html','utf8').matchAll(/(?:src|href)="([^"#]+\.(?:js|css))"/g))
+  assert.doesNotThrow(()=>readFileSync('web/dist/sate/'+m[1]),'Recurso de la receptora: '+m[1]);
 assert.doesNotThrow(()=>new Function(lector),'lector.js');
 assert.doesNotMatch(lector,/__LECTOR_|__TOOL_URL__/);
 const version=createHash('sha1').update(readFileSync('tools/lector_saes.js','utf8').replace(/\r\n/g,'\n')).digest('hex').slice(0,7);
-assert.ok(lector.includes("lector: '"+version+"'"),'Versión del Lector generada desde la huella vigente');
+assert.ok(readFileSync('web/dist/sate.js','utf8').includes("lector: '"+version+"'"),'Versión del Lector generada desde la huella vigente');
 console.log(archivos.length+' HTML: '+bloques+' bloques; módulos SATE y Lector parseados con new Function.');

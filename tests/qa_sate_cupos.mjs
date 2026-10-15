@@ -73,6 +73,8 @@ assert.equal(C.reciente(payload,siguiente),siguiente);assert.equal(C.reciente(si
 assert.equal(C.reciente(payload,{...siguiente,filas:[{cupo:-1}]}),payload);
 const seleccion=[{grupo:'1BM4',materia:'B105',horas:[[0,540,600]]},{grupo:'2BM1',materia:'B205',horas:[[0,600,660]]}];
 const oferta=[{grupo:'1BM3',materia:'B105',horas:[[0,630,690]]}];
+const nombreLargo='Materia ficticia con un nombre académico extraordinariamente largo para comprobar el ajuste de la tarjeta';
+seleccion[0].nombre=nombreLargo;seleccion[0].profesor='Docente ficticio';seleccion[0].horario='Lun 09:00–10:00';
 assert.equal(C.tarjetas(payload,seleccion,oferta)[0].alternativas[0].choque,true);
 assert.equal(C.tarjetas(payload,seleccion,[{...oferta[0],horas:[[0,660,720]]}])[0].alternativas[0].choque,false);
 assert.equal(C.tarjetas(payload,seleccion,[])[0].alternativas[0].choque,null);
@@ -81,13 +83,15 @@ assert.equal(C.limpiar({...payload,identidad:'dato inventado'}).identidad,undefi
 // Receptora real: almacenamiento, BroadcastChannel y OneDrive doble, en las tres unidades.
 for(const unidad of ['upiita','escom','upibi']){
   const prefix=unidad==='upiita'?'hu.':'hu.'+unidad+'.',origin=new URL(config.unidades[unidad].saes).origin;
-  const eventos={},storage=new Map(),difundidos=[],enviados=[],graph=[],nodos=new Map();
-  const nodo=id=>{if(!nodos.has(id))nodos.set(id,{textContent:'',classList:{toggle(){}},focus(){},scrollIntoView(){}});return nodos.get(id)};
+  const eventos={},storage=new Map(),difundidos=[],enviados=[],graph=[],nodos=new Map(),modales=[];
+  const nuevo=()=>({hijos:[],appendChild(n){this.hijos.push(n)},removeAttribute(){},cloneNode(){return nuevo()}});
+  const nodo=id=>{if(!nodos.has(id))nodos.set(id,{...nuevo(),value:'',checked:true,innerHTML:'',querySelector:nodo,textContent:'',classList:{toggle(){}},focus(){},scrollIntoView(){throw Error('Cupos no debe desplazar la página')}});return nodos.get(id)};
   const opener={postMessage:(d,o)=>enviados.push({d,o})};let sesion=false,nube=null;
   const ipnt={get cuenta(){return sesion?{}:null},get proveedor(){return sesion?'ms':null},set:(k,v)=>storage.set(k,v),cupos:async(u,d)=>{graph.push({u,d});if(d)nube=d;return nube}};
   const ctx=vm.createContext({URL,URLSearchParams,Date:class extends Date{static now(){return t}},console,location:{href:'https://sate.test/sate/cupos.html?unidad='+unidad},
     CUPOS_CONFIG:{textos:config.textos,unidades:{[unidad]:{saes:config.unidades[unidad].saes,prefijo:prefix}}},
-    document:{getElementById:nodo},localStorage:{getItem:k=>storage.get(k)},IPNT:ipnt,BroadcastChannel:class{constructor(n){assert.equal(n,'ipnt-cupos')}postMessage(d){difundidos.push(d)}}});
+    fetch:async ruta=>({ok:true,json:async()=>ruta.endsWith('nucleo.json')?{opciones_plan:{B:{carrera:'B',plan:'09'}}}:{asig:['Oferta ficticia'],prof:['Docente de oferta'],periodos:{actual:[['B','M',1,'1BM3',0,[0],[[0,630,690]],4,'B105']]}}}),
+    SateUI:{usarTextos(){},modal:(...args)=>modales.push(args)},document:{getElementById:nodo},localStorage:{getItem:k=>storage.get(k)},IPNT:ipnt,BroadcastChannel:class{constructor(n){assert.equal(n,'ipnt-cupos')}postMessage(d){difundidos.push(d)}}});
   ctx.window=ctx;ctx.opener=opener;ctx.addEventListener=(k,f)=>eventos[k]=f;
   vm.runInContext(comun+leer('web/sate/cupos-receptor.js'),ctx);
   const d={...payload,unidad};
@@ -100,6 +104,14 @@ for(const unidad of ['upiita','escom','upibi']){
   mensaje(origin,opener,d);await new Promise(ok=>setImmediate(ok));
   assert.equal(JSON.parse(storage.get(prefix+'cupos')).hora,d.hora);assert.equal(difundidos.length,1);
   assert.equal(graph.length,0);assert.match(nodo('cupos-resumen').textContent,/Última consulta:.*3 grupos/);
+  assert.match(nodo('cupos-tabla').innerHTML,/<table/);assert.match(nodo('cupos-tarjetas').innerHTML,/Tu horario/);
+  assert.match(nodo('cupos-tarjetas').innerHTML,/Docente ficticio/);
+  assert.ok(nodo('cupos-tarjetas').innerHTML.includes(nombreLargo));
+  nodo('cupos-tarjetas').onclick({target:{closest:()=>({dataset:{grupo:'1BM4|B105'}})}});
+  assert.match(modales.at(-1)[1],/Docente ficticio.*09:00/);
+  nodo('[data-r="filtro"]').value='B205';nodo('[data-r="filtro"]').oninput();assert.doesNotMatch(nodo('cupos-tabla').innerHTML,/1BM3/);
+  nodo('[data-r="filtro"]').value='';nodo('[data-r="filtro"]').oninput();
+  mensaje(origin,opener,{tipo:'ipnt.cupos.ritmo',v:1,unidad,n:1,busy:false});assert.equal(nodo('[data-r="consultar"]').textContent,'Consultar en 1 segundo');
   assert.ok(enviados.every(e=>e.o===origin));assert.equal(enviados[0].d.grupos.length,2);
   const antes=enviados.length;eventos.storage({key:prefix+'cuposContexto'});assert.equal(enviados.length,antes+1);
   sesion=true;await eventos['ipnt-sincronizado']();
@@ -109,44 +121,54 @@ for(const unidad of ['upiita','escom','upibi']){
   // Horarios real: elige la más reciente, avisa a 61 min y conserva la consulta al recargar.
   const handlers={};let renders=0;
   Object.assign(ctx,{UNIDAD:unidad,HU:prefix,DATA:{opciones_plan:{B:{carrera:'B',plan:'09'}}},S:{car:'B',gen:null},
-    SATE:{texto:(k,v={})=>(config.textos[k]||k).replace(/\{(\w+)\}/g,(_,n)=>v[n]??'')},
-    document:{hidden:false,documentElement:{},querySelectorAll:()=>[]},getComputedStyle:()=>({getPropertyValue:()=>''}),
+    SATE:{texto:(k,v={})=>C.texto(config.textos,k.replace('sate.cupos.',''),v)},name:c=>c[8],profs:()=>'',DAYS:['Lun'],hm:String,
+    document:{hidden:false,documentElement:{},createElement:nuevo,querySelectorAll:()=>[nodo('ayuda-cupos')]},getComputedStyle:()=>({getPropertyValue:()=>''}),
     setInterval(){},selected:()=>[['B','M',1,'1BM4',0,[],[[0,540,600]],4,'B105']],classes:()=>[],
     $:nodo,esc:String,renderOffer:()=>renders++,renderCal(){},renderGen(){}});
   ctx.addEventListener=(k,f)=>handlers[k]=f;
   vm.runInContext(leer('web/sate/cupos.js')+';globalThis.cupos=CUPOS',ctx);
   ctx.cupos.montar();await new Promise(ok=>setImmediate(ok));
+  nodo('ayuda-cupos').onclick();assert.equal(modales.at(-1)[0],'Consultar cupos');assert.equal(modales.at(-1)[1].hijos[1].hijos.length,3);
   assert.match(nodo('#cupos-estado').textContent,/Última consulta:/);assert.equal(nodo('#cupos-omitir').checked,true);
   nube={...d,hora:new Date(t+2000).toISOString()};await handlers['ipnt-sincronizado']();
   assert.equal(JSON.parse(storage.get(prefix+'cupos')).hora,nube.hora);
   const guardada=nube.hora;nube=d;await handlers['ipnt-sincronizado']();assert.equal(JSON.parse(storage.get(prefix+'cupos')).hora,guardada);
-  const grupo=ctx.selected()[0];assert.equal(ctx.cupos.excluir(grupo),true);assert.match(ctx.cupos.insignia(grupo),/Lleno/);
+  const grupo=ctx.selected()[0];assert.equal(ctx.cupos.excluir(grupo),true);assert.match(ctx.cupos.insignia(grupo),/Sin lugares/);
   t+=61*60000;ctx.cupos.pintar();assert.match(nodo('#cupos-estado').textContent,/Consulta antigua/);
   assert.equal(nodo('#cupos-omitir').checked,false);assert.equal(ctx.cupos.excluir(grupo),false);
   assert.match(nodo('#cupos-ayuda').textContent,/más de una hora/);
   assert.match(nodo('#cupos-omitir-ayuda').textContent,/más de una hora/);
-  ctx.S.car='E';ctx.cupos.pintar();assert.equal(nodo('#cupos-estado').textContent,'Consultar cupos');assert.equal(nodo('#cupos-omitir').disabled,true);
+  ctx.S.car='E';ctx.cupos.pintar();assert.equal(nodo('#cupos-estado').textContent,'');assert.equal(nodo('#cupos-omitir').disabled,true);
   t-=61*60000;
   // Notificaciones con doble, sin navegador: el permiso exige clic en SATE.
-  const notificaciones=[];let solicitudes=0,enfoques=0;
+  const notificaciones=[];let solicitudes=0,enfoques=0,audios=0,tonos=0;
+  ctx.AudioContext=class{constructor(){audios++;this.state='running';this.currentTime=0}resume(){return Promise.resolve()}createOscillator(){tonos++;return {frequency:{},connect(){},start(){},stop(){}}}createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}}}};
+  assert.equal(audios,0);nodo('[data-r="sonido"]').checked=true;nodo('[data-r="sonido"]').onchange();assert.equal(audios,1);
   storage.set(prefix+'cuposContexto',JSON.stringify({carrera:'B',plan:'09',grupos:seleccion,oferta}));
   ctx.document={getElementById:nodo};
   ctx.Notification=class{static permission='default';static async requestPermission(){solicitudes++;return this.permission='granted'}
     constructor(t,o){this.t=t;this.o=o;notificaciones.push(this)}close(){}};
-  opener.focus=()=>enfoques++;
+  ctx.focus=()=>enfoques++;
   mensaje(origin,opener,{tipo:'ipnt.cupos.avisos',v:1,unidad,hasta:t+1800000,notificacion:true});
   assert.equal(solicitudes,0);assert.equal(nodo('cupos-permitir').hidden,false);
   const cambio={...d,hora:new Date(t+3000).toISOString(),filas:d.filas.map(f=>({...f,disponibles:2}))};
   mensaje(origin,opener,cambio);assert.equal(notificaciones.length,0);
+  assert.equal(tonos,1);
   await nodo('cupos-permitir').onclick();assert.equal(solicitudes,1);
   const lleno={...cambio,hora:new Date(t+4000).toISOString(),filas:cambio.filas.map(f=>({...f,disponibles:0}))};
   mensaje(origin,opener,lleno);assert.equal(notificaciones.length,2);
+  assert.equal(tonos,2);
   mensaje(origin,opener,lleno);assert.equal(notificaciones.length,2);
+  assert.equal(tonos,2);
   notificaciones[0].onclick();assert.equal(enfoques,1);
   ctx.Notification.permission='denied';
   const libre={...cambio,hora:new Date(t+5000).toISOString()};mensaje(origin,opener,libre);assert.equal(notificaciones.length,2);
   ctx.Notification.permission='granted';mensaje(origin,opener,{tipo:'ipnt.cupos.avisos',v:1,unidad,hasta:0,notificacion:true});
   mensaje(origin,opener,{...lleno,hora:new Date(t+6000).toISOString()});assert.equal(notificaciones.length,2);
+  storage.delete(prefix+'cuposContexto');storage.set('saes.alumno',JSON.stringify({unidad,carrera:'B',plan:'09'}));
+  eventos.storage({key:prefix+'cuposContexto'});
+  assert.equal(enviados.at(-1).d.carrera,'B');assert.equal(enviados.at(-1).d.plan,'09');
+  assert.match(nodo('cupos-tabla').innerHTML,/Docente de oferta/);
 }
 // Cliente de cuenta real con fetch doble: no crea otra instancia MSAL.
 const cuenta=leer('tools/cuenta.py'),api=cuenta.slice(cuenta.indexOf('  async function con('),cuenta.indexOf('  // Microsoft Entra'));
@@ -173,69 +195,67 @@ vm.runInContext('function* generateBank(s){return s}',generador);  // doble: el 
 vm.runInContext(horarios.slice(horarios.indexOf('function* pasoGen('),horarios.indexOf('function* generateBank(')),generador);
 assert.equal(generador.generate()[0].opts.length,0);generador.CUPOS.excluir=()=>false;assert.equal(generador.generate()[0].opts.length,1);
 generador.tr=()=>({want:[],oblig:[],done:[],curso:[]});assert.equal(generador.generate(['B105'])[0].opts.length,1);
-// Panel real, sin navegador: solo el botón consulta, con un mínimo de 60 s.
-let panelMessage,peticionesPanel=0,tiempo=Date.now(),intervalos=[],visibilidad,audios=0,tonos=0;
+// CUP4: menú único y entradas antiguas; sin navegador ni red.
+assert.equal(C.texto(config.textos,'lugares',{n:1}),'1 lugar');
+assert.equal(C.texto(config.textos,'lugares',{n:2}),'2 lugares');
+assert.equal(C.texto(config.textos,'lugares',{n:0}),'Sin lugares');
+assert.match(C.texto(config.textos,'aviso',{n:1,materia:'B105',grupo:'1BM3'}),/1 lugar$/);
+let accion='',menu,botones=[];
+const menuCtx=vm.createContext({document:{getElementById:()=>null,createElement:tag=>tag==='button'?{style:{}}:{setAttribute(){},style:{},appendChild(b){botones.push(b)},querySelector:()=>({focus(){}}),remove(){menu=null}},body:{appendChild(m){menu=m}}}});
+menuCtx.window=menuCtx;menuCtx.elegir=v=>accion=v;
+const menuSrc=leer('tools/sate_saes.js').replace('__CUPOS_TEXTOS__',JSON.stringify(config.textos)).replace('/*__SATE_LECTOR__*/',"window.elegir('lector');").replace('/*__SATE_CUPOS__*/',"window.elegir('cupos');");
+vm.runInContext(menuSrc,menuCtx);
+assert.deepEqual(botones.map(b=>b.textContent),['Traer mis datos a SATE','Consultar cupos','Cerrar menú']);
+botones[0].onclick();assert.equal(accion,'lector');
+menuCtx.IPNTSate();botones.at(-2).onclick();assert.equal(accion,'cupos');
+for(const archivo of ['lector','cupos'])assert.match(leer('web/dist/'+archivo+'.js'),/sate\.js\?v=/);
+// Barra real ejecutada desde Inicio.aspx, sin selects ni tabla en la página visible.
+let panelMessage,peticionesPanel=0,tiempo=Date.now(),intervalos=[],visibilidad,aperturas=0;
 const nodes=new Map(),node=k=>{if(!nodes.has(k))nodes.set(k,{value:'',innerHTML:'',style:{setProperty(){}}});return nodes.get(k)};
 const panel={setAttribute(){},focus(){},addEventListener(){},querySelector:s=>node(s),style:{setProperty(){}},remove(){}};
-const receptor={closed:false,postMessage(){}};
-// DOM acotado a las filas del fixture para probar la tabla original y su restauración.
-const rows=documento(fixture).querySelector('#ctl00_mainCopy_GrvOcupabilidad').querySelectorAll('tr');
-const padre={appendChild(r){rows.splice(rows.indexOf(r),1);rows.push(r)}};
-for(const r of rows){r.parentNode=padre;r.hidden=false;r.marcas=new Set();r.classList={toggle(k,on){on?r.marcas.add(k):r.marcas.delete(k)},remove:k=>r.marcas.delete(k)};
-  for(const c of r.children){c.innerHTML=c.textContent;Object.defineProperty(c,'textContent',{get(){return String(this.innerHTML).replace(/<[^>]*>/g,'')},set(v){this.innerHTML=String(v)}})}}
-const tabla={querySelectorAll:()=>rows};
+let receptor={closed:false,postMessage(){}};
 const mc=vm.createContext({URL,URLSearchParams,Date:class extends Date{static now(){return tiempo}},console,
-  location:{origin:new URL(url).origin,hostname:new URL(url).hostname},
-  document:{title:'SAES',hidden:false,addEventListener:(k,f)=>{visibilidad=f},removeEventListener(){},getElementById:id=>id==='ctl00_mainCopy_GrvOcupabilidad'?tabla:null,querySelectorAll:()=>[],createElement:k=>k==='style'?{remove(){}}:panel,head:{appendChild(){}},body:{appendChild(){}},querySelector:()=>null},
-  AudioContext:class{constructor(){audios++;this.state='running';this.currentTime=0}resume(){return Promise.resolve()}close(){return Promise.resolve()}
-    createOscillator(){tonos++;return {frequency:{},connect(){},start(){},stop(){}}}createGain(){return {gain:{setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}}}},
-  setInterval:(f,ms)=>{assert.ok(ms===500||ms>=60000);intervalos.push(f);return intervalos.length},clearInterval(){},alert(){},DOMParser:class{parseFromString(s){return documento(s)}}});
-mc.window=mc;mc.open=(u,n,o)=>{assert.match(u,/cupos.html\?unidad=upiita/);assert.equal(n,'sate-cupos');assert.equal(o,'width=420,height=560');return receptor};
+  location:{origin:new URL(url).origin,hostname:new URL(url).hostname,pathname:'/Inicio.aspx'},
+  document:{hidden:false,addEventListener:(k,f)=>{visibilidad=f},removeEventListener(){},getElementById:()=>null,createElement:k=>k==='style'?{remove(){}}:panel,head:{appendChild(){}},body:{appendChild(){}},querySelector:()=>null},
+  setInterval:(f,ms)=>{assert.equal(ms,1000);intervalos.push(f);return intervalos.length},clearInterval(){},DOMParser:class{parseFromString(s){return documento(s)}}});
+mc.window=mc;mc.open=(u,n,o)=>{aperturas++;assert.match(u,/cupos.html\?unidad=upiita/);assert.equal(n,'sate-cupos');return receptor};
 mc.addEventListener=(k,f)=>panelMessage=f;mc.removeEventListener=()=>{};
-mc.fetch=async(u,o)=>{peticionesPanel++;return {ok:true,url,text:async()=>fixture}};
-vm.runInContext(fuente.replace("'__CUPOS_URL__'",JSON.stringify('https://sate.test/sate/cupos.html')).replace('__CUPOS_TEXTOS__',JSON.stringify(config.textos)),mc);
-assert.equal(peticionesPanel,0);for(const f of intervalos)f();assert.equal(peticionesPanel,0);
-node('[data-c="filtro"]').value='';node('[data-c="nivel"]').value='';
+let panelCar='B',panelPlan='09';
+mc.fetch=async(u,o)=>{assert.equal(u,url);peticionesPanel++;if(o.body){const b=new URLSearchParams(o.body),target=b.get('__EVENTTARGET');if(target.endsWith('dpdcarrera'))panelCar=b.get(target);if(target.endsWith('dpdplan'))panelPlan=b.get(target)}return {ok:true,url,text:async()=>conSeleccion(panelCar,panelPlan)}};
+const ejecutar=()=>vm.runInContext(fuente.replace("'__CUPOS_URL__'",JSON.stringify('https://sate.test/sate/cupos.html')).replace('__CUPOS_TEXTOS__',JSON.stringify(config.textos)),mc);
+const esperar=async()=>{for(let i=0;i<40;i++)await Promise.resolve()};
+const mensaje=d=>panelMessage({origin:'https://sate.test',source:receptor,data:d});
+ejecutar();assert.equal(peticionesPanel,0);assert.equal(aperturas,1);
+assert.doesNotMatch(panel.innerHTML,/<table|data-c="tabla"|data-c="tarjetas"|data-c="carrera"/);
+mensaje({tipo:'ipnt.cupos.hola'});mensaje({tipo:'ipnt.cupos.seleccion',v:1,carrera:'B',plan:'09',grupos:seleccion});await esperar();
+assert.equal(peticionesPanel,3);assert.match(node('[data-c="estado"]').textContent,/conectado a SATE/);
 await node('[data-c="actualizar"]').onclick();assert.equal(peticionesPanel,3);
-await node('[data-c="actualizar"]').onclick();assert.equal(peticionesPanel,3);assert.match(node('[data-c="estado"]').textContent,/60 s/);
-tiempo+=60000;await node('[data-c="actualizar"]').onclick();assert.equal(peticionesPanel,6);
-panelMessage({origin:'https://evil.test',source:receptor,data:{get tipo(){throw Error('origen ajeno')}}});
-panelMessage({origin:'https://sate.test',source:receptor,data:{tipo:'ipnt.cupos.seleccion',v:1,grupos:seleccion,oferta}});
-assert.match(node('[data-c="tabla"]').innerHTML,/Tu grupo/);assert.match(node('[data-c="tabla"]').innerHTML,/ipnt-cupo-barra/);
-assert.match(node('[data-c="tarjetas"]').innerHTML,/Tu horario/);assert.match(node('[data-c="tarjetas"]').innerHTML,/Choca con tu horario/);
-assert.match(node('[data-c="tabla"]').innerHTML,/1BM3/);assert.match(node('[data-c="tabla"]').innerHTML,/=/);
-assert.equal(rows[1].children[0].textContent,'2BM1');assert.ok(rows[1].marcas.has('ipnt-elegido'));
-assert.equal(rows[2].children[0].textContent,'1BM4');assert.match(rows[2].children[6].innerHTML,/Lleno.*Tu grupo.*ipnt-cupo-barra/);
-node('[data-c="filtro"]').value='B205';node('[data-c="filtro"]').oninput();
-assert.equal(rows.filter(r=>!r.hidden).length,2);
-node('[data-c="cerrar"]').onclick();assert.equal(rows[1].children[0].textContent,'1BM3');assert.equal(rows[1].children[6].innerHTML,'39');
-assert.ok(rows.every(r=>!r.hidden&&!r.marcas.size));
-assert.equal(audios,0);assert.equal(tonos,0);
-vm.runInContext(fuente.replace("'__CUPOS_URL__'",JSON.stringify('https://sate.test/sate/cupos.html')).replace('__CUPOS_TEXTOS__',JSON.stringify(config.textos)),mc);
+assert.match(node('[data-c="actualizar"]').textContent,/15 segundos/);
+tiempo+=14000;await intervalos[0]();assert.match(node('[data-c="actualizar"]').textContent,/1 segundo$/);
+tiempo+=1000;await intervalos[0]();assert.equal(node('[data-c="actualizar"]').disabled,false);
 await node('[data-c="actualizar"]').onclick();assert.equal(peticionesPanel,6);
-// Reloj falso: mínimo 60 s, pausa al ocultar y vencimiento absoluto a los 30 min.
-assert.equal(audios,0);node('[data-c="auto"]').checked=true;node('[data-c="auto"]').onchange();
-assert.equal(audios,1);assert.equal(node('[data-c="sonido"]').checked,true);assert.equal(node('[data-c="notificacion"]').checked,true);
-const pulso=intervalos.at(-1),esperar=async()=>{for(let i=0;i<30;i++)await Promise.resolve()};
-tiempo+=59999;await pulso();assert.equal(peticionesPanel,6);
+panelMessage({origin:'https://evil.test',source:receptor,data:{get tipo(){throw Error('origen ajeno')}}});
+receptor.closed=true;await intervalos[0]();assert.match(node('[data-c="estado"]').textContent,/Ventana de SATE cerrada/);
+assert.equal(node('[data-c="abrir"]').hidden,false);assert.equal(aperturas,1);
+await node('[data-c="actualizar"]').onclick();assert.equal(aperturas,1);assert.equal(peticionesPanel,6);
+receptor={closed:false,postMessage(){}};node('[data-c="abrir"]').onclick();assert.equal(aperturas,2);mensaje({tipo:'ipnt.cupos.hola'});
+node('[data-c="auto"]').checked=true;node('[data-c="auto"]').onchange();
+const pulso=intervalos[0];tiempo+=59999;await pulso();assert.equal(peticionesPanel,6);
 mc.document.hidden=true;tiempo++;await visibilidad();await pulso();assert.equal(peticionesPanel,6);
 assert.match(node('[data-c="automatico"]').textContent,/pausa/);
 mc.document.hidden=false;await visibilidad();await esperar();assert.equal(peticionesPanel,9);
-await node('[data-c="actualizar"]').onclick();assert.equal(peticionesPanel,9);
-panelMessage({origin:'https://sate.test',source:receptor,data:{tipo:'ipnt.cupos.seleccion',v:1,grupos:seleccion,oferta}});
-mc.fetch=async()=>{peticionesPanel++;return {ok:true,url,text:async()=>fixture.replace('<td>0</td>','<td>2</td>')}};
-tiempo+=60000;await pulso();await esperar();assert.equal(tonos,1);assert.match(mc.document.title,/\(1\) Cupos/);
-assert.match(node('[data-c="aviso"]').textContent,/ahora tiene 2 lugares/);
-tiempo+=60000;await pulso();await esperar();assert.equal(tonos,1);
-node('[data-c="sonido"]').checked=false;
-mc.fetch=async()=>{peticionesPanel++;return {ok:true,url,text:async()=>fixture}};
-tiempo+=60000;await pulso();await esperar();assert.equal(tonos,1);
-mc.document.hidden=true;tiempo+=26*60000;await pulso();assert.equal(node('[data-c="auto"]').checked,false);
-assert.equal(node('[data-c="seguir"]').hidden,false);assert.match(node('[data-c="automatico"]').textContent,/30 min/);
-const fin=peticionesPanel;tiempo+=60000;mc.document.hidden=false;await visibilidad();assert.equal(peticionesPanel,fin);
-node('[data-c="seguir"]').onclick();await esperar();assert.equal(node('[data-c="auto"]').checked,true);assert.equal(peticionesPanel,fin+3);
-node('[data-c="cerrar"]').onclick();assert.equal(mc.document.title,'SAES');
+tiempo+=30*60000;await pulso();assert.equal(node('[data-c="auto"]').checked,false);assert.equal(node('[data-c="seguir"]').hidden,false);
+const fin=peticionesPanel;await pulso();assert.equal(peticionesPanel,fin);
+node('[data-c="seguir"]').onclick();await esperar();assert.equal(peticionesPanel,fin+3);
+tiempo+=15000;mensaje({tipo:'ipnt.cupos.consultar',v:1,carrera:'E',plan:'98'});await esperar();assert.equal(panelCar,'E');assert.equal(panelPlan,'98');
+mensaje({tipo:'ipnt.cupos.seleccion',v:1,carrera:'B',plan:'09',grupos:seleccion});
+tiempo+=15000;await node('[data-c="actualizar"]').onclick();assert.equal(panelCar,'E');assert.equal(panelPlan,'98');
+node('[data-c="cerrar"]').onclick();
+// Reapertura de marcador conserva el mínimo manual, y bloqueo se explica sin alert().
+mc.open=()=>null;ejecutar();assert.match(node('[data-c="estado"]').textContent,/permite las ventanas emergentes/);
+assert.equal(node('[data-c="abrir"]').hidden,false);
+assert.doesNotMatch(fuente,/alert\(|ipnt-elegido|originales/);
 assert.doesNotMatch(fuente+leer('web/sate/cupos-receptor.js'),/postMessage\([^\n]*['"]\*['"]/);
-for(const p of ['web/dist/cupos.js','web/dist/sate/cupos.js','web/dist/sate/cupos-receptor.js'])assert.doesNotThrow(()=>new Function(leer(p)));
-assert.doesNotMatch(leer('web/dist/cupos.js'),/__CUPOS_URL__|__CUPOS_TEXTOS__/);
-console.log('OK CUP2/CUP3: WebForms, puente, consulta ≥60 s, visibilidad, 30 min, cambios propios sin duplicados, permisos y audio tras clic');
+for(const p of ['web/dist/sate.js','web/dist/lector.js','web/dist/cupos.js','web/dist/sate/cupos.js','web/dist/sate/cupos-receptor.js'])assert.doesNotThrow(()=>new Function(leer(p)));
+assert.doesNotMatch(leer('web/dist/sate.js'),/__CUPOS_URL__|__CUPOS_TEXTOS__|__SATE_LECTOR__|__SATE_CUPOS__/);
+console.log('OK CUP4: menú único, compatibilidad, WebForms desde Inicio, barra sin tabla, ICU, cierre/reapertura, bloqueo, manual ≥15 s, automático 60 s/30 min, permisos y sincronización');
