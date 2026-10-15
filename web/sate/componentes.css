@@ -328,6 +328,7 @@ body.sate-flotante #sate-tabs{display:none}
 button.sate-chip{cursor:pointer}
 .sate-chip__marca{display:inline-grid;place-items:center;width:1.1rem;height:1.1rem;border-radius:50%;background:var(--chip-c);color:var(--chip-s);font-size:.7rem;font-weight:700;line-height:1}
 .sate-chip__texto{color:var(--ipn-texto)}
+.sate-chip--reemplazo{max-width:100%;white-space:normal;padding-block:var(--ipn-esp-1);margin-bottom:var(--ipn-esp-2)}
 
 /* avisos */
 .sate-avisos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:var(--ipn-esp-3)}

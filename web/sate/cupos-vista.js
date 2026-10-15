@@ -6,10 +6,39 @@ window.SateCuposVista=(()=>{
   const version=()=>JSON.stringify([S.per,S.car,plan().sel,plan().own,CUPOS.datos?.hora]);
   const revision=DEMO&&new URLSearchParams(location.search).get('revisionCupos')==='1'&&/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
   const horario=c=>c[6].length?pattern(c).join(' · '):tx('sin_horas');
+  function clasificarReemplazo(original,candidata,resto){
+    const normal=s=>String(s||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
+    if(original.grupo!==candidata.grupo&&((original.materia&&original.materia===candidata.materia)||
+      (normal(original.nombre)&&normal(original.nombre)===normal(candidata.nombre))))return 'tipo_misma_materia';
+    function unir(bloques){
+      const unidos=[];
+      for(const [d,a,b] of bloques.map(b=>b.slice()).sort((a,b)=>a[0]-b[0]||a[1]-b[1]||a[2]-b[2])){
+        const ultimo=unidos.at(-1);
+        if(ultimo&&ultimo[0]===d&&a<=ultimo[2])ultimo[2]=Math.max(ultimo[2],b);else unidos.push([d,a,b]);
+      }
+      return unidos;
+    }
+    const horas=unir(candidata.horas);
+    if(!horas.length)return null;
+    if(JSON.stringify(unir(original.horas))===JSON.stringify(horas))return 'tipo_mismo_horario';
+    // Sin horas de alguna actividad restante no se puede asegurar que el hueco esté libre.
+    if(resto.some(r=>!r.horas.length))return null;
+    function huecos(bloques){
+      const ocupados=unir(bloques),libres=[];
+      for(let i=1;i<ocupados.length;i++)if(ocupados[i-1][0]===ocupados[i][0])libres.push([ocupados[i][0],ocupados[i-1][2],ocupados[i][1]]);
+      return libres;
+    }
+    const ocupados=resto.flatMap(r=>r.horas),libres=huecos(ocupados),minutos=bs=>bs.reduce((s,[,a,b])=>s+b-a,0);
+    // El hueco puede abarcar la materia retirada y descansos contiguos, no solo sus bloques.
+    return horas.every(([d,a,b])=>libres.some(([e,i,f])=>d===e&&a>=i&&b<=f))&&
+      minutos(huecos([...ocupados,...horas]))<minutos(libres)?'tipo_ocupa_hueco':null;
+  }
+  const datoReemplazo=c=>({materia:c[8],nombre:c.own?c.n:name(c),grupo:c[3],horas:slots(c)});
+  const tipoReemplazo=(c,x,resto)=>clasificarReemplazo(datoReemplazo(c),datoReemplazo(x),resto.map(datoReemplazo));
   function alternativas(c){
     const resto=selected().filter(x=>keyOf(x)!==keyOf(c));
     return classes().filter(x=>x[0]===S.car&&x[8]===c[8]&&keyOf(x)!==keyOf(c)&&CUPOS.fila(x)?.disponibles>0)
-      .map(x=>({c:x,choques:[...resto,...ownAsClasses()].filter(r=>overlaps(r,x)),incierto:!x[6].length||resto.some(r=>!r[6].length)}))
+      .map(x=>({c:x,tipo:tipoReemplazo(c,x,[...resto,...ownAsClasses()]),choques:[...resto,...ownAsClasses()].filter(r=>overlaps(r,x)),incierto:!x[6].length||resto.some(r=>!r[6].length)}))
       .sort((a,b)=>Number(!!a.choques.length||a.incierto)-Number(!!b.choques.length||b.incierto)||CUPOS.fila(b.c).disponibles-CUPOS.fila(a.c).disponibles||a.c[3].localeCompare(b.c[3]));
   }
   // Se consulta el mismo periodo de planeación que alimenta las recomendaciones del mapa.
@@ -17,12 +46,12 @@ window.SateCuposVista=(()=>{
     const resto=selected().filter(x=>keyOf(x)!==keyOf(c)),elegidas=new Set(resto.map(x=>x[8])),recomendadas=new Set(suggestions().list),hecho=new Set([...tr().done,...tr().curso]),req=prereqs();
     return classes().filter(x=>x[0]===S.car&&x[8]!==c[8]&&cur()[x[8]]&&!elegidas.has(x[8])&&available(x[8])&&
       (req[x[8]]||[]).every(k=>hecho.has(k))&&CUPOS.fila(x)?.disponibles>0&&x[6].length&&![...resto,...ownAsClasses()].some(r=>!slots(r).length||overlaps(r,x)))
-      .map(x=>({c:x,choques:[],recomendada:recomendadas.has(x[8]),hueco:x[6].every(([d,a,b])=>c[6].some(([e,i,f])=>d===e&&a>=i&&b<=f))}))
+      .map(x=>{const tipo=tipoReemplazo(c,x,[...resto,...ownAsClasses()]);return {c:x,choques:[],recomendada:recomendadas.has(x[8]),tipo,hueco:tipo==='tipo_mismo_horario'||tipo==='tipo_ocupa_hueco'}})
       .sort((a,b)=>Number(b.recomendada)-Number(a.recomendada)||Number(b.hueco)-Number(a.hueco)||CUPOS.fila(b.c).disponibles-CUPOS.fila(a.c).disponibles||a.c[3].localeCompare(b.c[3]));
   },0)}
   const riesgo=c=>{const f=CUPOS.fila(c);return !!f&&(f.disponibles===0||CUPOS.pocos(f.disponibles))};
   const idSugerencias=c=>'cupos-sug-'+encodeURIComponent(keyOf(c));
-  function opcion(a,c){return `<div class="cupos-alternativa"><div><b>${esc(name(a.c))} · ${esc(a.c[3])}</b>${a.recomendada?` <span class="cupos-recomendada">${esc(tx('recomendada'))}</span>`:''}<p>${esc(profs(a.c))}</p><p>${esc(horario(a.c))}</p><p>${CUPOS.insignia(a.c)} · ${esc(a.choques.length?tx('choque_con',{nombre:a.choques.map(x=>x.own?x.n:name(x)+' '+x[3]).join(', ')}):tx(a.incierto?'sin_horas':'sin_choque'))}</p></div><button type="button" class="btn" data-cupos-cambiar="${esc(keyOf(a.c))}" data-cupos-quitar="${esc(keyOf(c))}">${esc(tx('cambiar'))}</button></div>`}
+  function opcion(a,c){return `<div class="cupos-alternativa"><div>${a.tipo?`<div class="sate-chips"><span class="sate-chip sate-chip--reemplazo" data-estado="info"><span class="sate-chip__texto">${esc(tx(a.tipo))}</span></span></div>`:''}<b>${esc(name(a.c))} · ${esc(a.c[3])}</b>${a.recomendada?` <span class="cupos-recomendada">${esc(tx('recomendada'))}</span>`:''}<p>${esc(profs(a.c))}</p><p>${esc(horario(a.c))}</p><p>${CUPOS.insignia(a.c)} · ${esc(a.choques.length?tx('choque_con',{nombre:a.choques.map(x=>x.own?x.n:name(x)+' '+x[3]).join(', ')}):tx(a.incierto?'sin_horas':'sin_choque'))}</p></div><button type="button" class="btn" data-cupos-cambiar="${esc(keyOf(a.c))}" data-cupos-quitar="${esc(keyOf(c))}">${esc(tx('cambiar'))}</button></div>`}
   function sugerencias(c){
     if(!riesgo(c))return '';
     const mismas=alternativas(c),otras_=otras(c),recom=otras_.filter(a=>a.recomendada),resto=otras_.filter(a=>!a.recomendada);
@@ -133,5 +162,5 @@ window.SateCuposVista=(()=>{
     window.CUPOS_CONFIG={unidades:{[UNIDAD]:{saes:CAPACIDADES.saes,prefijo:HU}},textos:SATE_CONFIG.textos};
     renderCal();
   }
-  return {montar,pintar,alternativas,otras,sugerencias,riesgo,avisoCarga,cambiar,aplicar,restaurar,buscar,revision};
+  return {montar,pintar,alternativas,otras,sugerencias,riesgo,avisoCarga,cambiar,aplicar,restaurar,buscar,revision,clasificarReemplazo};
 })();
