@@ -1,0 +1,13 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAES simulado · SATE QA</title>
+<style>
+:root{color-scheme:light dark;font:16px/1.6 system-ui;color:#30242b;background:#faf7f8}body{max-width:48rem;margin:40px auto;padding:0 20px}h1{font-size:1.7rem}li{margin:20px 0}a{color:#78364f}code{overflow-wrap:anywhere}.marcador{display:inline-block;padding:12px 20px;border-radius:12px;background:#78364f;color:white;text-decoration:none}small{display:block;margin-top:16px}@media(prefers-color-scheme:dark){:root{color:#eee4e9;background:#211d20}a{color:#efb7ce}}
+</style>
+<h1>SAES simulado</h1><p>Entorno local de pruebas con un perfil ficticio. Capturas del 14 de octubre de 2026.</p>
+<ol>
+<li>Arrastra <a class="marcador" draggable="true" onclick="event.preventDefault()" href="javascript:(()=>{var s=document.createElement('script');s.src=location.origin+'/dist/qa-sate.js';document.head.appendChild(s)})()">SATE · pruebas locales</a> a tu barra de marcadores.</li>
+<li>Abre el <a href="/Alumnos/default.aspx">alumno ficticio</a> y ejecuta el marcador. Revisa el nombre ficticio y usa «Traer mis datos». En cupos, elige carrera y plan y comprueba los modos «Aquí en el SAES» y «En otra ventana». Los planes 98 no tienen registros; el parser vigente los informa como columnas no reconocidas.</li>
+<li>Repite con <a href="/__simulado/columnas">columnas cambiadas</a> y con <a href="/__simulado/vencida">sesión vencida</a>: deben aparecer errores comprensibles. <a href="/__simulado/normal">Restablecer sesión normal</a>.</li>
+</ol><p>El simulador escucha en <code>127.0.0.1</code>. Abre esta página con <code>http://saes-upiita.localhost:8765/qa-saes-simulado.html</code>. Si usas otro puerto, conserva este nombre de host.</p>
+<small>Oferta y mapa curricular solo incluyen las estructuras GET capturadas, sin inventar resultados de filtros. Los datos del Lector pueden quedar en el almacenamiento local de este origen de pruebas.</small>
+</html>

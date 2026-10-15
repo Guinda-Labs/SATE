@@ -1127,6 +1127,31 @@ document.addEventListener('click', e => {
     calendario_api = core[core.index('SATE.calendario={'):core.index('let CALAP=')]
     generico = generico.replace('(function () {', calendario_api + '\n(function () {', 1)
     (destino / 'generico.js').write_text(generico, encoding='utf-8')
+    if os.environ.get('SATE_QA') == '1':
+        # Una copia separada conserva los destinos y validaciones de producción intactos.
+        qa = dist / 'qa-sate'
+        shutil.copytree(destino, qa, dirs_exist_ok=True)
+        for archivo in qa.rglob('*'):
+            if archivo.suffix in {'.js', '.html', '.json'}:
+                texto = saes.origen_qa(archivo.read_text(encoding='utf-8'))
+                if archivo.name == 'cupos-vista.js':
+                    texto = texto.replace('saes:CAPACIDADES.saes', 'saes:location.origin')
+                archivo.write_text(texto, encoding='utf-8')
+        qa_marcador = saes.origen_qa(sate)
+        qa_marcador = qa_marcador.replace(json.dumps(url_cupos), 'location.origin+"/dist/qa-sate/index.html?vista=cupos"')
+        (dist / 'qa-sate.js').write_text(qa_marcador, encoding='utf-8')
+        pagina = (ROOT / 'tools/qa_saes_simulado.template.html').read_text(encoding='utf-8')
+        (ROOT / 'web/qa-saes-simulado.html').write_text(pagina, encoding='utf-8')
+        (dist / 'qa-saes-simulado.html').write_text(pagina, encoding='utf-8')
+    else:
+        # Evitar que una compilación normal arrastre el origen de pruebas de una QA previa.
+        qa = (dist / 'qa-sate').resolve()
+        if qa.parent != dist.resolve():
+            raise ValueError('Destino QA fuera de web/dist')
+        if qa.exists():
+            shutil.rmtree(qa)
+        for nombre in ('qa-sate.js', 'qa-saes-simulado.html'):
+            (dist / nombre).unlink(missing_ok=True)
     print("datos SATE", UNIDAD, {p.name:p.stat().st_size for p in datos.glob("*.json")})
 
 

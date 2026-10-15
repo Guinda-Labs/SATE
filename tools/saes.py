@@ -48,6 +48,17 @@ def loader(base):
             "s.src='" + base + "sate.js?v='+Date.now();document.head.appendChild(s)})()")
 
 
+def origen_qa(js):
+    """Transformación exclusiva de artefactos qa-*. Nunca se aplica al marcador publicado."""
+    js = re.sub(r"var TOOL = '[^']*';", "var TOOL = location.origin + '/dist/qa-sate/index.html';", js)
+    js = js.replace("const origenSaes=o=>", "const origenSaes=o=>/^http:\\/\\/saes-upiita\\.localhost:\\d+$/.test(o)||")
+    js = js.replace("var UM = location.hostname.match(/(?:^|\\.)saes\\.([a-z0-9-]+)\\.ipn\\.mx$/i);",
+                    "var UM = location.hostname === 'saes-upiita.localhost' && location.protocol === 'http:' ? ['', 'upiita'] : location.hostname.match(/(?:^|\\.)saes\\.([a-z0-9-]+)\\.ipn\\.mx$/i);")
+    js = js.replace("location.hostname.match(/saes\\.([a-z0-9]+)\\.ipn\\.mx$/)[1]", "(location.hostname==='saes-upiita.localhost'?'upiita':location.hostname.match(/saes\\.([a-z0-9]+)\\.ipn\\.mx$/)[1])")
+    js = js.replace("location.hostname.match(/saes\\.([a-z0-9-]+)\\.ipn\\.mx$/i)?.[1]||''", "(location.hostname==='saes-upiita.localhost'?'upiita':location.hostname.match(/saes\\.([a-z0-9-]+)\\.ipn\\.mx$/i)?.[1]||'')")
+    return js
+
+
 JS = r"""
 /* ---------- datos del SAES (v2): solo en este navegador ---------- */
 const SAES={

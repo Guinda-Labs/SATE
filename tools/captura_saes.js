@@ -36,6 +36,29 @@
     return parse(await r.text());
   };
   var cellsOf = function (row) { return Array.prototype.map.call(row.cells, function (c) { return c.textContent.replace(/ /g, ' ').trim(); }); };
+  // Parsers puros: el contrato local ejecuta este mismo bloque sin red.
+  /*__CAPTURA_PARSERS__*/
+  var parsearOferta = function (d, contexto) {
+    var g = d.querySelector('table[id$="dbgHorarios"]');
+    if (!g || g.rows.length < 2) return [];
+    var hd = cellsOf(g.rows[0]);
+    return Array.prototype.slice.call(g.rows, 1).map(function (r) {
+      var row = Object.assign({}, contexto), v = cellsOf(r);
+      hd.forEach(function (h, i) { row[h] = v[i]; });
+      return row;
+    });
+  };
+  var parsearMapa = function (d, cm, pm, nm) {
+    var gm = d.querySelector('table[id$="GridView1"]');
+    if (!gm || gm.rows.length < 2) return [];
+    var hm = cellsOf(gm.rows[0]), col = function (re) { return hm.findIndex(function (h) { return re.test(h); }); };
+    var indices = [/periodo|nivel/i, /clave/i, /nombre/i, /tipo/i, /cr[eé]dito/i, /teor/i, /pr[aá]ctica/i].map(col);
+    return Array.prototype.slice.call(gm.rows, 1).map(function (r) {
+      var v = cellsOf(r), at = function (i) { return i >= 0 ? v[i] || '' : ''; };
+      return [cm, pm, indices[0] >= 0 ? at(indices[0]) : nm].concat(indices.slice(1).map(at));
+    }).filter(function (r) { return r[3]; });
+  };
+  /*__CAPTURA_PARSERS_FIN__*/
   var now = new Date().toISOString(), host = location.hostname.replace(/^www\./, '');
   try {
     /* ---------- horarios de clase ---------- */
@@ -55,15 +78,7 @@
             var o3 = {}; o3[F + 'cboTurno'] = t; d = await post(H, d, F + 'cboTurno', o3);
             for (var nv of opts(d, F + 'lsNoPeriodos')) {
               var o4 = {}; o4[F + 'lsNoPeriodos'] = nv; d = await post(H, d, F + 'lsNoPeriodos', o4);
-              var g = d.querySelector('table[id$="dbgHorarios"]');   // el prefijo del id cambia entre unidades (ctl00_mainCopy_… o mainCopy_…)
-              if (g && g.rows.length > 1) {
-                var hd = cellsOf(g.rows[0]);
-                Array.prototype.slice.call(g.rows, 1).forEach(function (r) {
-                  var v = cellsOf(r), row = { carrera: c, plan: p, turno: t, nivel: +nv };
-                  hd.forEach(function (h, i) { row[h] = v[i]; });
-                  out[key].push(row);
-                });
-              }
+              out[key].push.apply(out[key], parsearOferta(d, { carrera: c, plan: p, turno: t, nivel: +nv }));
               msg('Horarios (' + (key === 'actual' ? 'periodo actual' : 'próximo periodo') + '): carrera ' + c + ', plan ' + p + ', turno ' + t + ', nivel ' + nv + ' · ' + (++n) + ' consultas');
             }
           }
@@ -80,16 +95,7 @@
           var q2 = {}; q2[F + 'cboPlanEstud'] = pm; dm = await post(M, dm, F + 'cboPlanEstud', q2);
           for (var nm of opts(dm, F + 'lsNoPeriodos')) {
             var q3 = {}; q3[F + 'lsNoPeriodos'] = nm; dm = await post(M, dm, F + 'lsNoPeriodos', q3);
-            var gm = dm.querySelector('table[id$="GridView1"]');
-            if (gm && gm.rows.length > 1) {
-              // columnas por encabezado: algunas unidades agregan «No periodo» al inicio
-              var hm = cellsOf(gm.rows[0]), col = function (re) { for (var i = 0; i < hm.length; i++) if (re.test(hm[i])) return i; return -1; };
-              var iN = col(/periodo|nivel/i), iC = col(/clave/i), iA = col(/nombre/i), iT = col(/tipo/i), iCr = col(/cr[eé]dito/i), iHt = col(/teor/i), iHp = col(/pr[aá]ctica/i);
-              Array.prototype.slice.call(gm.rows, 1).forEach(function (r) {
-                var v = cellsOf(r), at = function (i) { return i >= 0 ? v[i] || '' : ''; };
-                if (at(iC)) mapa.rows.push([cm, pm, iN >= 0 ? at(iN) : nm, at(iC), at(iA), at(iT), at(iCr), at(iHt), at(iHp)]);
-              });
-            }
+            mapa.rows.push.apply(mapa.rows, parsearMapa(dm, cm, pm, nm));
             msg('Mapa curricular: carrera ' + cm + ', plan ' + pm + ', nivel ' + nm + ' · ' + (++n) + ' consultas');
           }
         }
