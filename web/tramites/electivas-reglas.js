@@ -1,4 +1,6 @@
 (function(raiz){
+// «(excepto inglés)» es parte del nombre del catálogo; solo cuenta como inglés si lo menciona fuera de esa aclaración.
+const mencionIngles=t=>/ingl[eé]s|english/i.test(String(t||'').replace(/\(\s*excepto\s+ingl[eé]s\s*\)/ig,''));
 const CARN={B:'Ingeniería Biónica',M:'Ingeniería Mecatrónica',T:'Ingeniería Telemática',E:'Ingeniería en Energía',S:'Ing. en Sistemas Automotrices'};
 const REQ={B:{n:4,c:5},T:{n:4,c:5},M:{n:3,c:7}};
 const MOD={D:{n:'Docencia',h:16},C:{n:'Trabajo de campo supervisado',h:50},I:{n:'Actividades independientes',h:20}};
@@ -56,7 +58,7 @@ function credOf(a){const c=CATK[a.k];if(!c)return 0;if(c.f.cc)return floor2(((+a
 function warnOf(a){
   const c=CATK[a.k], w=[];
   if(c.f.off) w.push(['bad','Esta actividad ya no se acepta desde 26-2 (tiene retribución económica). No se incluirá en tus formatos.']);
-  if(c.f.noIngles&&/ingl[eé]s|english/i.test(a.desc||'')) w.push(['bad','Los cursos de inglés no cuentan: el inglés es parte del mapa curricular.']);
+  if(c.f.noIngles&&mencionIngles(a.desc)) w.push(['bad','Los cursos de inglés no cuentan: el inglés es parte del mapa curricular.']);
   if(c.f.cap&&(+a.h||0)>c.f.cap) w.push(['warn',`Se toman como máximo ${c.f.cap} horas por congreso; registra cada congreso por separado.`]);
   if(!c.f.cc&&!(+a.h)) w.push(['warn','Escribe el número de horas que indica tu constancia.']);
   return w;

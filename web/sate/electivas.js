@@ -118,11 +118,11 @@
       const calculo=()=>`${c.f.cc?R.fmt(+a.ht||0)+' + '+R.fmt(+a.hp||0)+' h por semana':R.fmt(R.hoursOf(a))+' h'} = ${R.fmt(R.credOf(a))} créditos${c.f.cap?' · tope de congresos: '+c.f.cap+' h':''}`;
       const actualizar=()=>{credito.textContent=calculo();resumen(sum,d);ctx.cambiar()};
       const editar=(k,v)=>{a[k]=v;actualizar()};
-      campo(card,c.f.die?'Materia':'¿Cómo se llama tu actividad?',a.desc,v=>editar('desc',v),{validar:v=>!v.trim()?'Escribe el nombre.':c.f.noIngles&&/ingl[eé]s|english/i.test(v)?'Los cursos de inglés no cuentan porque forman parte del mapa curricular.':textoValido(v)});
+      campo(card,c.f.die?'Materia':'¿Cómo se llama tu actividad?',a.desc,v=>editar('desc',v),{validar:v=>!v.trim()?'Escribe el nombre.':c.f.noIngles&&/ingl[eé]s|english/i.test(String(v).replace(/\(\s*excepto\s+ingl[eé]s\s*\)/ig,''))?'Los cursos de inglés no cuentan porque forman parte del mapa curricular.':textoValido(v)});
       if(c.f.die)optativa(card,a,ctx,actualizar);
       else if(c.f.cc){for(const [k,t] of [['ht','¿Cuántas horas teóricas por semana?'],['hp','¿Cuántas horas prácticas por semana?']])campo(card,t,a[k],v=>editar(k,v),{tipo:'number',validar:v=>v!==''&&Number.isFinite(+v)&&+v>=0?'':'Escribe un número mayor o igual a cero.'})}
       else campo(card,'¿Cuántas horas dice tu constancia?',a.h,v=>editar('h',v),{tipo:'number',validar:v=>Number.isFinite(+v)&&+v>0?'':'Escribe un número mayor que cero.'});
-      for(const [k,t] of [['inst','¿Qué institución la emitió?'],['folio','Folio (si tiene)'],['fecha','Fecha de la constancia'],['firma','¿Quién la firma?']])campo(card,t,a[k],v=>editar(k,v));
+      for(const [k,t] of [['inst','¿Qué institución la emitió?'],['folio','Folio (si tiene)'],['fecha','Fecha de la constancia'],['firma','¿Quién la firma?']])campo(card,t,a[k],v=>editar(k,v),k==='fecha'?{tipo:'date'}:{});
       const chips=nodo('div',null,'tramite-chips');chips.setAttribute('role','group');chips.setAttribute('aria-label','Evidencia que entregarás para esta actividad');
       for(const [ev,t] of [['constancia','Constancia'],['boleta','Boleta'],['oficio','Oficio'],['otro','Otro']]){
         const b=boton(t,()=>{a.ev=ev;for(const n of chips.children)n.setAttribute('aria-pressed',String(n===b));actualizar()});b.setAttribute('aria-pressed',String(a.ev===ev));chips.appendChild(b);
@@ -181,7 +181,7 @@
     }
     return PdfTramites.unir(pdfs);
   }
-  const def={id:'electivas',titulo:'Tus electivas',datos:inicial,preparar,descargaTexto:'Descargar mi solicitud (PDF)',archivo:()=>`electivas-${identidad()?.boleta}.pdf`,generar,pasos:[
+  const def={id:'electivas',titulo:'Tus electivas',volver:true,datos:inicial,preparar,descargaTexto:'Descargar mi solicitud (PDF)',archivo:()=>`electivas-${identidad()?.boleta}.pdf`,generar,pasos:[
     {titulo:'Tus actividades',campos:[{id:'actividades',texto:'Actividades',render:actividades,validar:validarActividades,revision:revisionActividades}]},
     {titulo:'Preguntas del formulario',campos:[{id:'formulario',texto:'Formulario',render:formulario,validar:validarFormulario,revision:revisionFormulario}]}
   ]};
