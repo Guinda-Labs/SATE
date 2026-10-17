@@ -78,6 +78,7 @@ caracteres de control; usa cadenas crudas (`r"..."`) o el editor.
 |---|---|
 | `web/horarios.template.html` | Toda la lógica de Horarios (HTML+CSS+JS en un archivo). Datos inyectados en `const DATA=` |
 | `tools/build_horarios.py` | Compila Horarios; `UNIDAD` elige `data/unidades/<u>/`; `layout_de` (trazado del PDF) y `layout_por_areas` (columnas por categoría, un renglón por semestre, flechas con pistas propias y reducción transitiva; prueba en `tests/test_rutas_mapa.py`) |
+| `tools/semestre.py` | Actualización semestral de oferta y salones (pdf, snippet-saes, aplicar-saes, cruce, datos, estado); guía en `docs/ACTUALIZACION-SEMESTRAL.md`. `build_horarios.py --solo-datos` regenera solo `datos/<unidad>/*.json` |
 | `tools/cuenta.py`, `tools/saes.py`, `tools/skins.py`, `tools/institucional.py` | Módulos inyectados (cuenta, Lector, tema, encabezado) |
 | `data/` | UPIITA: oferta, mapa curricular, trayectorias, seriación, especialidades, salones, formatos DIE |
 | `data/categorias.json` | Catálogo común de categorías (áreas de conocimiento) para todas las carreras |
