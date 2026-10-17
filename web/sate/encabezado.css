@@ -80,6 +80,8 @@ header.sate-encabezado{position:relative;display:grid;grid-template-columns:minm
 /* Revisión R2 (orquestador): pestañas a su ancho natural, primera alineada al eje izquierdo de la marca. */
 @media(min-width:768px){
   #sate-tabs .sate-pestanas{width:auto;justify-content:flex-start;gap:var(--ipn-esp-6)}
+  /* Pestañas como enlaces (páginas hermanas, p. ej. Grupos): misma separación. */
+  .sate-encabezado .sate-enlaces{gap:var(--ipn-esp-6)}
   #sate-tabs .sate-pestana{flex:none;min-width:0;padding-inline:0}
   /* Sin ícono en escritorio: su caja vacía corría el texto, el subrayado y el punto de la pestaña activa. */
   #sate-tabs .sate-pestana__icono{display:none}
