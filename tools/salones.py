@@ -184,10 +184,9 @@ def aplicar_periodos(periodos, asig, archivos):
     return meta
 
 
-def main():
-    src = sys.argv[1]
-    per = sys.argv[sys.argv.index('--periodo') + 1] if '--periodo' in sys.argv else None
-    if re.match(r'https?://', src):
+def generar(src, per=None, fuente=None, actualizado=None):
+    """Lee el PDF (ruta o URL) y escribe data/salones_<periodo>.json. `fuente` = URL oficial; `actualizado` = fecha de la página."""
+    if re.match(r'https?://', str(src)):
         tmp = pathlib.Path(tempfile.gettempdir()) / 'salones_upiita.pdf'
         url = urllib.parse.quote(src, safe=':/?=&%')
         urllib.request.urlretrieve(url, tmp)
@@ -204,11 +203,20 @@ def main():
             aulas.append(aula)
             for r in out:
                 clases.append({'aula': aula, **r})
-    per = per or (ciclo[2:].replace('/', '/') if ciclo else 'desconocido')
-    data = {'fuente': src, 'periodo': per, 'ciclo': ciclo, 'aulas': aulas, 'clases': clases}
+    per = per or (ciclo[2:] if ciclo else 'desconocido')
+    data = {'fuente': fuente or str(src), 'periodo': per, 'ciclo': ciclo, 'aulas': aulas, 'clases': clases}
+    if actualizado:
+        data['actualizado'] = actualizado
     dst = ROOT / 'data' / f"salones_{per.replace('/', '-')}.json"
     dst.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding='utf-8')
-    print(dst, len(aulas), 'aulas', len(clases), 'clases')
+    return dst, data
+
+
+def main():
+    src = sys.argv[1]
+    arg = lambda n: sys.argv[sys.argv.index(n) + 1] if n in sys.argv else None
+    dst, data = generar(src, arg('--periodo'), arg('--fuente'), arg('--actualizado'))
+    print(dst, len(data['aulas']), 'aulas', len(data['clases']), 'clases')
 
 
 if __name__ == '__main__':

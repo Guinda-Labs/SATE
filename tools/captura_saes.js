@@ -21,6 +21,7 @@
   box.innerHTML = '<b style="font-size:16px">Capturador de la oferta del SAES</b><p id="cs-msg" style="margin:6px 0 0;color:#52525b">Iniciando…</p>';
   document.body.appendChild(box);
   var msg = function (t) { box.querySelector('#cs-msg').textContent = t; };
+  /*__CAPTURA_BASE__*/
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
   var parse = function (h) { return new DOMParser().parseFromString(h, 'text/html'); };
   var P = 'ctl00$mainCopy$', F = P + 'Filtro$';
@@ -75,13 +76,16 @@
     }).filter(function (r) { return r[3]; });
   };
   /*__CAPTURA_PARSERS_FIN__*/
+  /*__CAPTURA_BASE_FIN__*/
   var now = new Date().toISOString(), host = location.hostname.replace(/^www\./, '');
+  var PERS_SAES = ['optActual', 'optProximo'];
   try {
+    /*__CAPTURA_HORARIOS__*/
     /* ---------- horarios de clase ---------- */
     var H = '/Academica/horarios.aspx', out = { fuente: host + H, capturado: now, carreras: {}, actual: [], proximo: [] }, n = 0;
     var d0 = parse((await consultar(H, { credentials: 'same-origin' })).texto);
     if (!d0.querySelector('[name="' + F + 'cboCarrera"]')) throw new Error('No se encontró la página de horarios; verifica que tu sesión esté iniciada.');
-    for (var per of ['optActual', 'optProximo']) {
+    for (var per of PERS_SAES) {
       var key = per === 'optActual' ? 'actual' : 'proximo', ov = {}; ov[P + 'GroupPeriodoEscolar'] = per;
       var d = await post(H, d0, P + per, ov);
       Array.prototype.forEach.call(d.querySelectorAll('select[name="' + F + 'cboCarrera"] option'), function (o) { out.carreras[o.value] = o.text.trim(); });
@@ -101,6 +105,7 @@
         }
       }
     }
+    /*__CAPTURA_HORARIOS_FIN__*/
     /* ---------- mapa curricular (créditos, claves y tipo de cada materia) ---------- */
     var M = '/Academica/mapa_curricular.aspx', mapa = { fuente: host + M, capturado: now, cols: ['carrera', 'plan', 'nivel', 'clave', 'nombre', 'tipo', 'creditos', 'horas_teoria', 'horas_practica'], rows: [] };
     try {

@@ -28,3 +28,5 @@ web/qa-*.html
 /qa-formatos/
 /web/dictamen.html
 /CODEX-INFORME.md
+# Salidas de tools/semestre.py (cruce, OCR, snippet del SAES)
+/tmp-horarios/

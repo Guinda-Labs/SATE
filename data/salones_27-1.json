@@ -1,5 +1,5 @@
 {
- "fuente": "https://www.upiita.ipn.mx/adjuntos/Horarios/27-1/HORARIOS 2027-1v3.pdf (16/10/2026 13:55)",
+ "fuente": "https://www.upiita.ipn.mx/adjuntos/Horarios/27-1/HORARIOS%202027-1v3.pdf",
  "periodo": "27/1",
  "ciclo": "2027/1",
  "aulas": [
@@ -34813,5 +34813,7 @@
     388
    ]
   }
- ]
+ ],
+ "actualizado": "16 de octubre del 2026, 13:55 hrs.",
+ "pdf_sha256": "e2bed8e090a5714586170a9b25775771795c2a40b94935c011c443c3a35a0ecb"
 }
