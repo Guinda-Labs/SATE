@@ -1,0 +1,96 @@
+{
+  "sitio": "SATE",
+  "paginas": {
+    "index.html": {
+      "marca": "GuindaLabs",
+      "titulo": "GuindaLabs · Herramientas de libre acceso para el alumnado del IPN",
+      "descripcion": "Herramientas para planear tu trayectoria escolar y armar tu horario, con tus datos del SAES. UPIITA, ESCOM y UPIBI.",
+      "titular": "Herramientas de libre acceso",
+      "subtitulo": "Para el alumnado del IPN.",
+      "pie": "UPIITA · ESCOM · UPIBI",
+      "imagen": "index.png",
+      "alt": "GuindaLabs: herramientas de libre acceso para el alumnado del IPN"
+    },
+    "sate/index.html": {
+      "titulo": "SATE · Sistema de Apoyo a la Trayectoria Escolar",
+      "descripcion": "Mapa curricular, avance, metas y horario sin traslapes, con tus datos del SAES. UPIITA, ESCOM y UPIBI.",
+      "titular": "Planea tu trayectoria escolar",
+      "subtitulo": "Mapa curricular, avance y horario.",
+      "pie": "UPIITA · ESCOM · UPIBI",
+      "imagen": "sate.png",
+      "alt": "SATE, Sistema de Apoyo a la Trayectoria Escolar"
+    },
+    "sate/grupos/index.html": {
+      "titulo": "Grupos de WhatsApp · SATE UPIITA",
+      "descripcion": "Directorio de grupos de WhatsApp de clase de la UPIITA, por grupo, materia, carrera y nivel. Sin datos personales.",
+      "titular": "Encuentra el grupo de tu materia",
+      "subtitulo": "Grupos de WhatsApp de clase de la UPIITA.",
+      "pie": "UPIITA · Oferta {periodo}",
+      "imagen": "grupos.png",
+      "alt": "SATE: grupos de WhatsApp de clase de la UPIITA"
+    },
+    "sate/cupos.html": {
+      "titulo": "Cupos del SAES · SATE",
+      "descripcion": "Consulta los cupos disponibles por grupo y materia en el SAES desde SATE, con tus propios datos.",
+      "titular": "Consulta los cupos del SAES",
+      "subtitulo": "Lugares disponibles por grupo y materia.",
+      "pie": "UPIITA · ESCOM · UPIBI",
+      "imagen": "cupos.png",
+      "alt": "SATE: consulta de cupos del SAES"
+    },
+    "horarios.html": {
+      "titulo": "Horarios · SATE",
+      "descripcion": "Elige tu unidad académica para armar tu horario y planear tu trayectoria con SATE.",
+      "titular": "Arma tu horario",
+      "subtitulo": "Elige tu unidad académica.",
+      "pie": "UPIITA · ESCOM · UPIBI",
+      "imagen": "horarios.png",
+      "alt": "SATE: arma tu horario"
+    },
+    "horarios-upiita.html": {
+      "titulo": "Horarios UPIITA · SATE",
+      "descripcion": "Arma tu horario sin traslapes y planea tu trayectoria en la UPIITA-IPN: mapa curricular, avance y metas con tus datos del SAES.",
+      "titular": "Arma tu horario sin traslapes",
+      "subtitulo": "Mapa curricular, avance y metas de la UPIITA.",
+      "pie": "UPIITA",
+      "imagen": "horarios-upiita.png",
+      "alt": "SATE: horarios de la UPIITA"
+    },
+    "horarios-escom.html": {
+      "titulo": "Horarios ESCOM · SATE",
+      "descripcion": "Arma tu horario sin traslapes y planea tu trayectoria en la ESCOM-IPN: mapa curricular, avance y metas con tus datos del SAES.",
+      "titular": "Arma tu horario sin traslapes",
+      "subtitulo": "Mapa curricular, avance y metas de la ESCOM.",
+      "pie": "ESCOM",
+      "imagen": "horarios-escom.png",
+      "alt": "SATE: horarios de la ESCOM"
+    },
+    "horarios-upibi.html": {
+      "titulo": "Horarios UPIBI · SATE",
+      "descripcion": "Arma tu horario sin traslapes y planea tu trayectoria en la UPIBI-IPN: mapa curricular, avance y metas con tus datos del SAES.",
+      "titular": "Arma tu horario sin traslapes",
+      "subtitulo": "Mapa curricular, avance y metas de la UPIBI.",
+      "pie": "UPIBI",
+      "imagen": "horarios-upibi.png",
+      "alt": "SATE: horarios de la UPIBI"
+    },
+    "condiciones.html": {
+      "titulo": "Condiciones de uso · SATE",
+      "descripcion": "Condiciones de uso de SATE y de las herramientas de GuindaLabs para el alumnado del IPN.",
+      "titular": "Condiciones de uso",
+      "subtitulo": "Reglas de uso de SATE.",
+      "pie": "UPIITA · ESCOM · UPIBI",
+      "imagen": "condiciones.png",
+      "alt": "SATE: condiciones de uso"
+    },
+    "privacidad.html": {
+      "titulo": "Aviso de privacidad · SATE",
+      "descripcion": "Qué datos usa SATE, dónde se guardan y cómo conservar el control de tu información.",
+      "titular": "Aviso de privacidad",
+      "subtitulo": "Tus datos se quedan contigo.",
+      "pie": "UPIITA · ESCOM · UPIBI",
+      "imagen": "privacidad.png",
+      "alt": "SATE: aviso de privacidad"
+    }
+  }
+}

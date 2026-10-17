@@ -876,7 +876,9 @@ def main(solo_datos=False):
         return
     from vista_previa import aplicar
     (ROOT / "web" / "dist" / "horarios.html").write_text(redireccion(None), encoding="utf-8")
-    (ROOT / "web" / "dist" / "auth.html").write_text(cuenta.AUTH, encoding="utf-8")
+    from vista_previa import sin_indexar, copiar_imagenes
+    (ROOT / "web" / "dist" / "auth.html").write_text(sin_indexar(cuenta.AUTH), encoding="utf-8")
+    copiar_imagenes(ROOT / "web" / "dist")
     import shutil   # páginas fijas del sitio e ícono de la app (docs/marca)
     idx = cuenta.inject((ROOT / "web" / "index.html").read_text(encoding="utf-8")).replace("/*__SAES_CSS__*/", saes.CSS, 1)
     idx = contenido.inject_apoyo(idx)
@@ -884,7 +886,9 @@ def main(solo_datos=False):
     idx = idx.replace("/*__UNIDADES__*/[]", json.dumps(cuenta.config()['unidades'], ensure_ascii=False), 1)
     (ROOT / "web" / "dist" / "index.html").write_text(aplicar(idx, "index"), encoding="utf-8")   # página principal con inicio de sesión
     for f in ("revision.html", "privacidad.html", "condiciones.html", "migrar.html"):
-        shutil.copy(ROOT / "web" / f, ROOT / "web" / "dist" / f)
+        pagina = (ROOT / "web" / f).read_text(encoding="utf-8")
+        pagina = sin_indexar(pagina) if f in ("revision.html", "migrar.html") else aplicar(pagina, f)
+        (ROOT / "web" / "dist" / f).write_text(pagina, encoding="utf-8")
     ico = ROOT / "web" / "dist" / "assets" / "icono"
     ico.mkdir(parents=True, exist_ok=True)
     for f in (ROOT / "docs" / "marca").glob("*"):
@@ -902,13 +906,14 @@ def redireccion(unidad):
     rutas = (ROOT / "web/sate/rutas.js").read_text(encoding="utf-8")
     import contenido, html
     titulo = html.escape(contenido.objeto_t()["sate.siglas"])
-    return ('<!doctype html><html lang="es"><meta charset="utf-8">'
+    from vista_previa import aplicar   # las redes no ejecutan JS: la redirección lleva sus propias etiquetas
+    return aplicar('<!doctype html><html lang="es"><meta charset="utf-8">'
             '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'; script-src \'self\' \'unsafe-inline\'; object-src \'none\'; base-uri \'self\'; form-action \'none\'">'
             '<meta name="referrer" content="strict-origin-when-cross-origin">'
             '<script>if(window.top!==window.self){let propio=false;try{propio=window.top.location.origin===location.origin}catch(e){}if(!propio){document.documentElement.hidden=true;document.documentElement.style.setProperty("display","none","important")}}</script>'
             '<title>' + titulo + '</title><script>' + rutas + '\nlocation.replace(SateRutas.redireccion('
             + json.dumps(unidad) + ',location.search,location.hash));</script>'
-            '<a href="sate/index.html">Abrir SATE</a></html>')
+            '<a href="sate/index.html">Abrir SATE</a></html>', "horarios-" + unidad if unidad else "horarios")
 
 
 def separar_datos(data):
@@ -1036,7 +1041,8 @@ def escribir_sate(data):
     receptor = (fuente / 'cupos.html').read_text(encoding='utf-8')
     receptor = receptor.replace('/*__CUPOS_CONFIG__*/', 'window.CUPOS_CONFIG=' + json.dumps(receptor_cfg, ensure_ascii=False) + ';')
     receptor = cuenta.inject(receptor).replace("new URL('auth.html',location.href)", "new URL('../auth.html',location.href)")
-    (destino / 'cupos.html').write_text(receptor, encoding='utf-8')
+    from vista_previa import aplicar
+    (destino / 'cupos.html').write_text(aplicar(receptor, 'sate/cupos.html'), encoding='utf-8')
     marcador = cupos.replace("'__CUPOS_URL__'", json.dumps(url_cupos)).replace('__CUPOS_TEXTOS__', json.dumps(textos_cupos, ensure_ascii=False))
     # Revisión sin red: mismo componente, sin ejecutar la entrada del marcador real.
     revision = (ROOT / 'tools/qa_cupos_hoja.template.html').read_text(encoding='utf-8')
