@@ -768,7 +768,7 @@ function renderTop(){
   const n=new Set(classes().filter(c=>c[0]===S.car).map(c=>c[3])).size;
   $('#notice').innerHTML=`<span>Captura del SAES: <b>${esc(f)}</b></span><span><b>${n}</b> grupos de esta carrera</span>`+
     (!hasOffer('proximo')?'<span>El SAES aún no publica la oferta del próximo periodo; se muestra el periodo actual.</span>':S.per==='proximo'?'<span>La oferta del próximo periodo está en captura y puede estar incompleta.</span>':'')+
-    (n===0?'<span class="bad">Esta carrera no tiene grupos publicados en este periodo.</span>':'')+(DATA.salones?.fuente==='saes'?'<span>Salones según el SAES.</span>':S.per==='actual'&&DATA.salones?`<span>Salones según el horario por aula de la unidad (ciclo ${esc(DATA.salones.periodo)}).</span>`:'<span>Salones aún sin asignar para este periodo.</span>');
+    (n===0?'<span class="bad">Esta carrera no tiene grupos publicados en este periodo.</span>':'')+(DATA.salones?.fuente==='saes'?'<span>Salones según el SAES.</span>':(DATA.salones?.periodos?.[S.per]||(S.per==='actual'&&DATA.salones))?`<span>Salones según el horario por aula de la unidad (ciclo ${esc((DATA.salones.periodos?.[S.per]||DATA.salones).periodo)}).</span>`:'<span>Salones aún sin asignar para este periodo.</span>');
 }
 /* Vista en lista (teléfono): materias por semestre propuesto con su estado y un botón para agregarlas */
 /* ---------- estadísticas del kárdex (solo con datos del SAES; se calculan en el navegador) ----------

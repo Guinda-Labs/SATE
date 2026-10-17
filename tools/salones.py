@@ -1,7 +1,7 @@
 """Salones: lee el PDF de horarios por aula que publica la UPIITA y genera un diccionario de salones.
 
 Uso:  python tools/salones.py <pdf o URL> [--periodo 26/2]
-Salida: data/salones_<periodo>.json  {fuente, periodo, aulas, clases:[{aula, dia, inicio, fin, grupo, materia, profesor}]}
+Salida: data/salones_<periodo>.json  {fuente, periodo, aulas, clases:[{aula, dia, inicio, fin, grupo, materia, profesor, pagina, bbox}]}
 
 El PDF (exportado de Excel) tiene una página por aula: columnas Lunes–Viernes separadas por líneas verticales y
 renglones de 1:30 (07:00–20:30) separados por líneas horizontales. Cada celda contiene materia, grupo y profesor;
@@ -31,18 +31,20 @@ def parse_page(pg):
     txt = ' '.join(w['text'] for w in words[:40])
     m = re.search(r'CICLO ESCOLAR\s+(\d{4}/\d)', txt)
     ciclo = m.group(1) if m else None
-    # nombre del aula: palabras del renglón que empieza con AULA/LAB/... justo arriba de los días
-    head = [w for w in words if w['text'].upper() in ('AULA', 'LABORATORIO', 'LAB', 'LAB.', 'SALA', 'SALÓN', 'SALON')]
+    # El encabezado no siempre incluye un prefijo: CIM y Trabajo Terminal son aulas también.
+    days = [w for w in words if norm(w['text']) in DIAS]
+    cycle_words = [w for w in words if w['text'] == 'CICLO']
+    head = [w for w in words if days and cycle_words
+            and cycle_words[0]['top'] + 2 < w['top'] < min(d['top'] for d in days) - 2]
     aula = None
     if head:
-        h = head[0]
-        aula = ' '.join(w['text'] for w in words if abs(w['top'] - h['top']) < 2)
+        h = max(head, key=lambda w: w['top'])
+        aula = ' '.join(w['text'] for w in sorted(head, key=lambda w: w['x0']) if abs(w['top'] - h['top']) < 2)
         m2 = re.match(r'^AULA\s+(\d+)$', aula)
         aula = f'Aula {m2.group(1)}' if m2 else re.sub(r'^AULA\s+', '', aula)
     # cuadrícula
     hl = sorted({round(r['top']) for r in pg.rects if r['height'] < 2 and r['width'] > 400})
     vl = sorted({round(r['x0']) for r in pg.rects if r['width'] < 2 and r['height'] > 300})
-    days = [w for w in words if norm(w['text']) in DIAS]
     if len(hl) < 3 or len(vl) < 3 or not days:
         return ciclo, aula, []
     rows = [(hl[i], hl[i + 1]) for i in range(len(hl) - 1)]
@@ -64,35 +66,49 @@ def parse_page(pg):
     for ci, (xa, xb) in enumerate(cols):
         if ci not in day_of:
             continue
-        cw = [w for w in words if xa < (w['x0'] + w['x1']) / 2 < xb and w['top'] > rows[0][0]]
-        # renglones de texto de la columna (de arriba abajo)
-        lines = []
-        for w in sorted(cw, key=lambda w: (round(w['top']), w['x0'])):
-            if lines and abs(lines[-1]['top'] - w['top']) < 3:
-                lines[-1]['t'] += ' ' + w['text']
-            else:
-                lines.append({'top': w['top'], 't': w['text']})
-        # secuencias materia… / grupo / profesor
-        mat = []
-        i = 0
-        while i < len(lines):
-            L = lines[i]
-            toks = L['t'].split()
-            if len(toks) == 1 and (GRUPO.match(toks[0]) or toks[0] in ('RECUPERACON', 'RECUPERACION', 'CURSO')):
-                prof = lines[i + 1]['t'] if i + 1 < len(lines) and not GRUPO.match(lines[i + 1]['t'].split()[0]) else ''
-                top = mat[0]['top'] if mat else L['top']
-                bot = lines[i + 1]['top'] if prof else L['top']
-                rj = [j for j, (a, b) in enumerate(rows) if b > top - 2 and a < bot + 2]
-                ini = start.get(rj[0]) if rj else None
-                fin = (start.get(rj[-1]) + 90) if rj and start.get(rj[-1]) is not None else None
-                out.append({'dia': day_of[ci], 'inicio': hm(ini) if ini is not None else None, 'fin': hm(fin) if fin is not None else None,
-                            'grupo': toks[0], 'materia': ' '.join(x['t'] for x in mat), 'profesor': prof})
-                mat = []
-                i += 2 if prof else 1
-                continue
-            mat.append(L)
-            i += 1
+        # Los bordes que atraviesan esta columna delimitan también las celdas combinadas.
+        borders = sorted({round(r['top']) for r in pg.rects if r['height'] < 2
+                          and r['x0'] <= (xa + xb) / 2 <= r['x1']})
+        for ya, yb in zip(borders, borders[1:]):
+            cw = [w for w in words if xa < (w['x0'] + w['x1']) / 2 < xb
+                  and ya < (w['top'] + w['bottom']) / 2 < yb]
+            out.extend(_parse_cell(cw, day_of[ci], xa, xb, ya, yb, rows, start, pg.page_number))
     return ciclo, aula, out
+
+
+def _parse_cell(cw, dia, xa, xb, ya, yb, rows, start, pagina):
+    # Renglones dentro de la celda: un curso sin docente no consume la materia siguiente.
+    lines = []
+    for w in sorted(cw, key=lambda w: (round(w['top']), w['x0'])):
+        if lines and abs(lines[-1]['top'] - w['top']) < 3:
+            lines[-1]['t'] += ' ' + w['text']
+        else:
+            lines.append({'top': w['top'], 't': w['text']})
+    # secuencias materia… / grupo / profesor
+    mat = []
+    out = []
+    i = 0
+    while i < len(lines):
+        L = lines[i]
+        toks = L['t'].split()
+        groups = [t for t in toks if GRUPO.fullmatch(t) or t in ('RECUPERACON', 'RECUPERACION', 'CURSO', 'SEMINARIO')]
+        if groups:
+            # El texto puede compartir renglón con el grupo; el docente puede ocupar varios.
+            extra = ' '.join(t for t in toks if t not in groups)
+            if extra:
+                mat.append({'t': extra})
+            prof = ' '.join(x['t'] for x in lines[i + 1:])
+            rj = [j for j, (a, b) in enumerate(rows) if b > ya + 1 and a < yb - 1]
+            ini = start.get(rj[0]) if rj else None
+            fin = (start.get(rj[-1]) + 90) if rj and start.get(rj[-1]) is not None else None
+            for grupo in groups:
+                out.append({'dia': dia, 'inicio': hm(ini) if ini is not None else None, 'fin': hm(fin) if fin is not None else None,
+                            'grupo': grupo, 'materia': ' '.join(x['t'] for x in mat), 'profesor': prof,
+                            'pagina': pagina, 'bbox': [round(xa), round(ya), round(xb), round(yb)]})
+            break
+        mat.append(L)
+        i += 1
+    return out
 
 
 STOP = {'de', 'la', 'el', 'y', 'e', 'en', 'los', 'las', 'a', 'del', 'i', 'ii', 'iii', 'iv', 'optativa'}
@@ -112,7 +128,7 @@ def _mins(t):
     return hh * 60 + mm
 
 
-def asignar(clases, asig, data, minimo=0.7):
+def asignar(clases, asig, data, minimo=0.7, aplicar=True):
     """Agrega a cada clase [.., bloques(6), ..] una lista de salones paralela a sus bloques (índice 10).
     Cruza por grupo + día + materia; con varios salones el mismo día elige el más cercano en hora.
     Si la cobertura es menor a `minimo` (PDF de otro periodo), no asigna nada y devuelve la cobertura."""
@@ -126,7 +142,8 @@ def asignar(clases, asig, data, minimo=0.7):
         rooms = []
         for d, a, b in bloques:
             tot += 1
-            cand = [r for r in idx.get((grp, d), []) if _sim(materia, r['materia']) >= 0.5]
+            cand = [r for r in idx.get((grp, d), []) if _sim(materia, r['materia']) >= 0.5
+                    and r['inicio'] and r['fin'] and max(a, _mins(r['inicio'])) < min(b, _mins(r['fin']))]
             if cand:
                 ok += 1
                 mid = (a + b) / 2
@@ -136,12 +153,35 @@ def asignar(clases, asig, data, minimo=0.7):
                 rooms.append('')
         res.append(rooms)
     cob = ok / tot if tot else 0
-    if cob >= minimo:
+    if aplicar and cob >= minimo:
         for c, rooms in zip(clases, res):
             while len(c) < 10:
                 c.append(None)
-            c.append(rooms)
+            c[10:11] = [rooms]
     return cob
+
+
+def aplicar_periodos(periodos, asig, archivos):
+    """El SAES no guarda ciclos: se infiere la oferta por su mejor cruce, con umbral 70 %.
+
+    Cada PDF se postula solo al periodo de mayor cobertura; cada periodo recibe el mejor PDF.
+    Se conservan los dos ciclos aunque cambie el orden o la fecha de modificación de los archivos.
+    """
+    elegidos = {}
+    for nombre, data in archivos:
+        coberturas = {k: asignar(v, asig, data, aplicar=False) for k, v in periodos.items()}
+        per = max(coberturas, key=coberturas.get)
+        cob = coberturas[per]
+        print('salones', nombre, 'ciclo', data.get('ciclo') or data['periodo'],
+              ', '.join(f'{k} {v:.1%}' for k, v in coberturas.items()),
+              f'oferta inferida: {per}' if cob >= 0.7 else 'NO aplicado (cobertura insuficiente)')
+        if cob >= 0.7 and cob > elegidos.get(per, (0, None))[0]:
+            elegidos[per] = (cob, data)
+    meta = {}
+    for per, (cob, data) in elegidos.items():
+        asignar(periodos[per], asig, data)
+        meta[per] = {'periodo': data.get('ciclo') or data['periodo'], 'cobertura': round(cob, 3)}
+    return meta
 
 
 def main():

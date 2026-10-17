@@ -820,16 +820,15 @@ def main():
                     extra.setdefault(c[0], {})[syn[key]] = [asig[c[4]], 0.0, c[2], "O"]
                 c[8], c[7], c[9] = syn[key], 0.0, "O"
     data["mapas"] = load_maps(d, upiita, extra)
-    # salones: PDF de horarios por aula de la unidad (tools/salones.py) -> solo el periodo actual; el próximo aún no
-    # los tiene. Se toma el archivo data/salones_*.json más reciente y se aplica si coincide con la oferta del SAES.
+    # salones: PDF de horarios por aula de la unidad (tools/salones.py). La captura del SAES no trae el ciclo:
+    # cada PDF se aplica a la oferta (actual o próxima) con la que mejor cruza, si cubre al menos el 70 %.
     import salones
     sal = sorted((ROOT / "data").glob("salones_*.json"), key=lambda p: p.stat().st_mtime)
     if sal and upiita:
-        sd = json.loads(sal[-1].read_text(encoding="utf-8"))
-        cob = salones.asignar(data["periodos"]["actual"], asig, sd)
-        if cob >= 0.7:
-            data["salones"] = {"periodo": sd.get("ciclo") or sd["periodo"], "cobertura": round(cob, 3)}
-        print("salones", sal[-1].name, f"cobertura {cob:.1%}", "aplicados" if cob >= 0.7 else "NO aplicados (otro periodo)")
+        meta = salones.aplicar_periodos(data['periodos'], asig,
+                                       [(p.name, json.loads(p.read_text(encoding='utf-8'))) for p in sal])
+        if meta:
+            data['salones'] = {**meta.get('actual', next(iter(meta.values()))), 'periodos': meta}
     if UNIDAD != "upiita":
         full = {}   # clave -> nombre completo según la oferta (el mapa curricular los recorta)
         for per in data["periodos"].values():
