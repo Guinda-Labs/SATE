@@ -64,7 +64,7 @@ def test_build_completo_y_textos(tmp_path, monkeypatch):
     assert 'De acuerdo' in html and 'Ver la guía' in html
     dialogs = re.findall(r'<dialog\b[^>]*>.*?</dialog>', html, re.S)
     assert len(dialogs) == 2
-    assert all(d.count('Solo grupos de clase de la UPIITA.') == 1 for d in dialogs)
+    assert all(d.count('Solo grupos de materias de la UPIITA.') == 1 for d in dialogs)
     import skins
     assert skins.THEME_BTN in html and skins.EARLY in html and skins.CSS in html
     assert 'ipnt.grupos.tema' not in js
