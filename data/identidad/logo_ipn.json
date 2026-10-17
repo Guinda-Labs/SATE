@@ -1,0 +1,8 @@
+{
+ "_nota": "Único lugar de la ruta del logo del IPN en el encabezado de SATE (isologo sin letras; originales reducidos en data/identidad/originales/, grandes en recursos/). Para cambiarlo basta editar claro, oscuro, ancho y alto.",
+ "claro": "assets/logos/ipn-isologo-guinda.webp",
+ "oscuro": "assets/logos/ipn-isologo-calado.webp",
+ "alt": "Instituto Politécnico Nacional",
+ "ancho": 135,
+ "alto": 200
+}

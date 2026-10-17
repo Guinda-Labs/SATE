@@ -37,7 +37,7 @@ def test_oferta_y_config(tmp_path, monkeypatch):
 def test_build_completo_y_textos(tmp_path, monkeypatch):
     # Compilación aislada: no altera los datos de publicación ni necesita una API activa.
     monkeypatch.setattr(build_grupos, "ROOT", tmp_path)
-    for nombre in ("data/grupos.json", "data/horarios_upiita.json", "data/sate.json", "web/sate/cascaron.html", "web/sate/grupos.html", "web/sate/grupos.js", "web/sate/grupos.css", "vendor/ipn-comun/dist/tokens.css"):
+    for nombre in ("data/grupos.json", "data/horarios_upiita.json", "data/sate.json", "web/sate/cascaron.html", "web/sate/grupos.html", "web/sate/grupos.js", "web/sate/grupos.css", "web/sate/encabezado.css", "vendor/ipn-comun/dist/tokens.css"):
         destino = tmp_path / nombre
         destino.parent.mkdir(parents=True, exist_ok=True)
         destino.write_text((ROOT / nombre).read_text(encoding="utf-8"), encoding="utf-8")
@@ -51,7 +51,10 @@ def test_build_completo_y_textos(tmp_path, monkeypatch):
     assert claves and claves <= contenido.objeto_t().keys()
     assert "{{grupos." not in html and "/*__GRUPOS__*/" not in html
     assert "https://script.googleusercontent.com" in html
-    assert 'class="top grupos-encabezado wrap"' in html and 'src="../../assets/logos/ipn-isologo-guinda.webp"' in html
+    assert 'class="top sate-encabezado"' in html and 'src="../../assets/logos/ipn-isologo-guinda.webp"' in html
+    assert 'href="../encabezado.css"' in html and 'class="sate-contenedor"' in html and 'grupos-encabezado' not in html
+    assert (tmp_path / 'web/dist/sate/encabezado.css').read_text(encoding='utf-8') == (ROOT / 'web/sate/encabezado.css').read_text(encoding='utf-8')
+    assert 'id="b-unidad"' not in html and 'id="f-carrera"' not in html and 'class="sate-lado"' in html
     assert 'src="../../assets/logos/ipn-isologo-calado.webp"' in html
     assert 'SATE UPIITA' in html and 'Sistema de Apoyo a la Trayectoria Escolar' in html
     assert '<dialog id="guia" class="sate-modal" aria-labelledby="guia-titulo">' in html
@@ -71,7 +74,7 @@ def test_build_completo_y_textos(tmp_path, monkeypatch):
     sate = json.loads((ROOT / 'data/sate.json').read_text(encoding='utf-8'))
     for pestana in sate['unidades']['upiita']['pestanas']:
         assert f'href="../index.html#/upiita/{pestana}"' in encabezado
-    assert 'aria-current="page" aria-selected="true">Grupos' in encabezado
+    assert 'aria-current="page">Grupos' in encabezado
     assert 'UPIITA · Oferta ' in html
     assert (tmp_path / 'web/dist/assets/logos/ipn-isologo-guinda.webp').is_file()
     assert (tmp_path / 'web/dist/assets/logos/ipn-isologo-calado.webp').is_file()

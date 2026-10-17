@@ -1,5 +1,5 @@
 /* Directorio: una superficie, cuadrícula de accesos y panel de detalle compartido. */
-.grupos-pagina main{max-width:1480px;margin:auto;padding:var(--ipn-esp-6) var(--ipn-esp-4) var(--ipn-esp-8)}
+.grupos-pagina main{padding-block:0 var(--ipn-esp-8)}
 .grupos-pagina h2{font-size:var(--ipn-tamano-l);margin:0 0 var(--ipn-esp-3)}
 .grupos-pagina p{margin:0 0 var(--ipn-esp-3)}
 .grupos-pagina :is(small,.tenue,.contador){color:var(--ipn-tenue);font-size:var(--ipn-tamano-s)}
@@ -58,24 +58,16 @@
 .grupos-pagina li{margin-block:var(--ipn-esp-2)}
 .grupos-aviso{position:fixed;z-index:5;bottom:var(--ipn-esp-4);left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100% - var(--ipn-esp-6));padding:var(--ipn-esp-3) var(--ipn-esp-4);border:1px solid var(--ipn-linea);border-radius:var(--ipn-radio);background:var(--ipn-superficie);color:var(--ipn-texto);font-size:var(--ipn-tamano-s)}
 .grupos-pagina .guardada{background:var(--ipn-ok-suave)}
-@media(max-width:479px){.grupos-pagina .carrera-larga{display:none}.grupos-pagina .buscador input{font-size:var(--ipn-tamano-m)}.grupos-pagina main{padding-top:var(--ipn-esp-5)}}
+@media(max-width:479px){.grupos-pagina .carrera-larga{display:none}.grupos-pagina .buscador input{font-size:var(--ipn-tamano-m)}}
 @media(min-width:480px){.grupos-pagina .carrera-corta{display:none}}
 @media(prefers-reduced-motion:reduce){.grupos-pagina *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
-.grupos-pagina{margin:0}
-.grupos-encabezado .header-actions{display:flex;align-items:center;flex-wrap:wrap}
-.grupos-encabezado img{height:2.5rem;width:auto}
-.grupos-encabezado .logo-dk{display:none}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .grupos-encabezado .logo-dk{display:block}:root:not([data-theme=light]) .grupos-encabezado .logo-lt{display:none}}
-:root[data-theme=dark] .grupos-encabezado .logo-dk{display:block}
-:root[data-theme=dark] .grupos-encabezado .logo-lt{display:none}
-.grupos-pagina #sate-tabs{display:block;overflow-x:auto}
-.grupos-pagina .sate-pestanas{min-width:max-content}
-.grupos-pagina .sate-pestana{text-decoration:none}
-.grupos-pagina #sate-nombre{display:block}
-.grupos-pagina #abrir-guia{display:inline-flex;align-items:center;gap:var(--ipn-esp-2)}
-.grupos-pagina #abrir-guia svg{width:1.25rem;height:1.25rem}
+.grupos-pagina{margin:0;padding-inline:0}
+/* El encabezado común (encabezado.css) y el contenido comparten .sate-contenedor: mismo eje izquierdo. */
+.grupos-pagina #abrir-guia svg{flex:none}
+@media(max-width:767px){.grupos-pagina #abrir-guia{width:var(--ipn-objetivo-tactil);padding:0}.grupos-pagina #abrir-guia span{display:none}}
+.grupos-pagina .sate-btn-barra:hover{background:var(--ipn-acento-suave)}
 .grupos-pagina .unirse{display:inline-flex;align-items:center;gap:var(--ipn-esp-2);text-decoration:none;color:var(--ipn-sobre-acento)}
-@media(max-width:479px){#abrir-guia span{display:none}.grupos-guia-tarjetas{grid-template-columns:minmax(0,1fr)}.grupos-encabezado .sate-identidad h1{font-size:var(--ipn-tamano-m)}.grupos-encabezado .sate-identidad{flex-wrap:wrap}.grupos-encabezado .header-actions{gap:var(--ipn-esp-1)}}
+@media(max-width:479px){.grupos-guia-tarjetas{grid-template-columns:minmax(0,1fr)}}
 
 /* Acción secundaria discreta: sin subrayado hasta pasar el cursor. */
 .grupos-pagina .materia .sate-enlace{text-decoration:none;font-weight:600}

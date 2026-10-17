@@ -7,10 +7,12 @@ medida mínima digital de 2 cm) y el Manual de Diseño Web IPN 2025 (título "| 
 Los archivos de logotipo NO se incluyen: deben ser los oficiales que entrega la Coordinación de
 Imagen Institucional (www.ipn.mx/imageninstitucional/identidad-institucional.html) y la propia unidad.
 """
-import pathlib, re
+import json, pathlib, re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DIST = ROOT / "web" / "dist"
+# Logo del IPN del encabezado de SATE: la ruta vive solo en data/identidad/logo_ipn.json
+LOGO_IPN = json.loads((ROOT / "data" / "identidad" / "logo_ipn.json").read_text(encoding="utf-8"))
 
 HEADER = """<style>
 .inst{background:transparent;border:0;border-radius:0;border-bottom:3px solid var(--sate-realce,var(--accent));padding-inline:16px}

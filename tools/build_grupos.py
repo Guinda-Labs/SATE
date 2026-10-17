@@ -4,6 +4,7 @@ import html
 import json
 import pathlib
 import re
+import shutil
 from datetime import datetime, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -40,16 +41,21 @@ def generar(solo_datos=False):
     reglas = '<ul>' + ''.join('<li>{{grupos.reglas.' + k + '}}</li>'
                               for k in ('clases', 'funcionan', 'dominio', 'abuso')) + '</ul>'
     pagina = pagina.replace('<!--__GRUPOS_REGLAS__-->', reglas)
+    from encabezado import encabezado_sate, pestanas_encabezado
     etiquetas = contenido.objeto_t()
-    pestanas = []
-    for p in capacidades['pestanas']:
-        if p in sate.get('pestanasOcultas', []):
-            continue
-        pestanas.append('<a class="sate-pestana" href="../index.html#/upiita/' + p + '">'
-                        + html.escape(etiquetas['sate.pestana.' + p + '.titulo']) + '</a>')
-    pestanas.append('<a class="sate-pestana" href="./" aria-current="page" aria-selected="true">'
-                    + html.escape(textos['grupos.pagina.pestana']) + '</a>')
-    pagina = pagina.replace('<!--__GRUPOS_PESTANAS__-->', '<div class="sate-pestanas">' + ''.join(pestanas) + '</div>')
+    unidad_enc = dict(capacidades, siglas='UPIITA')
+    pestanas = pestanas_encabezado(sate, 'upiita', etiquetas, inicio='../index.html')
+    pestanas.append(dict(id='grupos', href='./', texto=textos['grupos.pagina.pestana']))
+    guia = ('<button id="abrir-guia" class="sate-btn-barra" type="button" aria-haspopup="dialog" aria-controls="guia" '
+            'aria-label="{{grupos.guia.boton}}" title="{{grupos.guia.boton}}">'
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">'
+            '<path d="M12 5C9 3 5 3 2 4v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1Zm0 0v15"/></svg>'
+            '<span>{{grupos.guia.boton}}</span></button>')
+    # Mismo componente que SATE: marca | (sin selector de carrera) | acciones y logo de la unidad.
+    encabezado = encabezado_sate(textos=etiquetas, unidad=unidad_enc, contexto=False,
+                                 acciones='<!--__THEME_BTN__-->' + guia, pestanas=pestanas,
+                                 activa='grupos', recursos='../../', avisos=False)
+    pagina = pagina.replace('<!--__GRUPOS_ENCABEZADO__-->', encabezado)
     pagina = re.sub(r"\{\{(grupos\.[a-z0-9_.]+)\}\}",
                     lambda m: html.escape(textos[m[1]].replace("{periodo}", periodo)), pagina)
     nombres = {c["materia"]: re.sub(r"\b(i{1,3}|iv|v|vi{1,3}|ix|x)\b", lambda m: m[0].upper(),
@@ -63,7 +69,7 @@ def generar(solo_datos=False):
     css = css.replace('/*__COMPONENTES_CSS__*/', '')
     pagina = pagina.replace('/*__SATE_ESTILO__*/', css)
     pagina = skins.inject(comun.inyectar(pagina))
-    from institucional import HEADER, ROOT as RAIZ_IDENTIDAD
+    from institucional import ROOT as RAIZ_IDENTIDAD
     from PIL import Image
     logos = destino.parents[1] / "assets/logos"
     logos.mkdir(parents=True, exist_ok=True)
@@ -73,14 +79,10 @@ def generar(solo_datos=False):
         with Image.open(RAIZ_IDENTIDAD / f"data/identidad/originales/ipn-horizontal-{version}.png") as imagen:
             imagen.crop((0, 0, round(imagen.width * .26), imagen.height)).save(
                 logos / f"ipn-isologo-{version}.webp", lossless=True)
-    ipn = ('<span class="grupos-logo-ipn">'
-           '<img class="logo-lt" src="../../assets/logos/ipn-isologo-guinda.webp" alt="Instituto Politécnico Nacional">'
-           '<img class="logo-dk" src="../../assets/logos/ipn-isologo-calado.webp" alt="Instituto Politécnico Nacional"></span>')
-    unidad = re.search(r'<a class="unit".*?</a>', HEADER, re.S)[0].replace('src="assets/', 'src="../../assets/')
-    pagina = pagina.replace('<!--__GRUPOS_IPN__-->', ipn).replace('<!--__GRUPOS_UPIITA__-->', unidad)
     import vista_previa   # etiquetas Open Graph/Twitter y su imagen (assets/og/grupos.png)
     pagina = vista_previa.aplicar(pagina, "sate/grupos/index.html")
     vista_previa.copiar_imagenes(destino.parents[1], ROOT)
     (destino / "index.html").write_text(pagina, encoding="utf-8")
     (destino / "grupos.js").write_text((ROOT / "web/sate/grupos.js").read_text(encoding="utf-8"), encoding="utf-8")
+    shutil.copy(ROOT / "web/sate/encabezado.css", destino.parent / "encabezado.css")
     (destino / "grupos.css").write_text((ROOT / "web/sate/grupos.css").read_text(encoding="utf-8"), encoding="utf-8")

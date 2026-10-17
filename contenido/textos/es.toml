@@ -185,6 +185,8 @@ leyenda.prueba = "SATE está en fase de prueba en la {unidad}. Puede tener error
 # Pestañas. `titulo` va en escritorio; `corto` en la barra inferior del teléfono (una palabra).
 [sate.encabezado]
 unidad = "Cambiar unidad académica"
+acciones = "Acciones de SATE"
+navegacion = "Secciones de SATE"
 carrera = "Carrera"
 prueba = "Fase de prueba ⓘ"
 actualizar = "Traer mis datos del SAES"
