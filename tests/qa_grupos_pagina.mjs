@@ -136,7 +136,7 @@ async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento 
   const nodos = Object.fromEntries(['reglas','reglas-titulo','aceptar-reglas','reglas-guia','abrir-reglas','guia-titulo','guia','abrir-guia','cerrar-guia','tema','carrera','buscar','semestre','nivel-etiqueta','turno','sin','lista','mensaje','prueba','estado','proxima','global','resultados','limpiar','tus-materias'].map(id => [id, new Nodo('div')]));
   nodos['tus-materias'].hidden = true;
   nodos.estado.append(new Nodo('summary'));
-  const config = {periodo:'DEMO', zona:'America/Mexico_City', horario, endpoint:'https://script.google.com/demo', motivos:['caido','lleno','equivocado','otro'], enlaces:'/enlaces.json', enlaces_prueba:'/enlaces-prueba.json'};
+  const config = {unidad:'upiita', periodo:'DEMO', zona:'America/Mexico_City', horario, endpoint:'https://script.google.com/demo', motivos:['caido','lleno','equivocado','otro'], enlaces:'/enlaces.json', enlaces_prueba:'/enlaces-prueba.json'};
   const oferta = ofertaDirectorio || {casillas, carreras:{M:'Mecatrónica',B:'Biónica'}, semestrales:[]};
   const datos = {}; runInNewContext(pagina.match(/<script>window.GRUPOS=([\s\S]*?);<\/script>/)[0].replace(/<\/?script>/g,''), {window:datos});
   // Carrera ficticia: verifica que la capacidad funcione sin depender del código de Energía.
