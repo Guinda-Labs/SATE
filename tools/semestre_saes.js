@@ -1,5 +1,5 @@
 /* Captura de HORARIOS del SAES (solo lectura) con diferencia contra la oferta guardada.
- * Generado por: python tools/semestre.py snippet-saes   (no editar a mano: las marcas /*__SEM_…__*/ las llena el generador).
+ * Generado por: python tools/semestre.py snippet-saes   (no editar a mano: las marcas «SEM» las llena el generador).
  * Se pega en el navegador integrado, en una pestaña del SAES con sesión iniciada. Deja el resultado en window.SEM:
  *   {version, capturado, fuente, carreras, listas:{actual|proximo:{n, sha, base, coincide, fuera:[índices], nuevas:[[índice, valores]]}}}
  * y no descarga archivos. Después: python tools/semestre.py aplicar-saes <diff.json>. */

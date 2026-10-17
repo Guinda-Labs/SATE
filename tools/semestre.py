@@ -28,7 +28,8 @@ import semestre_huellas as hu  # noqa: E402
 
 PAGINA = 'https://www.upiita.ipn.mx/estudiantes/horariosnuevo'
 HOST_PERMITIDO = 'upiita.ipn.mx'
-OFERTA = ROOT / 'data' / 'horarios_upiita.json'
+DATA = ROOT / 'data'
+OFERTA = DATA / 'horarios_upiita.json'
 TMP = ROOT / 'tmp-horarios'
 DIAS_ES = ('Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb')
 
@@ -58,6 +59,11 @@ def dir_estado(arg=None):
     if p is None:
         raise SystemExit('No encuentro coordinacion-wt/ipt-estado/ipn-tools; indica --salida o IPNT_ESTADO.')
     return p
+
+
+def _rel(p):
+    p = Path(p)
+    return p.relative_to(ROOT) if ROOT in p.resolve().parents else p
 
 
 def leer_json(p):
@@ -109,7 +115,7 @@ def cmd_pdf(args, abrir=_abrir):
     previo = leer_json(marca) if marca.exists() else {}
     nombre = Path(urllib.parse.unquote(urllib.parse.urlparse(info['url']).path)).name.replace(' ', '-')
     destino = carpeta / nombre
-    salones = ROOT / 'data' / f"salones_{info['periodo'].replace('/', '-')}.json"
+    salones = DATA / f"salones_{info['periodo'].replace('/', '-')}.json"
     print(f"PDF {info['ciclo']}: {nombre} · {info['actualizado'] or 'sin fecha en la página'}")
     mismo = (previo.get('url') == info['url'] and previo.get('actualizado') == info['actualizado']
              and (carpeta / previo.get('archivo', '')).is_file() and not args.forzar)
@@ -144,7 +150,7 @@ def cmd_pdf(args, abrir=_abrir):
     escribir_json(dst, data, indent=1)
     escribir_json(marca, {'url': info['url'], 'actualizado': info['actualizado'], 'sha256': sha, 'archivo': destino.name,
                           'ciclo': info['ciclo'], 'periodo': info['periodo']}, indent=1)
-    print(f"{dst.relative_to(ROOT)}: {len(data['aulas'])} aulas, {len(data['clases'])} clases")
+    print(f"{_rel(dst)}: {len(data['aulas'])} aulas, {len(data['clases'])} clases")
     print('Siguiente: snippet-saes -> aplicar-saes -> cruce -> datos.')
     return 0
 
@@ -180,7 +186,7 @@ def cmd_snippet(args):
     TMP.mkdir(exist_ok=True)
     dst = TMP / 'snippet-saes.js'
     dst.write_text(js, encoding='utf-8')
-    print(f'{dst.relative_to(ROOT)} ({len(js) // 1024} KB, periodos SAES: {args.saes}).')
+    print(f'{_rel(dst)} ({len(js) // 1024} KB, periodos SAES: {args.saes}).')
     print('Pégalo en el navegador integrado, en una pestaña del SAES con sesión; al terminar lee JSON.stringify(window.SEM),')
     print('guárdalo como tmp-horarios/diff.json y corre: python tools/semestre.py aplicar-saes tmp-horarios/diff.json')
     return 0
@@ -216,7 +222,7 @@ def cmd_aplicar(args):
         print('Sin cambios respecto a lo guardado.')
         return 0
     escribir_json(OFERTA, nueva)
-    print(f'{OFERTA.relative_to(ROOT)} actualizado ({nueva.get("capturado")}). Siguiente: cruce -> datos.')
+    print(f'{_rel(OFERTA)} actualizado ({nueva.get("capturado")}). Siguiente: cruce -> datos.')
     return 0
 
 
@@ -330,9 +336,9 @@ def _pdf_local(periodo, recursos_arg):
 def cmd_cruce(args):
     args.periodo = args.periodo or periodo_vigente()
     slug = args.periodo.replace('/', '-')
-    ruta = ROOT / f'data/salones_{slug}.json'
+    ruta = DATA / f'salones_{slug}.json'
     if not ruta.exists():
-        print(f'Falta {ruta.relative_to(ROOT)}: corre antes «pdf».')
+        print(f'Falta {_rel(ruta)}: corre antes «pdf».')
         return 1
     r = subprocess.run([sys.executable, str(ROOT / 'tools/salones_cruce.py'), '--periodo', args.periodo,
                         *(['--oferta-periodo', args.oferta] if args.oferta else [])], cwd=ROOT, text=True, capture_output=True)
@@ -370,7 +376,7 @@ def cmd_cruce(args):
 
 def periodo_vigente():
     """El periodo más reciente con data/salones_<aa>-<n>.json."""
-    ps = sorted(p.stem.split('_', 1)[1] for p in (ROOT / 'data').glob('salones_*.json'))
+    ps = sorted(p.stem.split('_', 1)[1] for p in DATA.glob('salones_*.json'))
     if not ps:
         raise SystemExit('No hay data/salones_*.json; corre «pdf» o indica --periodo.')
     return ps[-1].replace('-', '/')
@@ -403,7 +409,7 @@ def cmd_estado(args):
         L.append(f"PDF: {e.get('ciclo')} · {e.get('archivo')} · «{e.get('actualizado') or 's/f'}» · SHA {e.get('sha256', '')[:10]}")
     if not marcas:
         L.append('PDF: sin descargar (corre «pdf»).')
-    sal = sorted((ROOT / 'data').glob('salones_*.json'))
+    sal = sorted(DATA.glob('salones_*.json'))
     falta = [] if marcas else ['el PDF no está registrado en recursos (corre «pdf»)']
     oferta = leer_json(OFERTA)
     L.append(f"Oferta SAES: capturada {oferta.get('capturado')} · actual {len(oferta.get('actual', []))} · próximo {len(oferta.get('proximo', []))} filas")
