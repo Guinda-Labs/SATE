@@ -20,6 +20,7 @@ def generar(solo_datos=False):
     config = (ROOT / "data/grupos.json").read_text(encoding="utf-8")
     periodo = json.loads(config)["periodo"]
     fuente = json.loads((ROOT / "data/horarios_upiita.json").read_text(encoding="utf-8"))
+    capacidades = json.loads((ROOT / "data/sate.json").read_text(encoding="utf-8"))["unidades"]["upiita"]
     casillas = {}
     for fila in fuente["proximo"]:
         ident = fila["Grupo"] + "|" + fila["Asignatura"]
@@ -27,6 +28,7 @@ def generar(solo_datos=False):
                                        materia=fila["Asignatura"], turno=fila["turno"], nivel=int(fila["nivel"])))
     oferta = dict(periodo=periodo, generado=datetime.now(timezone.utc).isoformat(),
                   carreras={c: CARRERAS[c] for c in fuente["carreras"]},
+                  semestrales=capacidades["carrerasSemestrales"],
                   casillas=sorted(casillas.values(), key=lambda c: (c["nivel"], c["grupo"], c["materia"])))
     (destino / "config.json").write_text(config, encoding="utf-8")
     (destino / "oferta.json").write_text(json.dumps(oferta, ensure_ascii=False), encoding="utf-8")

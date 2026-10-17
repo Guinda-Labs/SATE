@@ -343,9 +343,23 @@
     guardar(prefijo + 'filtros', {...filtros, g:''});
   }
   function controles() {
+    const disponibles = oferta.casillas.filter(c => !filtros.c || c.carrera === filtros.c);
+    const niveles = [...new Set(disponibles.map(c => c.nivel))].sort((a,b) => a-b);
+    if (filtros.s && !niveles.includes(Number(filtros.s))) filtros.s = '';
+    document.getElementById('nivel-etiqueta').textContent = t(disponibles.some(c => oferta.semestrales.includes(c.carrera)) ? 'grupos.filtro.nivel_semestre' : 'grupos.filtro.nivel');
+    semestre.replaceChildren();
+    const todos = elemento('option', t('grupos.filtro.todos')); todos.value = ''; semestre.append(todos);
+    for (const nivel of niveles) {
+      const o = elemento('option', filtros.c ? etiquetaNivel(filtros.c, nivel) : String(nivel));
+      o.value = String(nivel); semestre.append(o);
+    }
     buscar.value = filtros.q; semestre.value = filtros.s; turno.value = filtros.t; sin.checked = filtros.sin;
     for (const b of carrera.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.carrera === filtros.c));
     document.getElementById('limpiar').hidden = !['c','s','t','q','sin'].some(k => filtros[k]);
+  }
+  function etiquetaNivel(carrera, n) {
+    return t(oferta.semestrales.includes(carrera) ? 'grupos.lista.semestre' : 'grupos.lista.nivel',
+      {n, ordinal:n === 1 || n === 3 ? 'er' : 'º'});
   }
   async function compartir(nombre) {
     const url = new URL(location.href); url.pathname = url.pathname.replace(/\/index\.html$/, '/');
@@ -356,6 +370,7 @@
     } catch (error) { if (error.name !== 'AbortError') notificar(t('grupos.error.compartir')); }
   }
   function renderizar(automatico = true) {
+    controles();
     lista.replaceChildren(); const grupos = new Map();
     for (const c of filtrar(oferta.casillas, enlaces, filtros)) {
       if (!grupos.has(c.grupo)) grupos.set(c.grupo, []);
@@ -397,10 +412,29 @@
       }
     }
     if (grupos.has(ultimo)) agregar(ultimo, grupos.get(ultimo), seccion('tu', t('grupos.lista.tu')));
-    for (const [nombre, casillas] of [...grupos].sort((a,b) => a[1][0].nivel - b[1][0].nivel || a[0].localeCompare(b[0], 'es', {numeric:true}))) {
-      if (nombre === ultimo) continue;
-      const nivel = casillas[0].nivel;
-      agregar(nombre, casillas, seccion(nivel, t('grupos.lista.semestre_' + nivel)));
+    for (const id of Object.keys(oferta.carreras)) {
+      const deCarrera = [...grupos].filter(([, casillas]) => casillas[0].carrera === id);
+      if (!deCarrera.some(([nombre]) => nombre !== ultimo)) continue;
+      const s = elemento('section', null, 'grupos-seccion grupos-carrera'); s.dataset.carrera = id;
+      if (!filtros.c) {
+        const cabecera = elemento('div', null, 'renglon');
+        cabecera.append(elemento('h2', oferta.carreras[id]), elemento('span',
+          t(deCarrera.length === 1 ? 'grupos.lista.grupo_uno' : 'grupos.lista.grupo_varios', {n:deCarrera.length}), 'tenue'));
+        s.append(cabecera);
+      }
+      lista.append(s);
+      const filas = new Map();
+      for (const [nombre, casillas] of deCarrera.sort((a,b) => a[1][0].nivel - b[1][0].nivel || a[0].localeCompare(b[0], 'es', {numeric:true}))) {
+        if (nombre === ultimo) continue;
+        const nivel = casillas[0].nivel;
+        if (!filas.has(nivel)) {
+          const fila = elemento('div', null, 'grupos-nivel'), grid = elemento('div', null, 'grupos-cuadricula');
+          fila.dataset.nivel = String(nivel);
+          fila.append(elemento('h3', etiquetaNivel(id, nivel), 'grupos-nivel-etiqueta'), grid);
+          s.append(fila); filas.set(nivel, grid);
+        }
+        agregar(nombre, casillas, filas.get(nivel));
+      }
     }
     controles(); actualizarConteos();
   }
@@ -428,9 +462,6 @@
         b.append(elemento('span', t(id ? 'grupos.carrera.' + id.toLowerCase() : 'grupos.filtro.todas'), 'carrera-larga'),
           elemento('span', t(id ? 'grupos.carrera_corta.' + id.toLowerCase() : 'grupos.filtro.todas'), 'carrera-corta'));
         carrera.append(b);
-      }
-      for (const nivel of [...new Set(oferta.casillas.map(c => c.nivel))].sort((a,b) => a-b)) {
-        const o = elemento('option', String(nivel)); o.value = String(nivel); semestre.append(o);
       }
       function restaurar() {
         filtros = leerHash(location.hash || escribirHash(leer(prefijo + 'filtros', {})));

@@ -16,7 +16,7 @@
 <section class="filtros" aria-label="{{grupos.filtro.titulo}}">
 <label class="buscador"><span class="sr-only">{{grupos.filtro.grupo}}</span><input id="buscar" type="search" autocomplete="off" placeholder="{{grupos.filtro.ejemplo}}"></label>
 <div id="carrera" class="tramite-chips" role="group" aria-label="{{grupos.filtro.carrera}}"></div>
-<div class="grupos-opciones"><label>{{grupos.filtro.semestre}}<select id="semestre"><option value="">{{grupos.filtro.todos}}</option></select></label><label>{{grupos.filtro.turno}}<select id="turno"><option value="">{{grupos.filtro.todos}}</option><option value="M">{{grupos.filtro.matutino}}</option><option value="V">{{grupos.filtro.vespertino}}</option><option value="X">{{grupos.filtro.mixto}}</option></select></label>
+<div class="grupos-opciones"><label><span id="nivel-etiqueta">{{grupos.filtro.nivel}}</span><select id="semestre"><option value="">{{grupos.filtro.todos}}</option></select></label><label>{{grupos.filtro.turno}}<select id="turno"><option value="">{{grupos.filtro.todos}}</option><option value="M">{{grupos.filtro.matutino}}</option><option value="V">{{grupos.filtro.vespertino}}</option><option value="X">{{grupos.filtro.mixto}}</option></select></label>
 <label class="grupos-interruptor"><input id="sin" type="checkbox" role="switch">{{grupos.filtro.sin}}</label><button id="limpiar" class="texto-enlace" type="button" hidden>{{grupos.filtro.limpiar}}</button></div>
 </section>
 <p id="resultados" class="tenue" role="status" tabindex="-1"></p><div id="lista"></div>

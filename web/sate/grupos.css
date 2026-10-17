@@ -41,6 +41,11 @@
 .grupos-pagina .texto-enlace{border-color:transparent;background:transparent;color:var(--ipn-acento)}
 .grupos-seccion{margin-block:var(--ipn-esp-6)}
 .grupos-cuadricula{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,9rem),1fr));gap:var(--ipn-esp-3)}
+.grupos-nivel{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:var(--ipn-esp-4);margin-top:var(--ipn-esp-4)}
+.grupos-nivel-etiqueta{font-size:var(--ipn-tamano-s);font-weight:600;margin:0;padding-block:var(--ipn-esp-3)}
+.grupos-nivel .grupos-cuadricula{display:flex;flex-wrap:wrap;align-content:start;gap:var(--ipn-esp-2);min-width:0}
+.grupos-nivel .grupos-panel{flex-basis:100%}
+@media(max-width:479px){.grupos-nivel{grid-template-columns:minmax(0,1fr);gap:var(--ipn-esp-2)}.grupos-nivel-etiqueta{padding:0}}
 .grupos-pagina .grupo{display:flex;align-items:center;justify-content:space-between;gap:var(--ipn-esp-2);text-align:left;padding:var(--ipn-esp-3);border-color:var(--ipn-linea);font-variant-numeric:tabular-nums}
 .grupos-pagina .grupo[aria-expanded=true]{border-color:var(--ipn-acento);background:var(--ipn-acento-suave)}
 .grupos-pagina .grupo:hover{border-color:var(--ipn-acento)}

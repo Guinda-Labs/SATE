@@ -2,7 +2,7 @@
 # Textos de SATE (Sistema de Apoyo a la Trayectoria Escolar) en español de México, tuteo.
 # Reglas: claves a-z0-9_ con puntos; variables {nombre}; plurales {n, plural, one {# x} other {# xs}}.
 # Al cambiar un texto: sube `version` y valida con `python tools/contenido.py`.
-version = "2026.10.27"
+version = "2026.10.28"
 
 [grupos.tus]
 titulo = "Tus materias"
@@ -41,7 +41,8 @@ todas = "Todas"
 grupo = "Busca grupo o materia"
 ejemplo = "Busca grupo o materia"
 titulo = "Filtros del directorio"
-semestre = "Semestre"
+nivel = "Nivel"
+nivel_semestre = "Nivel / semestre"
 turno = "Turno"
 todos = "Todos"
 matutino = "Matutino"
@@ -73,15 +74,8 @@ grupo_varios = "{n} grupos"
 materia_una = "{n} materia"
 materia_varias = "{n} materias"
 tu = "Tu grupo"
-semestre_1 = "1.er semestre"
-semestre_2 = "2.º semestre"
-semestre_3 = "3.er semestre"
-semestre_4 = "4.º semestre"
-semestre_5 = "5.º semestre"
-semestre_6 = "6.º semestre"
-semestre_7 = "7.º semestre"
-semestre_8 = "8.º semestre"
-semestre_9 = "9.º semestre"
+nivel = "Nivel {n}"
+semestre = "{n}.{ordinal} semestre"
 
 [grupos.accion]
 unirse = "Unirse"

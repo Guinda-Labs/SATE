@@ -102,13 +102,16 @@ class Nodo {
   get classList() { return {add: c => { this.className += ' ' + c; }, remove: c => { this.className = this.className.split(' ').filter(v => v !== c).join(' '); }}; }
 }
 const fuente = readFileSync(new URL('../web/sate/grupos.js', import.meta.url), 'utf8');
-async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento = false, fallaConsulta = false, horarioPersonal = null, fallaOferta = false, persistir = 'si'} = {}) {
-  const nodos = Object.fromEntries(['carrera','buscar','semestre','turno','sin','lista','mensaje','prueba','estado','proxima','global','resultados','limpiar','tus-materias'].map(id => [id, new Nodo('div')]));
+async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento = false, fallaConsulta = false, horarioPersonal = null, fallaOferta = false, persistir = 'si', ofertaDirectorio = null} = {}) {
+  const nodos = Object.fromEntries(['carrera','buscar','semestre','nivel-etiqueta','turno','sin','lista','mensaje','prueba','estado','proxima','global','resultados','limpiar','tus-materias'].map(id => [id, new Nodo('div')]));
   nodos['tus-materias'].hidden = true;
   nodos.estado.append(new Nodo('summary'));
   const config = {periodo:'DEMO', zona:'America/Mexico_City', horario, endpoint:'https://script.google.com/demo', motivos:['caido','lleno','equivocado','otro'], enlaces:'/enlaces.json', enlaces_prueba:'/enlaces-prueba.json'};
-  const oferta = {casillas, carreras:{M:'Mecatrónica',B:'Biónica'}};
+  const oferta = ofertaDirectorio || {casillas, carreras:{M:'Mecatrónica',B:'Biónica'}, semestrales:[]};
   const datos = {}; runInNewContext(pagina.match(/<script>window.GRUPOS=([\s\S]*?);<\/script>/)[0].replace(/<\/?script>/g,''), {window:datos});
+  // Carrera ficticia: verifica que la capacidad funcione sin depender del código de Energía.
+  datos.GRUPOS.textos['grupos.carrera.z'] = 'Semestral';
+  datos.GRUPOS.textos['grupos.carrera_corta.z'] = 'Semestral';
   const guardado = new Map(), solicitudes = [], copias = [], eventos = {}, temporales = [];
   const datosLocal = {'ipnt.persistir':persistir}, datosSesion = {};
   if (horarioPersonal) (persistir === 'si' ? datosLocal : datosSesion)[claveHorario] = JSON.stringify(horarioPersonal);
@@ -135,6 +138,36 @@ async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento 
   await new Promise(setImmediate);
   return {nodos, location, guardado, solicitudes, copias, eventos, temporales};
 }
+// Directorio por carrera y nivel, con semestres definidos exclusivamente por datos.
+const agrupada = await iniciarDOM({ofertaDirectorio:{carreras:{M:'Mecatrónica',B:'Biónica',Z:'Semestral'}, semestrales:['Z'], casillas:[
+  ...casillas,
+  {id:'f', carrera:'M', nivel:1, turno:'M', grupo:'1MM10', materia:'Demo'},
+  {id:'g', carrera:'M', nivel:1, turno:'M', grupo:'1MM2', materia:'Demo'},
+  {id:'h', carrera:'M', nivel:1, turno:'M', grupo:'1MM1', materia:'Demo'},
+  {id:'i', carrera:'Z', nivel:2, turno:'M', grupo:'2ZM1', materia:'Demo'},
+  {id:'j', carrera:'Z', nivel:3, turno:'M', grupo:'3ZM1', materia:'Demo'}
+]}});
+const directorio = agrupada.nodos;
+assert.deepEqual(directorio.lista.querySelectorAll('.grupos-carrera').map(s => s.dataset.carrera), ['M','B','Z']);
+const mecanica = directorio.lista.querySelectorAll('.grupos-carrera')[0];
+assert.match(mecanica.textContent, /Mecatrónica6 grupos/);
+assert.deepEqual(mecanica.querySelectorAll('.grupos-nivel').map(s => s.dataset.nivel), ['1','3','4']);
+assert.equal(mecanica.querySelector('.grupos-nivel-etiqueta').textContent, 'Nivel 1');
+assert.deepEqual(mecanica.querySelector('.grupos-nivel').querySelectorAll('button.grupo').map(b => b.dataset.grupo), ['1MM1','1MM2','1MM10']);
+assert.deepEqual(directorio.lista.querySelectorAll('.grupos-carrera')[2].querySelectorAll('.grupos-nivel-etiqueta').map(n => n.textContent), ['2.º semestre','3.er semestre']);
+assert.equal(directorio['nivel-etiqueta'].textContent, 'Nivel / semestre');
+assert.deepEqual(directorio.semestre.children.map(o => o.textContent), ['Todos','1','2','3','4']);
+await directorio.carrera.querySelectorAll('button').find(b => b.dataset.carrera === 'Z').emitir('click');
+assert.equal(directorio.lista.querySelectorAll('h2').length, 0);
+assert.deepEqual(directorio.semestre.children.map(o => o.textContent), ['Todos','2.º semestre','3.er semestre']);
+directorio.semestre.value = '2'; await directorio.semestre.emitir('change');
+await directorio.carrera.querySelectorAll('button').find(b => b.dataset.carrera === 'M').emitir('click');
+assert.equal(directorio['nivel-etiqueta'].textContent, 'Nivel');
+assert.equal(directorio.semestre.value, '');
+assert.deepEqual(directorio.semestre.children.map(o => o.textContent), ['Todos','Nivel 1','Nivel 3','Nivel 4']);
+const css = readFileSync(new URL('../web/sate/grupos.css', import.meta.url), 'utf8');
+assert.match(css, /@media\(max-width:479px\)\{\.grupos-nivel\{grid-template-columns:minmax\(0,1fr\)/);
+
 const app = await iniciarDOM({hash:'#g=3MM1'});
 const n = app.nodos;
 assert.equal(n.lista.querySelectorAll('.grupos-panel').length, 1);
