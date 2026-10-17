@@ -45,7 +45,7 @@ async function drawSchedule(part,k=3){
       g.fillStyle=MUT;g.font=`400 13px ${F}`;g.textAlign='right';g.fillText(hm(m),LEFT-10,y+15);g.textAlign='left'}
     g.beginPath();g.moveTo(LEFT,gridTop+gridH);g.lineTo(W-PAD,gridTop+gridH);g.stroke();
     for(let d=0;d<=days;d++){const x=LEFT+d*colW;g.beginPath();g.moveTo(x,gridTop);g.lineTo(x,gridTop+gridH);g.stroke()}
-    const blocks=[...D.sel.flatMap(c=>c[6].map(([d,a,b])=>({c,d,a,b}))),...D.own.flatMap(o=>o.d.map(d=>({o,d,a:o.a,b:o.b})))];
+    const blocks=[...D.sel.flatMap(c=>c[6].map(([d,a,b],i)=>({c,d,a,b,r:(c[10]||[])[i]||''}))),...D.own.flatMap(o=>o.d.map(d=>({o,d,a:o.a,b:o.b})))];
     blocks.forEach(B=>{
       const x=LEFT+B.d*colW+3,y=gridTop+(B.a-lo)/60*hourPx+2,w=colW-6,h=(B.b-B.a)/60*hourPx-4,hu=B.c?hue(B.c):0;
       g.save();g.beginPath();g.roundRect?g.roundRect(x,y,w,h,6):g.rect(x,y,w,h);g.clip();
@@ -57,6 +57,7 @@ async function drawSchedule(part,k=3){
       g.fillStyle=MUT;g.font=`400 12px ${F}`;
       const meta=[B.c&&EXP.show.g?B.c[3]:'',`${hm(B.a)}–${hm(B.b)}`].filter(Boolean).join(' · ');
       if(ty<y+h-4){g.fillText(meta,x+11,ty);ty+=15}
+      if(B.r&&ty<y+h-4){g.fillText(wrapText(g,`${txH('salon')} ${shortRoom(B.r)}`,w-16)[0],x+11,ty);ty+=15}
       if(B.c&&EXP.show.p&&ty<y+h-4)g.fillText(wrapText(g,proper(profs(B.c)),w-16)[0],x+11,ty);
       g.restore();
     });
@@ -70,7 +71,7 @@ async function drawSchedule(part,k=3){
       if(c.own){g.fillText('—',PAD,y+28);g.fillText(c.own.n,PAD+80,y+28);g.fillStyle=MUT;g.fillText('Actividad extracurricular',PAD+470,y+28);g.fillText(`${c.own.d.map(d=>DAYS[d]).join(' ')} ${hm(c.own.a)}–${hm(c.own.b)}`,PAD+800,y+28);return}
       g.fillStyle=blkBar(hue(c));g.fillRect(PAD-12,y+12,5,22);g.fillStyle=INK;
       g.fillText(c[3],PAD,y+28);g.fillText(wrapText(g,`${c[8]} ${pretty(name(c))}`,380)[0],PAD+80,y+28);
-      g.fillStyle=MUT;g.fillText(wrapText(g,profs(c),320)[0],PAD+470,y+28);g.fillText(wrapText(g,pattern(c).join('; '),400)[0],PAD+800,y+28);
+      g.fillStyle=MUT;g.fillText(wrapText(g,profs(c),320)[0],PAD+470,y+28);const salones=[...new Set((c[10]||[]).filter(Boolean).map(shortRoom))].join(', ');g.fillText(wrapText(g,pattern(c).join('; ')+(salones?` · ${txH('salon')} ${salones}`:''),400)[0],PAD+800,y+28);
       g.fillStyle=INK;g.textAlign='right';g.fillText(fmtCr(c[7]),W-PAD,y+28);g.textAlign='left'});
   }
   const cap=new Date(DATA.capturado).toLocaleDateString('es-MX',{dateStyle:'long'});
