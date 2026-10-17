@@ -293,6 +293,9 @@ class DatosSinPaginas(unittest.TestCase):
         out = {}
         for p in sorted(base.rglob('*')):
             rel = p.relative_to(base).as_posix()
+            # El contrato de Grupos incluye estos dos datos fuera de datos/<unidad>/.
+            if rel in ('dist/sate/grupos/oferta.json', 'dist/sate/grupos/config.json'):
+                continue
             if p.is_file() and '/datos/' not in rel and not rel.startswith(('dist/qa', 'qa-')):
                 out[rel] = hashlib.sha256(p.read_bytes()).hexdigest()
         return out

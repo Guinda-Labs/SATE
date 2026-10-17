@@ -1,0 +1,13 @@
+{
+  "periodo": "2027/1",
+  "endpoint": "https://script.google.com/macros/s/AKfycbw1KChjdX51-pCxeihma2717zzSZVIZoLWvTNOBOmBJdflw_p2DsQR2YWmeXiEAa7ugGg/exec",
+  "enlaces": "/sate/grupos/enlaces.json",
+  "enlaces_prueba": "/sate/grupos/enlaces-prueba.json",
+  "zona": "America/Mexico_City",
+  "horario": [
+    {"hasta": "2026-10-19T06:00:00Z", "cada_min": 5},
+    {"hasta": "2026-10-26T06:00:00Z", "cada_min": 60},
+    {"hasta": null, "cada_min": 1440, "hora_utc": 12}
+  ],
+  "motivos": ["caido", "lleno", "equivocado", "otro"]
+}

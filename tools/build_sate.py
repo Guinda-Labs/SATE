@@ -760,7 +760,7 @@ def load_maps(offer, upiita=True, extra=None):
 
 
 def main(solo_datos=False):
-    """Compila la unidad. `solo_datos` escribe únicamente datos/<unidad>/*.json (sin páginas, JS ni CSS)."""
+    """Compila la unidad; `solo_datos` regenera JSON de SATE y Grupos, sin páginas, JS ni CSS."""
     import sys
     sys.path.insert(0, str(ROOT / "tools"))
     d = json.loads(SRC.read_text(encoding="utf-8"))
@@ -861,6 +861,9 @@ def main(solo_datos=False):
     data["sugerencias"] = sug.get(UNIDAD) or {}   # ajustes a las sugeridas (p. ej., materias que se cursan cerca de otra)
     payload = acentuar(json.dumps(tildes(data), ensure_ascii=False, separators=(",", ":")))
     datos_json = json.loads(payload)
+    if UNIDAD == "upiita":
+        from build_grupos import generar
+        generar(solo_datos=solo_datos)
     if solo_datos:
         escribir_datos(datos_json)
         print("SATE (solo datos)", UNIDAD, {k: len(v) for k, v in data["periodos"].items()})

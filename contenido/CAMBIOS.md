@@ -1,6 +1,12 @@
 <!-- SPDX-License-Identifier: CC0-1.0 -->
 # Cambios de textos
 
+## 2026-10-17 · 2026.10.25 · Codex (GRUPOS-B)
+
+| Claves | Cambio |
+|---|---|
+| `grupos.*` | Nuevas: directorio, filtros, formularios, estados de publicación y mensajes de la API. |
+
 ## 2026-10-15 · 2026.10.24 · Claude (GOOG1)
 
 | Claves | Cambio |

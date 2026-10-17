@@ -2,7 +2,85 @@
 # Textos de SATE (Sistema de Apoyo a la Trayectoria Escolar) en español de México, tuteo.
 # Reglas: claves a-z0-9_ con puntos; variables {nombre}; plurales {n, plural, one {# x} other {# xs}}.
 # Al cambiar un texto: sube `version` y valida con `python tools/contenido.py`.
-version = "2026.10.24"
+version = "2026.10.25"
+
+[grupos.pagina]
+titulo = "Grupos de WhatsApp"
+descripcion = "Directorio de grupos de clase de la UPIITA · Oferta {periodo}"
+identidad = "SATE / UPIITA-IPN"
+volver = "Volver a SATE"
+prueba = "Versión de prueba: lo que agregues aquí no se publica"
+inmediato = "Los enlaces que agregues se ven al momento en tu navegador y para todos en unos minutos."
+
+[grupos.estado]
+linea = "Último cambio publicado: {ultima} · Próxima verificación: {proxima}"
+sin_cambio = "Sin publicación todavía"
+revisando = "Revisando si alguien ya lo subió…"
+alguien = "Alguien ya lo subió. Ya puedes unirte con el enlace vigente."
+guardando = "Guardando el enlace…"
+guardado = "Enlace guardado. Ya puedes unirte."
+cambio = "Alguien cambió el enlace antes. Se muestra el vigente; revísalo antes de reemplazarlo."
+copiado = "Enlace copiado."
+reemplazado = "Reemplazado {fecha} · {motivo}"
+
+[grupos.filtro]
+carrera = "Carrera"
+todas = "Todas las carreras"
+grupo = "Buscar grupo"
+ejemplo = "Ejemplo: 3MM"
+
+[grupos.lista]
+contador = "{con} de {total} con enlace"
+vacio = "No hay grupos con esos filtros. Revisa el grupo o elige otra carrera."
+
+[grupos.accion]
+unirse = "Unirse"
+agregar = "Agregar enlace"
+reemplazar = "Reemplazar enlace"
+copiar = "Copiar enlace"
+opciones = "Opciones"
+pegar = "Pegar"
+guardar = "Guardar enlace"
+cancelar = "Cancelar"
+
+[grupos.form]
+url = "Enlace de WhatsApp"
+ayuda = "Pega el enlace del grupo de esta materia."
+registro = "Queda registro del enlace anterior."
+motivo = "Motivo del reemplazo"
+detalle = "Describe el motivo (máximo 140 caracteres)"
+web = "Deja este campo vacío"
+
+[grupos.motivo]
+caido = "El enlace ya no funciona"
+lleno = "El grupo está lleno"
+equivocado = "Es de otro grupo o materia"
+otro = "Otro"
+
+[grupos.error]
+url = "Usa un enlace de chat.whatsapp.com con un código de 20 a 24 letras o números."
+invalido = "No se guardó: el enlace o el motivo no es válido. Revisa los campos e intenta de nuevo."
+cerrado = "Por ahora no se pueden guardar enlaces. Puedes seguir consultando el directorio; intenta más tarde."
+limite = "Se alcanzó el límite temporal de cambios. No se guardó el enlace; espera unos minutos e intenta de nuevo."
+red = "No se pudo confirmar el cambio. Revisa tu conexión y vuelve a intentarlo; si ya se guardó, verás el enlace vigente."
+pendiente = "El directorio aún no recibe enlaces. Intenta de nuevo cuando esté habilitado."
+copiar = "No se pudo copiar. Abre Unirse y copia el enlace desde la barra de direcciones."
+pegar = "No se pudo leer el portapapeles. Pega el enlace directamente en el campo."
+datos = "No se pudo cargar el directorio. Revisa tu conexión y recarga la página."
+
+[grupos.info]
+titulo = "Cómo funciona"
+oferta = "Los grupos y materias vienen de la oferta {periodo} del SAES."
+consulta = "Antes de agregar un enlace, se revisa en vivo que nadie lo haya subido."
+primero = "Si dos personas agregan a la vez, se conserva el primer enlace."
+reemplazo = "Reemplazar pide un motivo y deja registro del enlace anterior."
+privacidad = "No se guardan datos personales."
+
+[grupos.reglas]
+titulo = "Reglas"
+clases = "Solo grupos de clase de la UPIITA."
+funcionan = "No reemplaces enlaces que funcionan."
+dominio = "El enlace debe ser de chat.whatsapp.com."
 
 [sate.creditos]
 rotulo = "créditos"
