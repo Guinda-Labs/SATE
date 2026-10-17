@@ -13,6 +13,7 @@ plan_vacio = "Este plan no tiene materias seleccionadas."
 contador = "{con} de {total} de tus materias con grupo"
 
 [grupos.pagina]
+pestana = "Grupos"
 titulo = "Grupos de WhatsApp"
 descripcion = "Directorio de grupos de clase de la UPIITA · Oferta {periodo}"
 identidad = "SATE / UPIITA-IPN"
@@ -26,6 +27,7 @@ prueba = "Versión de prueba: lo que agregues aquí no se publica"
 inmediato = "Los enlaces que agregues se ven al momento en tu navegador y para todos en unos minutos."
 
 [grupos.guia]
+boton = "Guía"
 titulo = "Cómo se usa"
 cerrar = "Cerrar guía"
 buscar = "Busca tu grupo o materia"
@@ -146,6 +148,10 @@ privacidad = "No se guardan datos personales."
 
 [grupos.reglas]
 titulo = "Reglas"
+antes = "Antes de usar el directorio"
+aceptar = "De acuerdo"
+guia = "Ver la guía"
+abuso = "El mal uso se puede revertir y bloquear."
 clases = "Solo grupos de clase de la UPIITA."
 funcionan = "No reemplaces enlaces que funcionan."
 dominio = "El enlace debe ser de chat.whatsapp.com."

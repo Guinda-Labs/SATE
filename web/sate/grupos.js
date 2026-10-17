@@ -80,7 +80,26 @@
     const plans = horario?.plans || {}, plan = elegido && plans[elegido] ? elegido : horario?.plan;
     return {plan, planes:Object.keys(plans), claves:Array.isArray(plans[plan]?.sel) ? [...new Set(plans[plan].sel)] : []};
   }
-  const funciones = {normalizarURL, proximaVerificacion, mezclar, normalizarBusqueda, leerHash, escribirHash, filtrar,
+  function aceptacionReglas(local, sesion, version = 'v1') {
+    const clave = ['grupos', 'reglas', version].join('.');
+    let aceptado = false;
+    return {
+      aceptada() {
+        if (aceptado) return true;
+        try { if (local().getItem(clave) === 'aceptado') return true; } catch (_) { /* Consultar el respaldo. */ }
+        try { return sesion().getItem(clave) === 'aceptado'; } catch (_) { return false; }
+      },
+      aceptar() {
+        aceptado = true;
+        try { local().setItem(clave, 'aceptado'); }
+        catch (_) {
+          // Si la persistencia está deshabilitada, recordar solo durante esta sesión.
+          try { sesion().setItem(clave, 'aceptado'); } catch (_) { /* Respaldo en memoria. */ }
+        }
+      }
+    };
+  }
+  const funciones = {aceptacionReglas, normalizarURL, proximaVerificacion, mezclar, normalizarBusqueda, leerHash, escribirHash, filtrar,
     periodoHorario, leerHorario, emparejarClave, seleccionHorario};
   if (typeof module !== 'undefined' && module.exports) module.exports = funciones;
   raiz.GruposFunciones = funciones;
@@ -94,10 +113,11 @@
     const nodo = document.createElement(tag);
     if (texto != null) nodo.textContent = texto;
     if (clase) nodo.className = clase;
+    else if (tag === 'label') nodo.className = 'tramite-campo';
     return nodo;
   }
   function boton(texto, accion) {
-    const b = elemento('button', texto); b.type = 'button'; b.addEventListener('click', accion); return b;
+    const b = elemento('button', texto, 'sate-btn'); b.type = 'button'; b.addEventListener('click', accion); return b;
   }
   function leer(clave, reserva) {
     try { return JSON.parse(localStorage.getItem(clave)) ?? reserva; } catch (_) { return reserva; }
@@ -108,26 +128,34 @@
   const prueba = location.pathname.startsWith('/prueba/'), modo = prueba ? 'prueba' : '';
   const prefijo = 'ipnt.grupos.' + (prueba ? 'prueba.' : 'real.');
   const guia = document.getElementById('guia'), abrirGuia = document.getElementById('abrir-guia');
-  const cerrarGuia = document.getElementById('cerrar-guia'), tema = document.getElementById('tema');
+  const cerrarGuia = document.getElementById('cerrar-guia');
+  const reglas = document.getElementById('reglas'), tituloReglas = document.getElementById('reglas-titulo');
+  const aceptacion = aceptacionReglas(() => localStorage, () => sessionStorage);
+  let pendienteReglas;
+  function mostrarReglas() {
+    if (!reglas.open) reglas.showModal();
+    tituloReglas.focus();
+  }
   // showModal mantiene el foco dentro del diálogo e inactiva el resto de la página.
-  abrirGuia.addEventListener('click', () => guia.showModal());
+  function mostrarGuia(evento) {
+    evento.preventDefault(); guia.showModal(); document.getElementById('guia-titulo').focus();
+  }
+  abrirGuia.addEventListener('click', mostrarGuia);
   cerrarGuia.addEventListener('click', () => guia.close());
   guia.addEventListener('cancel', evento => { evento.preventDefault(); guia.close(); });
-  guia.addEventListener('close', () => abrirGuia.focus());
-  // Si no se puede recordar la visita, dejar la guía a petición para no repetirla.
-  try {
-    if (!localStorage.getItem(prefijo + 'guia')) {
-      localStorage.setItem(prefijo + 'guia', '1');
-      guia.showModal();
-    }
-  } catch (_) { /* Sin almacenamiento, se conserva el acceso manual. */ }
-  const temaGuardado = leer('ipnt.grupos.tema', null);
-  if (['claro','oscuro'].includes(temaGuardado)) document.documentElement.dataset.tema = temaGuardado;
-  tema.addEventListener('click', () => {
-    const actual = document.documentElement.dataset.tema || (matchMedia('(prefers-color-scheme:dark)').matches ? 'oscuro' : 'claro');
-    const siguiente = actual === 'oscuro' ? 'claro' : 'oscuro';
-    document.documentElement.dataset.tema = siguiente; guardar('ipnt.grupos.tema', siguiente);
+  guia.addEventListener('close', () => (reglas.open ? tituloReglas : abrirGuia).focus());
+  document.getElementById('reglas-guia').addEventListener('click', mostrarGuia);
+  document.getElementById('abrir-reglas').addEventListener('click', evento => {
+    evento.preventDefault(); mostrarReglas();
   });
+  reglas.addEventListener('cancel', evento => { if (!aceptacion.aceptada()) evento.preventDefault(); });
+  document.getElementById('aceptar-reglas').addEventListener('click', async () => {
+    aceptacion.aceptar(); reglas.close();
+    const continuar = pendienteReglas; pendienteReglas = null;
+    if (continuar) await continuar();
+    else abrirGuia.focus();
+  });
+  if (!aceptacion.aceptada()) mostrarReglas();
   let config, oferta, enlaces = {}, locales = {}, cambio;
   let ofertaSate, planElegido, conteoTus;
   const tusMaterias = document.getElementById('tus-materias');
@@ -235,7 +263,7 @@
     return t(error.message === 'pendiente' ? 'grupos.error.pendiente' : 'grupos.error.red');
   }
   function unirse(dato) {
-    const a = elemento('a', t('grupos.accion.unirse'), 'unirse');
+    const a = elemento('a', t('grupos.accion.unirse'), 'unirse sate-btn sate-btn--primario');
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -275,10 +303,11 @@
         }), boton(t('grupos.accion.reemplazar'), () => { menu.open = false; editar(true); }));
         acciones.append(menu);
         if (vigente.reemplazo) contenedor.append(elemento('small', t('grupos.estado.reemplazado', {fecha:relativo(vigente.reemplazo.fecha), motivo:t(motivos[vigente.reemplazo.motivo] || motivos.otro)})));
-      } else { const agregar = boton(t('grupos.accion.agregar'), () => editar(false)); agregar.className = 'texto-enlace'; acciones.append(agregar); }
+      } else { const agregar = boton(t('grupos.accion.agregar'), () => editar(false)); agregar.className = 'sate-enlace'; acciones.append(agregar); }
       if (resumen) contador(grupo, resumen);
     }
     async function editar(reemplazo) {
+      if (!aceptacion.aceptada()) { pendienteReglas = () => editar(reemplazo); mostrarReglas(); return; }
       if (contenedor.querySelector('.editor')) return;
       const editor = elemento('div', null, 'editor'), aviso = elemento('p');
       aviso.setAttribute('role', 'status'); aviso.setAttribute('aria-live', 'polite');
@@ -312,7 +341,7 @@
       }
       const trampaLabel = elemento('label', t('grupos.form.web'), 'trampa'), trampa = elemento('input');
       trampa.name = 'web'; trampa.tabIndex = -1; trampa.autocomplete = 'off'; trampaLabel.setAttribute('aria-hidden', 'true'); trampaLabel.append(trampa);
-      const enviar = elemento('button', t('grupos.accion.guardar')); enviar.type = 'submit'; enviar.disabled = true;
+      const enviar = elemento('button', t('grupos.accion.guardar'), 'sate-btn sate-btn--primario'); enviar.type = 'submit'; enviar.disabled = true;
       let ocupado = false;
       function validar() {
         const url = normalizarURL(entrada.value);
@@ -418,7 +447,7 @@
         renderizar(false); sincronizar();
         [...lista.querySelectorAll('button.grupo')].find(n => n.dataset.grupo === nombre)?.focus();
       });
-      b.className = 'grupo'; b.dataset.grupo = nombre;
+      b.className = 'grupo sate-btn'; b.dataset.grupo = nombre;
       b.id = 'grupo-' + nombre; b.setAttribute('aria-controls', 'panel-' + nombre);
       b.setAttribute('aria-expanded', String(abierto === nombre));
       b.append(elemento('strong', nombre), elemento('span', '', 'contador')); grid.append(b);
@@ -426,7 +455,7 @@
         const panel = elemento('div', null, 'grupos-panel'); panel.id = 'panel-' + nombre;
         panel.setAttribute('role', 'region'); panel.setAttribute('aria-labelledby', b.id);
         const cabecera = elemento('div', null, 'renglon');
-        const compartirBoton = boton(t('grupos.accion.compartir'), () => compartir(nombre)); compartirBoton.className = 'texto-enlace';
+        const compartirBoton = boton(t('grupos.accion.compartir'), () => compartir(nombre)); compartirBoton.className = 'sate-enlace';
         cabecera.append(elemento('h3', nombre), compartirBoton); panel.append(cabecera);
         for (const c of casillas) panel.append(fila(c, oferta.casillas.filter(f => f.grupo === nombre), b));
         grid.append(panel);
@@ -479,7 +508,7 @@
         abierto = ''; renderizar(); sincronizar();
       }
       for (const id of ['', ...Object.keys(oferta.carreras)]) {
-        const b = boton('', () => { filtros.c = id; cambiar(); }); b.dataset.carrera = id;
+        const b = boton('', () => { filtros.c = id; cambiar(); }); b.className = 'chip'; b.dataset.carrera = id;
         b.append(elemento('span', t(id ? 'grupos.carrera.' + id.toLowerCase() : 'grupos.filtro.todas'), 'carrera-larga'),
           elemento('span', t(id ? 'grupos.carrera_corta.' + id.toLowerCase() : 'grupos.filtro.todas'), 'carrera-corta'));
         carrera.append(b);

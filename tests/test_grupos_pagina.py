@@ -37,7 +37,7 @@ def test_oferta_y_config(tmp_path, monkeypatch):
 def test_build_completo_y_textos(tmp_path, monkeypatch):
     # Compilación aislada: no altera los datos de publicación ni necesita una API activa.
     monkeypatch.setattr(build_grupos, "ROOT", tmp_path)
-    for nombre in ("data/grupos.json", "data/horarios_upiita.json", "data/sate.json", "web/sate/grupos.html", "web/sate/grupos.js", "web/sate/grupos.css", "vendor/ipn-comun/dist/tokens.css"):
+    for nombre in ("data/grupos.json", "data/horarios_upiita.json", "data/sate.json", "web/sate/cascaron.html", "web/sate/grupos.html", "web/sate/grupos.js", "web/sate/grupos.css", "vendor/ipn-comun/dist/tokens.css"):
         destino = tmp_path / nombre
         destino.parent.mkdir(parents=True, exist_ok=True)
         destino.write_text((ROOT / nombre).read_text(encoding="utf-8"), encoding="utf-8")
@@ -51,19 +51,35 @@ def test_build_completo_y_textos(tmp_path, monkeypatch):
     assert claves and claves <= contenido.objeto_t().keys()
     assert "{{grupos." not in html and "/*__GRUPOS__*/" not in html
     assert "https://script.googleusercontent.com" in html
-    assert 'class="grupos-encabezado"' in html and 'src="../../assets/logos/ipn-isologo-guinda.webp"' in html
+    assert 'class="top grupos-encabezado wrap"' in html and 'src="../../assets/logos/ipn-isologo-guinda.webp"' in html
     assert 'src="../../assets/logos/ipn-isologo-calado.webp"' in html
     assert 'SATE UPIITA' in html and 'Sistema de Apoyo a la Trayectoria Escolar' in html
-    assert '<dialog id="guia" aria-labelledby="guia-titulo">' in html
+    assert '<dialog id="guia" class="sate-modal" aria-labelledby="guia-titulo">' in html
     assert html.count('<article>') == 6
+    encabezado = html.split('<header')[1].split('</header>')[0]
+    assert encabezado.count('id="abrir-guia"') == 1
+    assert 'aria-label="Guía" title="Guía"' in encabezado
+    assert 'id="reglas" class="sate-modal sate-modal--pequeno"' in html
+    assert 'id="reglas-titulo" class="sate-modal__titulo" tabindex="-1" autofocus' in html
+    assert 'De acuerdo' in html and 'Ver la guía' in html
+    dialogs = re.findall(r'<dialog\b[^>]*>.*?</dialog>', html, re.S)
+    assert len(dialogs) == 2
+    assert all(d.count('Solo grupos de clase de la UPIITA.') == 1 for d in dialogs)
+    import skins
+    assert skins.THEME_BTN in html and skins.EARLY in html and skins.CSS in html
+    assert 'ipnt.grupos.tema' not in js
+    sate = json.loads((ROOT / 'data/sate.json').read_text(encoding='utf-8'))
+    for pestana in sate['unidades']['upiita']['pestanas']:
+        assert f'href="../index.html#/upiita/{pestana}"' in encabezado
+    assert 'aria-current="page" aria-selected="true">Grupos' in encabezado
     assert 'UPIITA · Oferta ' in html
     assert (tmp_path / 'web/dist/assets/logos/ipn-isologo-guinda.webp').is_file()
     assert (tmp_path / 'web/dist/assets/logos/ipn-isologo-calado.webp').is_file()
-    assert 'src="../../assets/logos/upiita-oro.webp"' in html and "Volver a SATE" in html
+    assert 'src="../../assets/logos/upiita-oro.webp"' in html
     assert "<!--__GRUPOS_IDENTIDAD__-->" not in html
     assert all(f'id="{control}"' in html for control in ("semestre", "turno", "sin", "limpiar", "resultados"))
     assert 'role="switch"' in html and 'aria-live="polite"' in html
-    assert html.count('<details><summary>') == 1
+    assert html.count('<details><summary>') == 0
     assert 'Cómo funciona' not in html.split('<footer>')[1].split('</footer>')[0]
     plantilla = (ROOT / 'web/sate/grupos.html').read_text(encoding='utf-8')
     assert set(re.findall(r'\{\{(grupos\.[a-z0-9_.]+)\}\}', plantilla)) <= contenido.objeto_t().keys()

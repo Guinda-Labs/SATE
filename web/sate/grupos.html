@@ -1,33 +1,35 @@
 <!doctype html>
 <!-- SPDX-License-Identifier: MIT; GENERADO desde web/sate/grupos.html y contenido/textos/es.toml -->
 <html lang="es"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; script-src-attr 'none'; base-uri 'self'; form-action 'self'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; frame-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; script-src-attr 'none'; base-uri 'self'; form-action 'self'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com; frame-src 'none';">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{{grupos.pagina.titulo}}</title><meta name="description" content="{{grupos.pagina.descripcion}}">
-<style>/*__TOKENS__*/</style><link rel="stylesheet" href="../componentes.css"><link rel="stylesheet" href="grupos.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wdth,wght@0,62.5..100,300..800;1,100,400&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<style>/*__SATE_ESTILO__*/</style><link rel="stylesheet" href="../componentes.css"><link rel="stylesheet" href="grupos.css">
 </head><body class="grupos-pagina">
-<header class="grupos-encabezado">
-<div class="grupos-marca"><!--__GRUPOS_IPN__--><div class="grupos-identidad"><strong>{{grupos.pagina.marca}}</strong><p>{{grupos.pagina.nombre}}</p></div><div class="grupos-lado"><!--__GRUPOS_UPIITA__--><button id="tema" type="button" aria-label="{{grupos.pagina.tema}}" title="{{grupos.pagina.tema}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z"/></svg></button></div></div>
-<nav aria-label="{{grupos.pagina.navegacion}}"><a class="grupos-volver" href="../index.html#/upiita">{{grupos.pagina.volver}}</a></nav>
+<header class="top grupos-encabezado wrap">
+<div class="brand"><div class="title-row"><div class="sate-identidad"><!--__GRUPOS_IPN__--><h1 id="sate-titulo">{{grupos.pagina.marca}}</h1></div><div class="header-actions"><!--__GRUPOS_UPIITA__--><!--__THEME_BTN__--><button id="abrir-guia" class="sate-btn" type="button" aria-haspopup="dialog" aria-controls="guia" aria-label="{{grupos.guia.boton}}" title="{{grupos.guia.boton}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5C9 3 5 3 2 4v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1Zm0 0v15"/></svg><span>{{grupos.guia.boton}}</span></button></div></div><p id="sate-nombre">{{grupos.pagina.nombre}}</p></div>
+<div class="sate-navegacion"><nav id="sate-tabs" aria-label="{{grupos.pagina.navegacion}}"><!--__GRUPOS_PESTANAS__--></nav></div>
 </header>
 <main>
-<div id="prueba" class="franja" hidden>{{grupos.pagina.prueba}}</div>
-<div class="grupos-titulo"><h1>{{grupos.pagina.titulo}}</h1><button id="abrir-guia" type="button" aria-haspopup="dialog" aria-controls="guia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 5m0 2v1"/></svg>{{grupos.guia.titulo}}</button></div><p class="tenue">{{grupos.pagina.subtitulo}}</p>
+<div id="prueba" class="sate-aviso" data-estado="aviso" hidden>{{grupos.pagina.prueba}}</div>
+<h2>{{grupos.pagina.titulo}}</h2><p class="tenue">{{grupos.pagina.subtitulo}}</p>
 <div class="grupos-estado"><details id="estado"><summary></summary><div><p id="proxima"></p><p>{{grupos.pagina.inmediato}}</p></div></details><span id="global" class="tenue"></span></div>
 <section id="tus-materias" class="grupos-seccion" aria-label="{{grupos.tus.titulo}}" hidden></section>
 <section class="filtros" aria-label="{{grupos.filtro.titulo}}">
-<label class="buscador"><span class="sr-only">{{grupos.filtro.grupo}}</span><input id="buscar" type="search" autocomplete="off" placeholder="{{grupos.filtro.ejemplo}}"></label>
+<label class="buscador tramite-campo"><span class="sr-only">{{grupos.filtro.grupo}}</span><input id="buscar" type="search" autocomplete="off" placeholder="{{grupos.filtro.ejemplo}}"></label>
 <div id="carrera" class="tramite-chips" role="group" aria-label="{{grupos.filtro.carrera}}"></div>
-<div class="grupos-opciones"><label><span id="nivel-etiqueta">{{grupos.filtro.nivel}}</span><select id="semestre"><option value="">{{grupos.filtro.todos}}</option></select></label><label>{{grupos.filtro.turno}}<select id="turno"><option value="">{{grupos.filtro.todos}}</option><option value="M">{{grupos.filtro.matutino}}</option><option value="V">{{grupos.filtro.vespertino}}</option><option value="X">{{grupos.filtro.mixto}}</option></select></label>
-<label class="grupos-interruptor"><input id="sin" type="checkbox" role="switch">{{grupos.filtro.sin}}</label><button id="limpiar" class="texto-enlace" type="button" hidden>{{grupos.filtro.limpiar}}</button></div>
+<div class="grupos-opciones"><label class="tramite-campo"><span id="nivel-etiqueta">{{grupos.filtro.nivel}}</span><select id="semestre"><option value="">{{grupos.filtro.todos}}</option></select></label><label class="tramite-campo">{{grupos.filtro.turno}}<select id="turno"><option value="">{{grupos.filtro.todos}}</option><option value="M">{{grupos.filtro.matutino}}</option><option value="V">{{grupos.filtro.vespertino}}</option><option value="X">{{grupos.filtro.mixto}}</option></select></label>
+<label class="grupos-interruptor"><input id="sin" type="checkbox" role="switch">{{grupos.filtro.sin}}</label><button id="limpiar" class="sate-enlace" type="button" hidden>{{grupos.filtro.limpiar}}</button></div>
 </section>
 <p id="resultados" class="tenue" role="status" tabindex="-1"></p><div id="lista"></div>
 <footer>
-<details><summary>{{grupos.reglas.titulo}}</summary><ul><li>{{grupos.reglas.clases}}</li><li>{{grupos.reglas.funcionan}}</li><li>{{grupos.reglas.dominio}}</li></ul></details></footer>
+<a id="abrir-reglas" class="sate-enlace" href="#reglas" aria-haspopup="dialog" aria-controls="reglas">{{grupos.reglas.titulo}}</a></footer>
 </main>
-<dialog id="guia" aria-labelledby="guia-titulo">
-<div class="renglon"><h2 id="guia-titulo">{{grupos.guia.titulo}}</h2><button id="cerrar-guia" type="button" autofocus>{{grupos.guia.cerrar}}</button></div>
+<dialog id="guia" class="sate-modal" aria-labelledby="guia-titulo">
+<div class="sate-modal__cab"><h2 id="guia-titulo" class="sate-modal__titulo" tabindex="-1">{{grupos.guia.titulo}}</h2><button id="cerrar-guia" class="sate-btn" type="button">{{grupos.guia.cerrar}}</button></div>
+<div class="sate-modal__cuerpo">
 <div class="grupos-guia-tarjetas">
 <article><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><h3>{{grupos.guia.buscar}}</h3><p>{{grupos.guia.buscar_texto}}</p></article>
 <article><svg viewBox="0 0 24 24"><path d="M3 5h18M6 12h12M9 19h6"/></svg><h3>{{grupos.guia.filtrar}}</h3><p>{{grupos.guia.filtrar_texto}}</p></article>
@@ -36,6 +38,12 @@
 <article><svg viewBox="0 0 24 24"><path d="M20 7a9 9 0 0 0-15-1L3 9m0-6v6h6m-5 8a9 9 0 0 0 15 1l2-3m0 6v-6h-6"/></svg><h3>{{grupos.guia.reemplazar}}</h3><p>{{grupos.guia.reemplazar_texto}}</p></article>
 <article><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="3"/><circle cx="19" cy="5" r="3"/><circle cx="19" cy="19" r="3"/><path d="m8 11 8-5M8 13l8 5"/></svg><h3>{{grupos.guia.compartir}}</h3><p>{{grupos.guia.compartir_texto}}</p></article>
 </div><p class="tenue">{{grupos.guia.estado}}</p>
+<section aria-labelledby="guia-reglas"><h3 id="guia-reglas">{{grupos.reglas.titulo}}</h3><!--__GRUPOS_REGLAS__--></section></div>
 </dialog>
-<div id="mensaje" class="grupos-aviso" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+<dialog id="reglas" class="sate-modal sate-modal--pequeno" aria-labelledby="reglas-titulo">
+<div class="sate-modal__cab"><h2 id="reglas-titulo" class="sate-modal__titulo" tabindex="-1" autofocus>{{grupos.reglas.antes}}</h2></div>
+<div class="sate-modal__cuerpo"><!--__GRUPOS_REGLAS__--></div>
+<div class="sate-modal__pie"><a id="reglas-guia" class="sate-enlace" href="#guia">{{grupos.reglas.guia}}</a><button id="aceptar-reglas" class="sate-btn sate-btn--primario" type="button">{{grupos.reglas.aceptar}}</button></div>
+</dialog>
+<div id="mensaje" class="grupos-aviso sate-aviso" data-estado="info" role="status" aria-live="polite" aria-atomic="true" hidden></div>
 <script>/*__GRUPOS__*/</script><script src="grupos.js" defer></script></body></html>

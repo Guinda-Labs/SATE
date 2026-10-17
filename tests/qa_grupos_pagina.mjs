@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 import {Script, runInNewContext} from 'node:vm';
 const require = createRequire(import.meta.url);
 const {normalizarURL, proximaVerificacion, mezclar, normalizarBusqueda, filtrar, leerHash, escribirHash,
-  leerHorario, periodoHorario, emparejarClave, seleccionHorario} = require('../web/sate/grupos.js');
+  aceptacionReglas, leerHorario, periodoHorario, emparejarClave, seleccionHorario} = require('../web/sate/grupos.js');
 const {horario} = JSON.parse(readFileSync(new URL('../data/grupos.json', import.meta.url), 'utf8'));
 const url = 'https://chat.whatsapp.com/Ab12345678901234567890';
 for (const longitud of [20, 24]) assert.equal(normalizarURL('https://chat.whatsapp.com/' + 'a'.repeat(longitud)), 'https://chat.whatsapp.com/' + 'a'.repeat(longitud));
@@ -50,6 +50,29 @@ assert.deepEqual(seleccionHorario(horarioSate).claves, []);
 assert.equal(seleccionHorario(horarioSate).plan, 'A');
 assert.equal(seleccionHorario(horarioSate, 'B').claves.length, 3);
 const almacen = datos => Object.assign({getItem(k) { return datos[k] ?? null; }}, datos);
+const memoriaReglas = datos => ({getItem:k => datos[k] ?? null, setItem(k,v) { datos[k] = v; }});
+const datosReglas = {}, sesionReglas = {};
+const localReglas = memoriaReglas(datosReglas), respaldoReglas = memoriaReglas(sesionReglas);
+const aceptacion = aceptacionReglas(() => localReglas, () => respaldoReglas);
+assert.equal(aceptacion.aceptada(), false);
+aceptacion.aceptar();
+assert.equal(datosReglas['grupos.reglas.v1'], 'aceptado');
+assert.equal(aceptacionReglas(() => localReglas, () => respaldoReglas).aceptada(), true);
+assert.equal(aceptacionReglas(() => localReglas, () => respaldoReglas, 'v2').aceptada(), false);
+const inaccesible = () => { throw Error('almacenamiento deshabilitado'); };
+const sinLocal = aceptacionReglas(inaccesible, () => respaldoReglas);
+assert.equal(sinLocal.aceptada(), false);
+sinLocal.aceptar();
+assert.equal(aceptacionReglas(inaccesible, () => respaldoReglas).aceptada(), true, 'Aceptación durante la sesión');
+assert.equal(aceptacionReglas(inaccesible, () => memoriaReglas({})).aceptada(), false, 'Nueva sesión requiere aceptar');
+const soloLectura = () => ({getItem:() => null, setItem:inaccesible});
+const sinEscritura = aceptacionReglas(soloLectura, () => respaldoReglas);
+sinEscritura.aceptar();
+assert.equal(aceptacionReglas(soloLectura, () => respaldoReglas).aceptada(), true);
+const sinAmbos = aceptacionReglas(inaccesible, inaccesible);
+assert.equal(sinAmbos.aceptada(), false);
+sinAmbos.aceptar();
+assert.equal(sinAmbos.aceptada(), true, 'Memoria de la visita si ambos almacenes fallan');
 const claveHorario = 'hu.w.proximo', serializado = JSON.stringify(horarioSate);
 assert.deepEqual(leerHorario(almacen({'ipnt.persistir':'si',[claveHorario]:serializado}), almacen({}), claveHorario), horarioSate);
 assert.deepEqual(leerHorario(almacen({'ipnt.persistir':'no',[claveHorario]:'{}'}), almacen({[claveHorario]:serializado}), claveHorario), horarioSate);
@@ -91,7 +114,12 @@ class Nodo {
   replaceChildren(...n) { this.texto = ''; this.children = []; this.append(...n); }
   setAttribute(k,v) { this.attributes[k] = String(v); }
   addEventListener(k,v) { (this.events[k] ||= []).push(v); }
-  async emitir(k) { for (const f of this.events[k] || []) await f({preventDefault() {}, key:''}); }
+  async emitir(k) {
+    const evento = {defaultPrevented:false, preventDefault() { this.defaultPrevented = true; }, key:''};
+    for (const f of this.events[k] || []) await f(evento);
+    if (k === 'cancel' && !evento.defaultPrevented) this.close();
+    return evento;
+  }
   showModal() { this.open = true; this.aperturas = (this.aperturas || 0) + 1; }
   close() { this.open = false; for (const f of this.events.close || []) f(); }
   querySelectorAll(selector) {
@@ -104,8 +132,8 @@ class Nodo {
   get classList() { return {add: c => { this.className += ' ' + c; }, remove: c => { this.className = this.className.split(' ').filter(v => v !== c).join(' '); }}; }
 }
 const fuente = readFileSync(new URL('../web/sate/grupos.js', import.meta.url), 'utf8');
-async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento = false, fallaConsulta = false, horarioPersonal = null, fallaOferta = false, persistir = 'si', ofertaDirectorio = null, guiaVista = false} = {}) {
-  const nodos = Object.fromEntries(['guia','abrir-guia','cerrar-guia','tema','carrera','buscar','semestre','nivel-etiqueta','turno','sin','lista','mensaje','prueba','estado','proxima','global','resultados','limpiar','tus-materias'].map(id => [id, new Nodo('div')]));
+async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento = false, fallaConsulta = false, horarioPersonal = null, fallaOferta = false, persistir = 'si', ofertaDirectorio = null, reglasAceptadas = true} = {}) {
+  const nodos = Object.fromEntries(['reglas','reglas-titulo','aceptar-reglas','reglas-guia','abrir-reglas','guia-titulo','guia','abrir-guia','cerrar-guia','tema','carrera','buscar','semestre','nivel-etiqueta','turno','sin','lista','mensaje','prueba','estado','proxima','global','resultados','limpiar','tus-materias'].map(id => [id, new Nodo('div')]));
   nodos['tus-materias'].hidden = true;
   nodos.estado.append(new Nodo('summary'));
   const config = {periodo:'DEMO', zona:'America/Mexico_City', horario, endpoint:'https://script.google.com/demo', motivos:['caido','lleno','equivocado','otro'], enlaces:'/enlaces.json', enlaces_prueba:'/enlaces-prueba.json'};
@@ -116,7 +144,7 @@ async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento 
   datos.GRUPOS.textos['grupos.carrera_corta.z'] = 'Semestral';
   const guardado = new Map(), solicitudes = [], copias = [], eventos = {}, temporales = [];
   const datosLocal = {'ipnt.persistir':persistir}, datosSesion = {};
-  if (guiaVista) datosLocal['ipnt.grupos.real.guia'] = '1';
+  if (reglasAceptadas) datosLocal['grupos.reglas.v1'] = 'aceptado';
   if (horarioPersonal) (persistir === 'si' ? datosLocal : datosSesion)[claveHorario] = JSON.stringify(horarioPersonal);
   const sesion = almacen(datosSesion);
   const location = {pathname:ruta, search:'', hash, href:'https://ejemplo.test' + ruta + hash};
@@ -173,29 +201,47 @@ assert.match(css, /@media\(max-width:479px\)\{\.grupos-nivel\{grid-template-colu
 
 const app = await iniciarDOM({hash:'#g=3MM1'});
 const n = app.nodos;
-assert.equal(n.guia.open, true, 'Primera visita abre la guía');
-assert.equal(app.guardado.get('ipnt.grupos.real.guia'), '1');
-// Simula cancel, que es el evento nativo de Esc; no simula el teclado del navegador.
+assert.ok(!n.guia.open, 'La guía nunca se abre sola');
+await n['abrir-guia'].emitir('click');
+assert.equal(n.guia.open, true);
 await n.guia.emitir('cancel');
 assert.equal(n.guia.open, false);
 assert.equal(n['abrir-guia'].enfocado, true);
 await n['abrir-guia'].emitir('click');
-assert.equal(n.guia.open, true);
 await n['cerrar-guia'].emitir('click');
 assert.equal(n.guia.open, false);
-assert.equal(n['abrir-guia'].enfocado, true);
-const recurrente = await iniciarDOM({guiaVista:true});
-assert.ok(!recurrente.nodos.guia.open, 'No se abre en visitas posteriores');
-await recurrente.nodos['abrir-guia'].emitir('click');
-assert.equal(recurrente.nodos.guia.open, true);
+const primera = await iniciarDOM({reglasAceptadas:false, hash:'#g=3MM1'});
+assert.equal(primera.nodos.reglas.open, true);
+assert.equal(primera.nodos['reglas-titulo'].enfocado, true);
+assert.ok(!primera.nodos.guia.open);
+await primera.nodos.reglas.emitir('cancel');
+assert.equal(primera.nodos.reglas.open, true);
+assert.equal((await primera.nodos.reglas.emitir('cancel')).defaultPrevented, true);
+await primera.nodos['reglas-guia'].emitir('click');
+assert.equal(primera.nodos.guia.open, true);
+await primera.nodos['cerrar-guia'].emitir('click');
+assert.equal(primera.nodos['reglas-titulo'].enfocado, true);
+const filaSinAceptar = primera.nodos.lista.querySelectorAll('.materia')[1];
+await filaSinAceptar.querySelector('button').emitir('click');
+assert.ok(!filaSinAceptar.querySelector('form'), 'Agregar exige aceptar antes de consultar o editar');
+await primera.nodos['aceptar-reglas'].emitir('click');
+assert.equal(primera.guardado.get('grupos.reglas.v1'), 'aceptado');
+assert.equal(primera.nodos.reglas.open, false);
+assert.ok(filaSinAceptar.querySelector('form'), 'Continúa la acción pendiente al aceptar');
+const reemplazoSinAceptar = await iniciarDOM({reglasAceptadas:false, hash:'#g=3MM1'});
+const filaReemplazo = reemplazoSinAceptar.nodos.lista.querySelectorAll('.materia')[0];
+await filaReemplazo.querySelectorAll('button').find(b => b.textContent === 'Reemplazar enlace').emitir('click');
+assert.ok(!filaReemplazo.querySelector('form'), 'Reemplazar también exige aceptar');
+await reemplazoSinAceptar.nodos['aceptar-reglas'].emitir('click');
+assert.ok(filaReemplazo.querySelector('form'));
+assert.ok(filaReemplazo.querySelector('select'), 'Conserva el motivo requerido del reemplazo');
+await primera.nodos['abrir-reglas'].emitir('click');
+assert.equal(primera.nodos.reglas.open, true);
 const bloqueado = await iniciarDOM({sinAlmacenamiento:true});
+assert.equal(bloqueado.nodos.reglas.open, true);
+await bloqueado.nodos['aceptar-reglas'].emitir('click');
+assert.equal(bloqueado.nodos.reglas.open, false);
 assert.ok(!bloqueado.nodos.guia.open);
-await bloqueado.nodos['abrir-guia'].emitir('click');
-assert.equal(bloqueado.nodos.guia.open, true);
-await n.tema.emitir('click');
-assert.equal(JSON.parse(app.guardado.get('ipnt.grupos.tema')), 'oscuro');
-await n.tema.emitir('click');
-assert.equal(JSON.parse(app.guardado.get('ipnt.grupos.tema')), 'claro');
 assert.equal(n.lista.querySelectorAll('.grupos-panel').length, 1);
 assert.equal(n.lista.querySelectorAll('.materia').length, 2);
 assert.equal(n.lista.querySelectorAll('button.grupo')[0].dataset.grupo, '3MM1');
@@ -220,6 +266,7 @@ app.location.hash = '#g=3BV1'; app.eventos.hashchange();
 assert.equal(n.lista.querySelectorAll('.materia').length, 1);
 assert.equal(n.lista.querySelectorAll('.grupos-panel').length, 1);
 const prueba = await iniciarDOM({hash:'#g=3MM1', ruta:'/prueba/sate/grupos/', sinAlmacenamiento:true, fallaConsulta:true});
+await prueba.nodos['aceptar-reglas'].emitir('click');
 const materia = prueba.nodos.lista.querySelectorAll('.materia')[1];
 await materia.querySelector('button').emitir('click');
 assert.ok(materia.querySelector('form'), 'La consulta fallida conserva el formulario');
