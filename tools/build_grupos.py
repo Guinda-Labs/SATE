@@ -42,5 +42,14 @@ def generar(solo_datos=False):
     pagina = pagina.replace("/*__GRUPOS__*/", "window.GRUPOS=" + datos + ";")
     css = (ROOT / "vendor/ipn-comun/dist/tokens.css").read_text(encoding="utf-8")
     pagina = pagina.replace("/*__TOKENS__*/", css)
+    from institucional import HEADER
+    # La firma es la misma de SATE; las imágenes solo se insertan en dist.
+    cabecera = HEADER.split("</style>", 1)[1]
+    cabecera = re.sub(r'<div class="inst-name">.*?</div>', '', cabecera)
+    cabecera = cabecera.replace('src="assets/', 'src="../../assets/')
+    cabecera = cabecera.replace('</header>', '<a class="grupos-volver" href="../index.html#/upiita">'
+                                + html.escape(textos['grupos.pagina.volver']) + '</a></header>')
+    pagina = pagina.replace('<!--__GRUPOS_IDENTIDAD__-->', cabecera)
     (destino / "index.html").write_text(pagina, encoding="utf-8")
     (destino / "grupos.js").write_text((ROOT / "web/sate/grupos.js").read_text(encoding="utf-8"), encoding="utf-8")
+    (destino / "grupos.css").write_text((ROOT / "web/sate/grupos.css").read_text(encoding="utf-8"), encoding="utf-8")

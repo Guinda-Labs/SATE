@@ -2,7 +2,7 @@
 # Textos de SATE (Sistema de Apoyo a la Trayectoria Escolar) en español de México, tuteo.
 # Reglas: claves a-z0-9_ con puntos; variables {nombre}; plurales {n, plural, one {# x} other {# xs}}.
 # Al cambiar un texto: sube `version` y valida con `python tools/contenido.py`.
-version = "2026.10.25"
+version = "2026.10.26"
 
 [grupos.pagina]
 titulo = "Grupos de WhatsApp"
@@ -18,30 +18,73 @@ sin_cambio = "Sin publicación todavía"
 revisando = "Revisando si alguien ya lo subió…"
 alguien = "Alguien ya lo subió. Ya puedes unirte con el enlace vigente."
 guardando = "Guardando el enlace…"
-guardado = "Enlace guardado. Ya puedes unirte."
+guardado = "Enlace guardado"
 cambio = "Alguien cambió el enlace antes. Se muestra el vigente; revísalo antes de reemplazarlo."
 copiado = "Enlace copiado."
 reemplazado = "Reemplazado {fecha} · {motivo}"
+pastilla = "● Al día · {hora}"
+proxima = "Próxima verificación: {hora}"
+global = "{con} de {total} materias con grupo"
+compartido = "Enlace del grupo copiado"
 
 [grupos.filtro]
 carrera = "Carrera"
-todas = "Todas las carreras"
-grupo = "Buscar grupo"
-ejemplo = "Ejemplo: 3MM"
+todas = "Todas"
+grupo = "Busca grupo o materia"
+ejemplo = "Busca grupo o materia"
+titulo = "Filtros del directorio"
+semestre = "Semestre"
+turno = "Turno"
+todos = "Todos"
+matutino = "Matutino"
+vespertino = "Vespertino"
+mixto = "Mixto"
+sin = "Solo sin enlace"
+limpiar = "Limpiar"
+
+[grupos.carrera]
+b = "Biónica"
+e = "Energía"
+m = "Mecatrónica"
+s = "Automotrices"
+t = "Telemática"
+
+[grupos.carrera_corta]
+b = "Biónica"
+e = "Energía"
+m = "Mecatr."
+s = "Autom."
+t = "Telem."
 
 [grupos.lista]
-contador = "{con} de {total} con enlace"
+contador = "{con}/{total}"
 vacio = "No hay grupos con esos filtros. Revisa el grupo o elige otra carrera."
+resultados = "{grupos} · {materias}"
+grupo_uno = "{n} grupo"
+grupo_varios = "{n} grupos"
+materia_una = "{n} materia"
+materia_varias = "{n} materias"
+tu = "Tu grupo"
+semestre_1 = "1.er semestre"
+semestre_2 = "2.º semestre"
+semestre_3 = "3.er semestre"
+semestre_4 = "4.º semestre"
+semestre_5 = "5.º semestre"
+semestre_6 = "6.º semestre"
+semestre_7 = "7.º semestre"
+semestre_8 = "8.º semestre"
+semestre_9 = "9.º semestre"
 
 [grupos.accion]
 unirse = "Unirse"
-agregar = "Agregar enlace"
+agregar = "+ Agregar"
 reemplazar = "Reemplazar enlace"
 copiar = "Copiar enlace"
 opciones = "Opciones"
 pegar = "Pegar"
 guardar = "Guardar enlace"
 cancelar = "Cancelar"
+compartir = "Compartir"
 
 [grupos.form]
 url = "Enlace de WhatsApp"
@@ -65,6 +108,7 @@ limite = "Se alcanzó el límite temporal de cambios. No se guardó el enlace; e
 red = "No se pudo confirmar el cambio. Revisa tu conexión y vuelve a intentarlo; si ya se guardó, verás el enlace vigente."
 pendiente = "El directorio aún no recibe enlaces. Intenta de nuevo cuando esté habilitado."
 copiar = "No se pudo copiar. Abre Unirse y copia el enlace desde la barra de direcciones."
+compartir = "No se pudo compartir el grupo. Intenta copiar su dirección desde la barra del navegador."
 pegar = "No se pudo leer el portapapeles. Pega el enlace directamente en el campo."
 datos = "No se pudo cargar el directorio. Revisa tu conexión y recarga la página."
 

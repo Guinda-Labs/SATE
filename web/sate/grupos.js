@@ -31,7 +31,28 @@
     }
     return {enlaces, pendientes};
   }
-  const funciones = {normalizarURL, proximaVerificacion, mezclar};
+  function normalizarBusqueda(valor) {
+    return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+  function leerHash(hash) {
+    const p = new URLSearchParams(String(hash || '').replace(/^#/, ''));
+    return {c:p.get('c') || '', s:/^[1-9]$/.test(p.get('s')) ? p.get('s') : '',
+      t:['M','V','X'].includes(p.get('t')) ? p.get('t') : '', q:p.get('q') || '', sin:p.get('sin') === '1', g:(p.get('g') || '').toUpperCase()};
+  }
+  function escribirHash(filtros) {
+    const p = new URLSearchParams();
+    for (const clave of ['c','s','t','q']) if (filtros[clave]) p.set(clave, filtros[clave]);
+    if (filtros.sin) p.set('sin', '1');
+    if (filtros.g) p.set('g', filtros.g);
+    return p.size ? '#' + p.toString() : '';
+  }
+  function filtrar(casillas, enlaces, filtros) {
+    const q = normalizarBusqueda(filtros.q);
+    return casillas.filter(c => (!filtros.c || c.carrera === filtros.c) &&
+      (!filtros.s || String(c.nivel) === filtros.s) && (!filtros.t || c.turno === filtros.t) &&
+      (!filtros.sin || !enlaces[c.id]) && (!q || normalizarBusqueda(c.grupo).includes(q) || normalizarBusqueda(c.materia).includes(q)));
+  }
+  const funciones = {normalizarURL, proximaVerificacion, mezclar, normalizarBusqueda, leerHash, escribirHash, filtrar};
   if (typeof module !== 'undefined' && module.exports) module.exports = funciones;
   raiz.GruposFunciones = funciones;
   if (typeof document === 'undefined') return;
@@ -59,15 +80,24 @@
   const prefijo = 'ipnt.grupos.' + (prueba ? 'prueba.' : 'real.');
   let config, oferta, enlaces = {}, locales = {}, cambio;
   const carrera = document.getElementById('carrera'), buscar = document.getElementById('buscar');
+  const semestre = document.getElementById('semestre'), turno = document.getElementById('turno'), sin = document.getElementById('sin');
+  let filtros = leerHash(''), abierto = '', ultimo = leer(prefijo + 'grupo', '');
+  let avisoTimer;
   const lista = document.getElementById('lista'), mensaje = document.getElementById('mensaje');
   document.getElementById('prueba').hidden = !prueba;
   const estado = document.getElementById('estado');
+  function notificar(texto) {
+    clearTimeout(avisoTimer); mensaje.hidden = false; mensaje.textContent = texto;
+    avisoTimer = setTimeout(() => { mensaje.hidden = true; }, 6000);
+  }
   function fecha(valor) {
     if (!valor || !Number.isFinite(Date.parse(valor))) return t('grupos.estado.sin_cambio');
-    return new Intl.DateTimeFormat('es-MX', {timeZone:config.zona, day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}).format(new Date(valor));
+    return new Intl.DateTimeFormat('es-MX', {timeZone:config.zona, hour:'2-digit', minute:'2-digit', hourCycle:'h23'}).format(new Date(valor));
   }
   function actualizarEstado() {
-    estado.textContent = t('grupos.estado.linea', {ultima:fecha(cambio), proxima:fecha(proximaVerificacion(config.horario)?.toISOString())});
+    estado.querySelector('summary').textContent = cambio ? t('grupos.estado.pastilla', {hora:fecha(cambio)}) : t('grupos.estado.sin_cambio');
+    document.getElementById('proxima').textContent = t('grupos.estado.proxima', {hora:fecha(proximaVerificacion(config.horario)?.toISOString())});
+    document.getElementById('global').textContent = t('grupos.estado.global', {con:oferta.casillas.filter(c => enlaces[c.id]).length, total:oferta.casillas.length});
   }
   function relativo(valor) {
     const minutos = Math.round((Date.parse(valor) - Date.now()) / 60000);
@@ -108,6 +138,12 @@
   }
   function unirse(dato) {
     const a = elemento('a', t('grupos.accion.unirse'), 'unirse');
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6 4V6a2 2 0 0 1 2-2Z');
+    path.setAttribute('fill', 'none'); path.setAttribute('stroke', 'currentColor'); path.setAttribute('stroke-width', '1.5');
+    svg.append(path); a.prepend(svg);
     a.href = dato.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; return a;
   }
   function acordeon(detalle, resumen) {
@@ -127,15 +163,18 @@
       const vigente = enlaces[casilla.id];
       if (vigente) {
         acciones.append(unirse(vigente));
-        const menu = elemento('details', null, 'menu'), sum = elemento('summary', t('grupos.accion.opciones'));
+        const menu = elemento('details', null, 'menu'), sum = elemento('summary', '⋯');
+        sum.setAttribute('aria-label', t('grupos.accion.opciones'));
         menu.append(sum); acordeon(menu, sum);
-        menu.append(boton(t('grupos.accion.copiar'), async () => {
-          try { await navigator.clipboard.writeText(vigente.url); mensaje.textContent = t('grupos.estado.copiado'); }
-          catch (_) { mensaje.textContent = t('grupos.error.copiar'); }
+        const opciones = elemento('div'); menu.append(opciones);
+        opciones.append(boton(t('grupos.accion.copiar'), async () => {
+          menu.open = false;
+          try { await navigator.clipboard.writeText(vigente.url); notificar(t('grupos.estado.copiado')); }
+          catch (_) { notificar(t('grupos.error.copiar')); }
         }), boton(t('grupos.accion.reemplazar'), () => { menu.open = false; editar(true); }));
         acciones.append(menu);
         if (vigente.reemplazo) contenedor.append(elemento('small', t('grupos.estado.reemplazado', {fecha:relativo(vigente.reemplazo.fecha), motivo:t(motivos[vigente.reemplazo.motivo] || motivos.otro)})));
-      } else acciones.append(boton(t('grupos.accion.agregar'), () => editar(false)));
+      } else { const agregar = boton(t('grupos.accion.agregar'), () => editar(false)); agregar.className = 'texto-enlace'; acciones.append(agregar); }
       contador(grupo, resumen);
     }
     async function editar(reemplazo) {
@@ -148,9 +187,9 @@
         aviso.textContent = t('grupos.estado.revisando');
         try {
           const respuesta = await api('consultar', {id:casilla.id});
-          if (!respuesta.ok) { aviso.textContent = errorAPI(respuesta); editor.append(cancelar); return; }
+          if (!respuesta.ok) notificar(errorAPI(respuesta));
           if (respuesta.enlace) {
-            recordar(casilla.id, respuesta.enlace); dibujar(); mensaje.textContent = t('grupos.estado.alguien'); return;
+            recordar(casilla.id, respuesta.enlace); dibujar(); actualizarEstado(); notificar(t('grupos.estado.alguien')); return;
           }
         } catch (error) { errorRed(error, 'consultar'); }   // al guardar, el script vuelve a revisar con candado
       }
@@ -184,7 +223,7 @@
       const botones = elemento('div', null, 'botones');
       if (navigator.clipboard?.readText) botones.append(boton(t('grupos.accion.pegar'), async () => {
         try { entrada.value = await navigator.clipboard.readText(); validar(); entrada.focus(); }
-        catch (_) { aviso.textContent = t('grupos.error.pegar'); }
+        catch (_) { notificar(t('grupos.error.pegar')); }
       }));
       botones.append(enviar, cancelar); formulario.append(etiqueta, validacion, trampaLabel, botones); editor.append(formulario); entrada.focus();
       formulario.addEventListener('submit', async evento => {
@@ -193,33 +232,96 @@
         try {
           const respuesta = await api(reemplazo ? 'reemplazar' : 'agregar', {id:casilla.id, url:normalizarURL(entrada.value), web:trampa.value,
             ...(reemplazo ? {anterior, motivo:motivo.value, detalle:motivo.value === 'otro' ? detalle.value.trim() : ''} : {})});
-          if (!respuesta.ok) { aviso.textContent = errorAPI(respuesta); return; }
+          if (!respuesta.ok) { aviso.textContent = ''; notificar(errorAPI(respuesta)); return; }
           const claves = {guardado:'grupos.estado.guardado', existe:'grupos.estado.alguien', cambio:'grupos.estado.cambio'};
           if (!claves[respuesta.estado]) throw new Error('respuesta');
-          recordar(casilla.id, respuesta.enlace); dibujar(); mensaje.textContent = t(claves[respuesta.estado]);
+          recordar(casilla.id, respuesta.enlace); dibujar(); actualizarEstado(); actualizarConteos(); notificar(t(claves[respuesta.estado]));
+          contenedor.classList.add('guardada'); setTimeout(() => {
+            contenedor.classList.remove('guardada');
+            if (filtros.sin) { renderizar(); sincronizar(); document.getElementById('resultados').focus(); }
+          }, 1000);
           contenedor.querySelector('a')?.focus();
-        } catch (error) { aviso.textContent = errorRed(error, reemplazo ? 'reemplazar' : 'agregar'); }
+        } catch (error) { aviso.textContent = ''; notificar(errorRed(error, reemplazo ? 'reemplazar' : 'agregar')); }
         finally { ocupado = false; validar(); }
       });
     }
     dibujar(); return contenedor;
   }
-  function renderizar() {
-    const abiertos = new Set([...lista.querySelectorAll('details.grupo[open]')].map(d => d.dataset.grupo));
-    lista.replaceChildren(); const grupos = new Map(), filtro = buscar.value.trim().toUpperCase();
-    for (const c of oferta.casillas) {
-      if ((carrera.value && c.carrera !== carrera.value) || !c.grupo.startsWith(filtro)) continue;
+  function actualizarConteos() {
+    const visibles = filtrar(oferta.casillas, enlaces, filtros);
+    const cantidad = new Set(visibles.map(c => c.grupo)).size;
+    document.getElementById('resultados').textContent = visibles.length ? t('grupos.lista.resultados',
+      {grupos:t(cantidad === 1 ? 'grupos.lista.grupo_uno' : 'grupos.lista.grupo_varios', {n:cantidad}),
+        materias:t(visibles.length === 1 ? 'grupos.lista.materia_una' : 'grupos.lista.materia_varias', {n:visibles.length})}) : t('grupos.lista.vacio');
+    for (const b of lista.querySelectorAll('button.grupo')) contador(oferta.casillas.filter(c => c.grupo === b.dataset.grupo), b);
+  }
+  function sincronizar() {
+    const hash = escribirHash({...filtros, g:abierto});
+    // replaceState evita una entrada de historial por cada letra del buscador.
+    history.replaceState(null, '', location.pathname + location.search + hash);
+    guardar(prefijo + 'filtros', {...filtros, g:''});
+  }
+  function controles() {
+    buscar.value = filtros.q; semestre.value = filtros.s; turno.value = filtros.t; sin.checked = filtros.sin;
+    for (const b of carrera.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.carrera === filtros.c));
+    document.getElementById('limpiar').hidden = !['c','s','t','q','sin'].some(k => filtros[k]);
+  }
+  async function compartir(nombre) {
+    const url = new URL(location.href); url.pathname = url.pathname.replace(/\/index\.html$/, '/');
+    url.hash = escribirHash({g:nombre});
+    try {
+      if (navigator.share && matchMedia('(max-width: 767px)').matches) await navigator.share({title:t('grupos.pagina.titulo'), url:url.href});
+      else { await navigator.clipboard.writeText(url.href); notificar(t('grupos.estado.compartido')); }
+    } catch (error) { if (error.name !== 'AbortError') notificar(t('grupos.error.compartir')); }
+  }
+  function renderizar(automatico = true) {
+    lista.replaceChildren(); const grupos = new Map();
+    for (const c of filtrar(oferta.casillas, enlaces, filtros)) {
       if (!grupos.has(c.grupo)) grupos.set(c.grupo, []);
       grupos.get(c.grupo).push(c);
     }
-    for (const [nombre, casillas] of [...grupos].sort((a,b) => a[1][0].nivel - b[1][0].nivel || a[0].localeCompare(b[0], 'es', {numeric:true}))) {
-      const d = elemento('details', null, 'grupo'), resumen = elemento('summary'); d.dataset.grupo = nombre;
-      d.open = nombre === filtro || abiertos.has(nombre); resumen.append(elemento('strong', nombre), elemento('span', '', 'contador'));
-      acordeon(d, resumen); d.append(resumen);
-      for (const c of casillas) d.append(fila(c, casillas, resumen));
-      lista.append(d);
+    if (automatico) {
+      const exacto = [...grupos.keys()].find(g => normalizarBusqueda(g) === normalizarBusqueda(filtros.q));
+      if (!grupos.has(abierto)) abierto = '';
+      abierto = abierto || exacto || (grupos.size === 1 ? [...grupos.keys()][0] : '');
+      if (abierto) { ultimo = abierto; guardar(prefijo + 'grupo', ultimo); }
     }
-    mensaje.textContent = grupos.size ? '' : t('grupos.lista.vacio');
+    const secciones = new Map();
+    function seccion(clave, titulo) {
+      if (!secciones.has(clave)) {
+        const s = elemento('section', null, 'grupos-seccion'), grid = elemento('div', null, 'grupos-cuadricula');
+        s.append(elemento('h2', titulo), grid); lista.append(s); secciones.set(clave, grid);
+      }
+      return secciones.get(clave);
+    }
+    function agregar(nombre, casillas, grid) {
+      const b = boton('', () => {
+        abierto = abierto === nombre ? '' : nombre;
+        if (abierto) { ultimo = abierto; guardar(prefijo + 'grupo', ultimo); }
+        renderizar(false); sincronizar();
+        [...lista.querySelectorAll('button.grupo')].find(n => n.dataset.grupo === nombre)?.focus();
+      });
+      b.className = 'grupo'; b.dataset.grupo = nombre;
+      b.id = 'grupo-' + nombre; b.setAttribute('aria-controls', 'panel-' + nombre);
+      b.setAttribute('aria-expanded', String(abierto === nombre));
+      b.append(elemento('strong', nombre), elemento('span', '', 'contador')); grid.append(b);
+      if (abierto === nombre) {
+        const panel = elemento('div', null, 'grupos-panel'); panel.id = 'panel-' + nombre;
+        panel.setAttribute('role', 'region'); panel.setAttribute('aria-labelledby', b.id);
+        const cabecera = elemento('div', null, 'renglon');
+        const compartirBoton = boton(t('grupos.accion.compartir'), () => compartir(nombre)); compartirBoton.className = 'texto-enlace';
+        cabecera.append(elemento('h3', nombre), compartirBoton); panel.append(cabecera);
+        for (const c of casillas) panel.append(fila(c, oferta.casillas.filter(f => f.grupo === nombre), b));
+        grid.append(panel);
+      }
+    }
+    if (grupos.has(ultimo)) agregar(ultimo, grupos.get(ultimo), seccion('tu', t('grupos.lista.tu')));
+    for (const [nombre, casillas] of [...grupos].sort((a,b) => a[1][0].nivel - b[1][0].nivel || a[0].localeCompare(b[0], 'es', {numeric:true}))) {
+      if (nombre === ultimo) continue;
+      const nivel = casillas[0].nivel;
+      agregar(nombre, casillas, seccion(nivel, t('grupos.lista.semestre_' + nivel)));
+    }
+    controles(); actualizarConteos();
   }
   async function iniciar() {
     try {
@@ -236,13 +338,33 @@
       publicados = Object.fromEntries(Object.entries(publicados).map(([id,dato]) => [id,enlaceValido(dato)]).filter(([,dato]) => dato));
       const mezcla = mezclar(publicados, locales); enlaces = mezcla.enlaces; locales = mezcla.pendientes;
       guardar(prefijo + config.periodo, locales);
-      const todos = elemento('option', t('grupos.filtro.todas')); todos.value = ''; carrera.append(todos);
-      for (const [id, nombre] of Object.entries(oferta.carreras)) { const o = elemento('option', nombre); o.value = id; carrera.append(o); }
-      carrera.value = leer('ipnt.grupos.carrera', ''); if (carrera.selectedIndex < 0) carrera.value = '';
-      carrera.addEventListener('change', () => { guardar('ipnt.grupos.carrera', carrera.value); renderizar(); });
-      buscar.addEventListener('input', () => { const posicion = buscar.selectionStart; buscar.value = buscar.value.toUpperCase(); if (posicion != null) buscar.setSelectionRange(posicion,posicion); renderizar(); });
-      actualizarEstado(); setInterval(actualizarEstado, 30000); renderizar();
-    } catch (error) { mensaje.textContent = t('grupos.error.datos'); console.warn('[grupos]', {accion:'cargar', error:error.name}); }
+      function cambiar() {
+        filtros = {...filtros, q:buscar.value, s:semestre.value, t:turno.value, sin:sin.checked, g:''};
+        abierto = ''; renderizar(); sincronizar();
+      }
+      for (const id of ['', ...Object.keys(oferta.carreras)]) {
+        const b = boton('', () => { filtros.c = id; cambiar(); }); b.dataset.carrera = id;
+        b.append(elemento('span', t(id ? 'grupos.carrera.' + id.toLowerCase() : 'grupos.filtro.todas'), 'carrera-larga'),
+          elemento('span', t(id ? 'grupos.carrera_corta.' + id.toLowerCase() : 'grupos.filtro.todas'), 'carrera-corta'));
+        carrera.append(b);
+      }
+      for (const nivel of [...new Set(oferta.casillas.map(c => c.nivel))].sort((a,b) => a-b)) {
+        const o = elemento('option', String(nivel)); o.value = String(nivel); semestre.append(o);
+      }
+      function restaurar() {
+        filtros = leerHash(location.hash || escribirHash(leer(prefijo + 'filtros', {})));
+        if (filtros.c && !oferta.carreras[filtros.c]) filtros.c = '';
+        abierto = filtros.g; controles(); renderizar();
+      }
+      restaurar(); sincronizar();
+      buscar.addEventListener('input', cambiar);
+      for (const control of [semestre, turno, sin]) control.addEventListener('change', cambiar);
+      document.getElementById('limpiar').addEventListener('click', () => {
+        filtros = leerHash(''); abierto = ''; controles(); renderizar(); sincronizar(); buscar.focus();
+      });
+      window.addEventListener('hashchange', () => { filtros = leerHash(location.hash); abierto = filtros.g; controles(); renderizar(); guardar(prefijo + 'filtros', {...filtros,g:''}); });
+      actualizarEstado(); setInterval(actualizarEstado, 30000);
+    } catch (error) { notificar(t('grupos.error.datos')); console.warn('[grupos]', {accion:'cargar', error:error.name}); }
   }
   iniciar();
 })(typeof globalThis !== 'undefined' ? globalThis : this);
