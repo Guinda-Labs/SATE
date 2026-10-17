@@ -58,6 +58,10 @@ header.sate-encabezado{position:relative;display:grid;grid-template-columns:minm
 .sate-fila-avisos{grid-area:avisos;min-width:0}
 .sate-encabezado #sate-avisos-globales:not(:empty){margin-top:var(--ipn-esp-3)}
 @media(min-width:768px) and (max-width:1199px){
+  /* Compacto: la leyenda larga cede su espacio al nombre de la carrera, que no se corta. */
+  header.sate-encabezado{grid-template-columns:auto minmax(0,1fr) auto}
+  .sate-marca #sate-nombre{display:none}
+  .sate-contexto{justify-content:center}
   .sate-encabezado{--ipn-logo-ipn-alto:var(--ipn-esp-7);--ipn-logo-unidad-alto:var(--ipn-esp-6)}
   .sate-encabezado .header-actions .saes-open .sate-texto-largo{display:none!important}
   .sate-encabezado .header-actions .saes-open .sate-texto-corto{display:none}
