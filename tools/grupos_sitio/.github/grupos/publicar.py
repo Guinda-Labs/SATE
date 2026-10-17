@@ -99,7 +99,8 @@ def publicar(raiz=Path("."), ahora=None, evento=None):
     ids = {c["id"] for c in oferta["casillas"]}
     clave = os.environ.get("GRUPOS_CLAVE")
     if not clave:
-        raise ValueError("Falta el secreto GRUPOS_CLAVE.")
+        print("Aviso: falta el secreto GRUPOS_CLAVE; sin publicación.")
+        return 0
     cambios = []
     # Se consultan ambos modos antes de tocar archivos: una falla no deja una publicación parcial.
     for modo, nombre in [("", "enlaces.json"), ("prueba", "enlaces-prueba.json")]:
