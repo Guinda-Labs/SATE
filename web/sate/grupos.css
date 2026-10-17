@@ -80,3 +80,7 @@
 /* Acción secundaria discreta: sin subrayado hasta pasar el cursor. */
 .grupos-pagina .materia .sate-enlace{text-decoration:none;font-weight:600}
 .grupos-pagina .materia .sate-enlace:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* Diálogos: caben en la ventana y desplazan su contenido; nunca se cortan arriba (p. ej. guía abierta sobre las reglas). */
+.grupos-pagina dialog.sate-modal{position:fixed;inset:0;margin:auto;max-height:calc(100dvh - 2*var(--ipn-esp-4));overflow:auto;overscroll-behavior:contain}
+.grupos-pagina dialog.sate-modal>:first-child{position:sticky;top:0;z-index:1;background:inherit}

@@ -138,7 +138,7 @@
   }
   // showModal mantiene el foco dentro del diálogo e inactiva el resto de la página.
   function mostrarGuia(evento) {
-    evento.preventDefault(); guia.showModal(); document.getElementById('guia-titulo').focus();
+    evento.preventDefault(); guia.showModal(); guia.scrollTop = 0; document.getElementById('guia-titulo').focus({preventScroll:true});
   }
   abrirGuia.addEventListener('click', mostrarGuia);
   cerrarGuia.addEventListener('click', () => guia.close());
