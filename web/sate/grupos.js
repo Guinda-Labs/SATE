@@ -52,7 +52,36 @@
       (!filtros.s || String(c.nivel) === filtros.s) && (!filtros.t || c.turno === filtros.t) &&
       (!filtros.sin || !enlaces[c.id]) && (!q || normalizarBusqueda(c.grupo).includes(q) || normalizarBusqueda(c.materia).includes(q)));
   }
-  const funciones = {normalizarURL, proximaVerificacion, mezclar, normalizarBusqueda, leerHash, escribirHash, filtrar};
+  function periodoHorario(oferta, periodo) {
+    // La oferta actual no publica ids escolares; conservar el respaldo en un solo lugar.
+    const id = valor => String(valor || '').replace(/^20/, '').replace(/\//g, '');
+    return Object.keys(oferta.periodos || {}).find(p => id(oferta.periodos[p]?.id) === id(periodo)) || 'proximo';
+  }
+  function leerHorario(local, sesion, clave) {
+    let mantener = false;
+    try {
+      const previa = local.getItem('ipnt.persistir') ?? sesion.getItem('ipnt.persistir');
+      mantener = previa === 'si' || (previa === null && Object.keys(local).some(k => /^(hu\.|ue\.|saes\.)|^perfil\.opciones$/.test(k)));
+    } catch (_) { /* Igual que Cuenta: sin preferencia legible, usar la sesión. */ }
+    try { return JSON.parse((mantener ? local : sesion).getItem(clave)); } catch (_) { return null; }
+  }
+  function emparejarClave(clave, oferta, casillas, periodo = 'proximo') {
+    if (typeof clave !== 'string') return null;
+    const partes = clave.split('|');
+    if (partes.length !== 3 || !/^\d+$/.test(partes[2])) return null;
+    const [carrera, grupo, indice] = partes;
+    if (!(oferta.periodos?.[periodo] || []).some(c => c[0] === carrera && c[3] === grupo && String(c[4]) === indice)) return null;
+    const nombre = oferta.asig?.[Number(indice)];
+    if (typeof nombre !== 'string') return null;
+    const normal = v => normalizarBusqueda(v).replace(/\s+/g, ' ').toUpperCase();
+    return casillas.find(c => normal(c.grupo) === normal(grupo) && normal(c.materia) === normal(nombre))?.id || null;
+  }
+  function seleccionHorario(horario, elegido) {
+    const plans = horario?.plans || {}, plan = elegido && plans[elegido] ? elegido : horario?.plan;
+    return {plan, planes:Object.keys(plans), claves:Array.isArray(plans[plan]?.sel) ? [...new Set(plans[plan].sel)] : []};
+  }
+  const funciones = {normalizarURL, proximaVerificacion, mezclar, normalizarBusqueda, leerHash, escribirHash, filtrar,
+    periodoHorario, leerHorario, emparejarClave, seleccionHorario};
   if (typeof module !== 'undefined' && module.exports) module.exports = funciones;
   raiz.GruposFunciones = funciones;
   if (typeof document === 'undefined') return;
@@ -79,6 +108,54 @@
   const prueba = location.pathname.startsWith('/prueba/'), modo = prueba ? 'prueba' : '';
   const prefijo = 'ipnt.grupos.' + (prueba ? 'prueba.' : 'real.');
   let config, oferta, enlaces = {}, locales = {}, cambio;
+  let ofertaSate, planElegido, conteoTus;
+  const tusMaterias = document.getElementById('tus-materias');
+  function horarioPersonal() {
+    try { return leerHorario(localStorage, sessionStorage, 'hu.w.' + periodoHorario(ofertaSate, config.periodo)); }
+    catch (_) { return null; }
+  }
+  function renderizarTusMaterias() {
+    if (!ofertaSate) return;
+    tusMaterias.replaceChildren(); tusMaterias.hidden = false; conteoTus = null;
+    const horario = horarioPersonal(), seleccion = seleccionHorario(horario, planElegido);
+    const link = elemento('a', t('grupos.tus.horarios'), 'grupos-volver'); link.href = '../index.html#/upiita/horarios';
+    const hayHorario = seleccion.planes.some(p => horario.plans[p]?.sel?.length || horario.plans[p]?.own?.length);
+    if (!hayHorario) {
+      const linea = elemento('p', t('grupos.tus.sin_horario') + ' ', 'tenue'); linea.append(link); tusMaterias.append(linea); return;
+    }
+    const cabecera = elemento('div', null, 'renglon');
+    cabecera.append(elemento('h2', t('grupos.tus.titulo')), link);
+    if (seleccion.planes.length > 1) {
+      const etiqueta = elemento('label', t('grupos.tus.plan')), selector = elemento('select');
+      for (const p of seleccion.planes) { const o = elemento('option', p); o.value = p; selector.append(o); }
+      selector.value = seleccion.plan;
+      selector.addEventListener('change', () => { planElegido = selector.value; renderizarTusMaterias(); });
+      etiqueta.append(selector); cabecera.append(etiqueta);
+    }
+    tusMaterias.append(cabecera);
+    const contador = elemento('p', '', 'tenue'); contador.id = 'tus-conteo'; contador.setAttribute('role', 'status');
+    tusMaterias.append(contador); conteoTus = contador;
+    for (const clave of seleccion.claves) {
+      const id = emparejarClave(clave, ofertaSate, oferta.casillas, periodoHorario(ofertaSate, config.periodo));
+      const casilla = oferta.casillas.find(c => c.id === id);
+      if (casilla) tusMaterias.append(fila(casilla));
+    }
+    if (!seleccion.claves.length) tusMaterias.append(elemento('p', t('grupos.tus.plan_vacio'), 'tenue'));
+    actualizarTusConteos();
+  }
+  function actualizarTusConteos() {
+    if (!ofertaSate) return;
+    if (!conteoTus) return;
+    const seleccion = seleccionHorario(horarioPersonal(), planElegido);
+    const con = seleccion.claves.filter(k => enlaces[emparejarClave(k, ofertaSate, oferta.casillas, periodoHorario(ofertaSate, config.periodo))]).length;
+    conteoTus.textContent = t('grupos.tus.contador', {con, total:seleccion.claves.length});
+  }
+  function actualizarFilas(origen) {
+    for (const raiz of [lista, tusMaterias]) for (const nodo of raiz.querySelectorAll('.materia')) {
+      if (nodo !== origen && nodo.dataset.casilla === origen.dataset.casilla) nodo.actualizar();
+    }
+    actualizarTusConteos();
+  }
   const carrera = document.getElementById('carrera'), buscar = document.getElementById('buscar');
   const semestre = document.getElementById('semestre'), turno = document.getElementById('turno'), sin = document.getElementById('sin');
   let filtros = leerHash(''), abierto = '', ultimo = leer(prefijo + 'grupo', '');
@@ -155,10 +232,13 @@
   }
   function fila(casilla, grupo, resumen) {
     const contenedor = elemento('div', null, 'materia');
+    contenedor.dataset.casilla = casilla.id;
     function dibujar() {
       contenedor.replaceChildren();
       const renglon = elemento('div', null, 'renglon'), acciones = elemento('div', null, 'acciones');
-      renglon.append(elemento('span', raiz.GRUPOS.nombres[casilla.materia] || casilla.materia, 'nombre'), acciones);
+      const nombre = elemento('span', raiz.GRUPOS.nombres[casilla.materia] || casilla.materia, 'nombre');
+      if (!resumen) nombre.append(elemento('small', casilla.grupo));
+      renglon.append(nombre, acciones);
       contenedor.append(renglon);
       const vigente = enlaces[casilla.id];
       if (vigente) {
@@ -175,7 +255,7 @@
         acciones.append(menu);
         if (vigente.reemplazo) contenedor.append(elemento('small', t('grupos.estado.reemplazado', {fecha:relativo(vigente.reemplazo.fecha), motivo:t(motivos[vigente.reemplazo.motivo] || motivos.otro)})));
       } else { const agregar = boton(t('grupos.accion.agregar'), () => editar(false)); agregar.className = 'texto-enlace'; acciones.append(agregar); }
-      contador(grupo, resumen);
+      if (resumen) contador(grupo, resumen);
     }
     async function editar(reemplazo) {
       if (contenedor.querySelector('.editor')) return;
@@ -189,7 +269,7 @@
           const respuesta = await api('consultar', {id:casilla.id});
           if (!respuesta.ok) notificar(errorAPI(respuesta));
           if (respuesta.enlace) {
-            recordar(casilla.id, respuesta.enlace); dibujar(); actualizarEstado(); notificar(t('grupos.estado.alguien')); return;
+            recordar(casilla.id, respuesta.enlace); dibujar(); actualizarFilas(contenedor); actualizarEstado(); notificar(t('grupos.estado.alguien')); return;
           }
         } catch (error) { errorRed(error, 'consultar'); }   // al guardar, el script vuelve a revisar con candado
       }
@@ -235,7 +315,7 @@
           if (!respuesta.ok) { aviso.textContent = ''; notificar(errorAPI(respuesta)); return; }
           const claves = {guardado:'grupos.estado.guardado', existe:'grupos.estado.alguien', cambio:'grupos.estado.cambio'};
           if (!claves[respuesta.estado]) throw new Error('respuesta');
-          recordar(casilla.id, respuesta.enlace); dibujar(); actualizarEstado(); actualizarConteos(); notificar(t(claves[respuesta.estado]));
+          recordar(casilla.id, respuesta.enlace); dibujar(); actualizarFilas(contenedor); actualizarEstado(); actualizarConteos(); notificar(t(claves[respuesta.estado]));
           contenedor.classList.add('guardada'); setTimeout(() => {
             contenedor.classList.remove('guardada');
             if (filtros.sin) { renderizar(); sincronizar(); document.getElementById('resultados').focus(); }
@@ -245,6 +325,7 @@
         finally { ocupado = false; validar(); }
       });
     }
+    contenedor.actualizar = dibujar;
     dibujar(); return contenedor;
   }
   function actualizarConteos() {
@@ -364,6 +445,18 @@
       });
       window.addEventListener('hashchange', () => { filtros = leerHash(location.hash); abierto = filtros.g; controles(); renderizar(); guardar(prefijo + 'filtros', {...filtros,g:''}); });
       actualizarEstado(); setInterval(actualizarEstado, 30000);
+      window.addEventListener('storage', () => { planElegido = undefined; renderizarTusMaterias(); });
+      // Carga independiente: una oferta de SATE ausente no afecta al directorio.
+      try {
+        const r = await fetch('../datos/upiita/oferta.json');
+        if (!r.ok) throw new Error('oferta');
+        const datos = await r.json();
+        if (!Array.isArray(datos.asig) || !datos.periodos) throw new Error('formato');
+        ofertaSate = datos; renderizarTusMaterias();
+      } catch (error) {
+        ofertaSate = undefined; tusMaterias.hidden = true;
+        console.warn('[grupos]', {accion:'cargar_oferta_sate', error:error.name});
+      }
     } catch (error) { notificar(t('grupos.error.datos')); console.warn('[grupos]', {accion:'cargar', error:error.name}); }
   }
   iniciar();

@@ -4,7 +4,8 @@ import {createRequire} from 'node:module';
 import {readFileSync} from 'node:fs';
 import {Script, runInNewContext} from 'node:vm';
 const require = createRequire(import.meta.url);
-const {normalizarURL, proximaVerificacion, mezclar, normalizarBusqueda, filtrar, leerHash, escribirHash} = require('../web/sate/grupos.js');
+const {normalizarURL, proximaVerificacion, mezclar, normalizarBusqueda, filtrar, leerHash, escribirHash,
+  leerHorario, periodoHorario, emparejarClave, seleccionHorario} = require('../web/sate/grupos.js');
 const {horario} = JSON.parse(readFileSync(new URL('../data/grupos.json', import.meta.url), 'utf8'));
 const url = 'https://chat.whatsapp.com/Ab12345678901234567890';
 for (const longitud of [20, 24]) assert.equal(normalizarURL('https://chat.whatsapp.com/' + 'a'.repeat(longitud)), 'https://chat.whatsapp.com/' + 'a'.repeat(longitud));
@@ -36,6 +37,29 @@ const casillas = [
   {id:'e', carrera:'M', nivel:3, turno:'X', grupo:'3MX1', materia:'Cálculo integral'}
 ];
 const ids = f => filtrar(casillas, {a:dato}, {...leerHash(''), ...f}).map(c => c.id);
+const ofertaSate = {asig:['CÁLCULO  VECTORIAL', 'ETICA', 'Cálculo diferencial'], periodos:{
+  proximo:[['M',0,0,'3MM1',0], ['M',0,0,'3MM1',1], ['B',0,0,'3BV1',2]], actual:[]}};
+assert.equal(emparejarClave('M|3MM1|0', ofertaSate, [{...casillas[0], materia:'CALCULO VECTORIAL'}]), 'a');
+assert.equal(emparejarClave('M|3MM1|1', ofertaSate, casillas), 'b');
+for (const clave of ['M|3MM1|999', 'M|OTRO|0', 'B|3MM1|0', 'M|3MM1|no', null]) assert.equal(emparejarClave(clave, ofertaSate, casillas), null);
+assert.equal(emparejarClave('M|3MM1|0', ofertaSate, casillas, 'actual'), null);
+assert.equal(periodoHorario(ofertaSate, '2027/1'), 'proximo');
+assert.equal(periodoHorario({periodos:{actual:{id:'27/1'}}}, '2027/1'), 'actual');
+const horarioSate = {plan:'A', plans:{A:{sel:[],own:[]}, B:{sel:['M|3MM1|0','M|3MM1|1','B|3BV1|2'],own:[]}}};
+assert.deepEqual(seleccionHorario(horarioSate).claves, []);
+assert.equal(seleccionHorario(horarioSate).plan, 'A');
+assert.equal(seleccionHorario(horarioSate, 'B').claves.length, 3);
+const almacen = datos => Object.assign({getItem(k) { return datos[k] ?? null; }}, datos);
+const claveHorario = 'hu.w.proximo', serializado = JSON.stringify(horarioSate);
+assert.deepEqual(leerHorario(almacen({'ipnt.persistir':'si',[claveHorario]:serializado}), almacen({}), claveHorario), horarioSate);
+assert.deepEqual(leerHorario(almacen({'ipnt.persistir':'no',[claveHorario]:'{}'}), almacen({[claveHorario]:serializado}), claveHorario), horarioSate);
+assert.deepEqual(leerHorario(almacen({[claveHorario]:serializado}), almacen({}), claveHorario), horarioSate);
+assert.deepEqual(leerHorario(almacen({'ipnt.unidad':'upiita'}), almacen({[claveHorario]:serializado}), claveHorario), horarioSate);
+assert.deepEqual(leerHorario(almacen({'saes.alumno':'{}',[claveHorario]:serializado}), almacen({}), claveHorario), horarioSate);
+assert.deepEqual(leerHorario(almacen({[claveHorario]:serializado}), almacen({'ipnt.persistir':'no',[claveHorario]:'{}'}), claveHorario), {});
+assert.deepEqual(leerHorario({getItem() { throw Error('bloqueado'); }}, almacen({[claveHorario]:serializado}), claveHorario), horarioSate);
+assert.equal(leerHorario(almacen({'ipnt.persistir':'si',[claveHorario]:'mal json'}), almacen({}), claveHorario), null);
+assert.equal(leerHorario({getItem() { throw Error('bloqueado'); }}, {getItem() { throw Error('bloqueado'); }}, claveHorario), null);
 assert.equal(normalizarBusqueda('  ÉTICA  '), 'etica');
 assert.deepEqual(ids({q:'calculo'}), ['a','c','e']);
 assert.deepEqual(ids({q:'ÉtiCA'}), ['b','d']);
@@ -78,22 +102,28 @@ class Nodo {
   get classList() { return {add: c => { this.className += ' ' + c; }, remove: c => { this.className = this.className.split(' ').filter(v => v !== c).join(' '); }}; }
 }
 const fuente = readFileSync(new URL('../web/sate/grupos.js', import.meta.url), 'utf8');
-async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento = false, fallaConsulta = false} = {}) {
-  const nodos = Object.fromEntries(['carrera','buscar','semestre','turno','sin','lista','mensaje','prueba','estado','proxima','global','resultados','limpiar'].map(id => [id, new Nodo('div')]));
+async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento = false, fallaConsulta = false, horarioPersonal = null, fallaOferta = false, persistir = 'si'} = {}) {
+  const nodos = Object.fromEntries(['carrera','buscar','semestre','turno','sin','lista','mensaje','prueba','estado','proxima','global','resultados','limpiar','tus-materias'].map(id => [id, new Nodo('div')]));
+  nodos['tus-materias'].hidden = true;
   nodos.estado.append(new Nodo('summary'));
   const config = {periodo:'DEMO', zona:'America/Mexico_City', horario, endpoint:'https://script.google.com/demo', motivos:['caido','lleno','equivocado','otro'], enlaces:'/enlaces.json', enlaces_prueba:'/enlaces-prueba.json'};
   const oferta = {casillas, carreras:{M:'Mecatrónica',B:'Biónica'}};
   const datos = {}; runInNewContext(pagina.match(/<script>window.GRUPOS=([\s\S]*?);<\/script>/)[0].replace(/<\/?script>/g,''), {window:datos});
   const guardado = new Map(), solicitudes = [], copias = [], eventos = {}, temporales = [];
+  const datosLocal = {'ipnt.persistir':persistir}, datosSesion = {};
+  if (horarioPersonal) (persistir === 'si' ? datosLocal : datosSesion)[claveHorario] = JSON.stringify(horarioPersonal);
+  const sesion = almacen(datosSesion);
   const location = {pathname:ruta, search:'', hash, href:'https://ejemplo.test' + ruta + hash};
   const contexto = {GRUPOS:datos.GRUPOS, URL, URLSearchParams, Intl, Date, AbortSignal,
     document:{createElement: t => new Nodo(t), createElementNS: (_,t) => new Nodo(t), getElementById: id => nodos[id]},
     location, history:{replaceState(_, __, valor) { location.hash = valor.includes('#') ? '#' + valor.split('#')[1] : ''; }},
-    localStorage:{getItem(k) { if (sinAlmacenamiento) throw Error('almacenamiento'); return guardado.get(k) || null; }, setItem(k,v) { if (sinAlmacenamiento) throw Error('almacenamiento'); guardado.set(k,v); }},
+    localStorage:{...datosLocal, getItem(k) { if (sinAlmacenamiento) throw Error('almacenamiento'); return guardado.get(k) ?? datosLocal[k] ?? null; }, setItem(k,v) { if (sinAlmacenamiento) throw Error('almacenamiento'); guardado.set(k,v); }},
+    sessionStorage:sesion,
     navigator:{clipboard:{writeText: async v => { copias.push(v); }}}, matchMedia:() => ({matches:false}),
     console:{warn() {}}, setInterval() {}, setTimeout(f) { temporales.push(f); return temporales.length; }, clearTimeout() {},
     fetch:async (ruta, opciones) => {
       solicitudes.push({ruta:String(ruta), opciones});
+      if (ruta === '../datos/upiita/oferta.json') { if (fallaOferta) throw Error('oferta'); return {ok:true,json:async () => ofertaSate}; }
       if (String(ruta).startsWith('https://script.google.com')) {
         if (!opciones.method && fallaConsulta) throw Error('sin red');
         return {ok:true, json:async () => opciones.method ? {ok:true, estado:'guardado', enlace:dato} : {ok:true,enlace:null}};
@@ -145,3 +175,42 @@ assert.equal(prueba.nodos.mensaje.textContent, 'Enlace guardado');
 assert.equal(prueba.nodos.mensaje.hidden, false);
 assert.ok(materia.className.includes('guardada'));
 assert.equal(materia.querySelector('a').href, url);
+
+assert.match(app.nodos['tus-materias'].textContent, /Arma tu horario en SATE/);
+const personal = await iniciarDOM({hash:'#g=3MM1', horarioPersonal:horarioSate, persistir:'no'});
+const tus = personal.nodos['tus-materias'];
+assert.equal(tus.querySelectorAll('.materia').length, 0, 'No sustituir el plan activo vacío');
+assert.match(tus.textContent, /0 de 0/);
+const selector = tus.querySelector('select'); selector.value = 'B'; await selector.emitir('change');
+assert.equal(tus.querySelectorAll('.materia').length, 3);
+assert.match(tus.textContent, /1 de 3/);
+assert.match(tus.querySelectorAll('.materia')[2].textContent, /3BV1/);
+const filaPersonal = tus.querySelectorAll('.materia')[1];
+await filaPersonal.querySelector('button').emitir('click');
+const urlPersonal = filaPersonal.querySelector('input'); urlPersonal.value = url; await urlPersonal.emitir('input');
+await filaPersonal.querySelector('form').emitir('submit');
+assert.match(tus.textContent, /2 de 3/);
+assert.equal(personal.nodos.lista.querySelectorAll('.materia')[1].querySelector('a').href, url);
+await personal.eventos.storage({key:'ipnt.persistir'});
+assert.match(tus.textContent, /0 de 0/);
+const cambioHorario = {...horarioSate, plan:'B'};
+personal.guardado.set('ipnt.persistir', 'si'); personal.guardado.set(claveHorario, JSON.stringify(cambioHorario));
+await personal.eventos.storage({key:claveHorario});
+assert.equal(tus.querySelectorAll('.materia').length, 3);
+const desdeDirectorio = await iniciarDOM({hash:'#g=3MM1', horarioPersonal:cambioHorario});
+const filaDirectorio = desdeDirectorio.nodos.lista.querySelectorAll('.materia')[1];
+await filaDirectorio.querySelector('button').emitir('click');
+const entradaDirectorio = filaDirectorio.querySelector('input'); entradaDirectorio.value = url; await entradaDirectorio.emitir('input');
+await filaDirectorio.querySelector('form').emitir('submit');
+assert.match(desdeDirectorio.nodos['tus-materias'].textContent, /2 de 3/);
+assert.equal(desdeDirectorio.nodos['tus-materias'].querySelectorAll('.materia')[1].querySelector('a').href, url);
+const sinOferta = await iniciarDOM({fallaOferta:true, horarioPersonal:cambioHorario});
+assert.equal(sinOferta.nodos['tus-materias'].hidden, true);
+assert.equal(sinOferta.nodos.lista.querySelectorAll('button.grupo').length, 4);
+
+// Muestra exhaustiva de claves públicas compiladas, sin perfiles de alumnos.
+const ofertaReal = JSON.parse(readFileSync(new URL('../web/dist/sate/datos/upiita/oferta.json', import.meta.url), 'utf8'));
+const gruposReales = JSON.parse(readFileSync(new URL('../web/dist/sate/grupos/oferta.json', import.meta.url), 'utf8'));
+const clavesReales = [...new Set(ofertaReal.periodos.proximo.map(c => c[0] + '|' + c[3] + '|' + c[4]))];
+const emparejadas = clavesReales.filter(k => emparejarClave(k, ofertaReal, gruposReales.casillas)).length;
+assert.equal(emparejadas, clavesReales.length, `Emparejamiento público: ${emparejadas}/${clavesReales.length}`);

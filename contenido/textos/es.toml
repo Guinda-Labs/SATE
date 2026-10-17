@@ -2,7 +2,15 @@
 # Textos de SATE (Sistema de Apoyo a la Trayectoria Escolar) en español de México, tuteo.
 # Reglas: claves a-z0-9_ con puntos; variables {nombre}; plurales {n, plural, one {# x} other {# xs}}.
 # Al cambiar un texto: sube `version` y valida con `python tools/contenido.py`.
-version = "2026.10.26"
+version = "2026.10.27"
+
+[grupos.tus]
+titulo = "Tus materias"
+horarios = "Ver en Horarios"
+sin_horario = "Arma tu horario en SATE y aquí verás los grupos de tus materias."
+plan = "Plan"
+plan_vacio = "Este plan no tiene materias seleccionadas."
+contador = "{con} de {total} de tus materias con grupo"
 
 [grupos.pagina]
 titulo = "Grupos de WhatsApp"
