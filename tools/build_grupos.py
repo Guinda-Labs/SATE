@@ -53,7 +53,7 @@ def generar(solo_datos=False):
             '<span>{{grupos.guia.boton}}</span></button>')
     # Mismo componente que SATE: marca | (sin selector de carrera) | acciones y logo de la unidad.
     encabezado = encabezado_sate(textos=etiquetas, unidad=unidad_enc, contexto=False,
-                                 acciones='<!--__THEME_BTN__-->' + guia, pestanas=pestanas,
+                                 acciones=guia + '<!--__THEME_BTN__-->', pestanas=pestanas,
                                  activa='grupos', recursos='../../', avisos=False)
     pagina = pagina.replace('<!--__GRUPOS_ENCABEZADO__-->', encabezado)
     pagina = re.sub(r"\{\{(grupos\.[a-z0-9_.]+)\}\}",
