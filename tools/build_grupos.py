@@ -44,14 +44,21 @@ def generar(solo_datos=False):
     pagina = pagina.replace("/*__GRUPOS__*/", "window.GRUPOS=" + datos + ";")
     css = (ROOT / "vendor/ipn-comun/dist/tokens.css").read_text(encoding="utf-8")
     pagina = pagina.replace("/*__TOKENS__*/", css)
-    from institucional import HEADER
-    # La firma es la misma de SATE; las imágenes solo se insertan en dist.
-    cabecera = HEADER.split("</style>", 1)[1]
-    cabecera = re.sub(r'<div class="inst-name">.*?</div>', '', cabecera)
-    cabecera = cabecera.replace('src="assets/', 'src="../../assets/')
-    cabecera = cabecera.replace('</header>', '<a class="grupos-volver" href="../index.html#/upiita">'
-                                + html.escape(textos['grupos.pagina.volver']) + '</a></header>')
-    pagina = pagina.replace('<!--__GRUPOS_IDENTIDAD__-->', cabecera)
+    from institucional import HEADER, ROOT as RAIZ_IDENTIDAD
+    from PIL import Image
+    logos = destino.parents[1] / "assets/logos"
+    logos.mkdir(parents=True, exist_ok=True)
+    # El original horizontal reserva el primer 26 % al escudo, con su área de protección.
+    # Generar la pieza aquí evita depender de archivos de otra rama o recortar con CSS.
+    for version in ("guinda", "calado"):
+        with Image.open(RAIZ_IDENTIDAD / f"data/identidad/originales/ipn-horizontal-{version}.png") as imagen:
+            imagen.crop((0, 0, round(imagen.width * .26), imagen.height)).save(
+                logos / f"ipn-isologo-{version}.webp", lossless=True)
+    ipn = ('<span class="grupos-logo-ipn">'
+           '<img class="logo-lt" src="../../assets/logos/ipn-isologo-guinda.webp" alt="Instituto Politécnico Nacional">'
+           '<img class="logo-dk" src="../../assets/logos/ipn-isologo-calado.webp" alt="Instituto Politécnico Nacional"></span>')
+    unidad = re.search(r'<a class="unit".*?</a>', HEADER, re.S)[0].replace('src="assets/', 'src="../../assets/')
+    pagina = pagina.replace('<!--__GRUPOS_IPN__-->', ipn).replace('<!--__GRUPOS_UPIITA__-->', unidad)
     (destino / "index.html").write_text(pagina, encoding="utf-8")
     (destino / "grupos.js").write_text((ROOT / "web/sate/grupos.js").read_text(encoding="utf-8"), encoding="utf-8")
     (destino / "grupos.css").write_text((ROOT / "web/sate/grupos.css").read_text(encoding="utf-8"), encoding="utf-8")

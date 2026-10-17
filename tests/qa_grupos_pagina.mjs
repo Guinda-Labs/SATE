@@ -92,6 +92,8 @@ class Nodo {
   setAttribute(k,v) { this.attributes[k] = String(v); }
   addEventListener(k,v) { (this.events[k] ||= []).push(v); }
   async emitir(k) { for (const f of this.events[k] || []) await f({preventDefault() {}, key:''}); }
+  showModal() { this.open = true; this.aperturas = (this.aperturas || 0) + 1; }
+  close() { this.open = false; for (const f of this.events.close || []) f(); }
   querySelectorAll(selector) {
     const [tag, clase] = selector.split('.');
     return this.children.flatMap(c => [...((!tag || c.tagName === tag) && (!clase || c.className.split(' ').includes(clase)) ? [c] : []), ...c.querySelectorAll(selector)]);
@@ -102,8 +104,8 @@ class Nodo {
   get classList() { return {add: c => { this.className += ' ' + c; }, remove: c => { this.className = this.className.split(' ').filter(v => v !== c).join(' '); }}; }
 }
 const fuente = readFileSync(new URL('../web/sate/grupos.js', import.meta.url), 'utf8');
-async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento = false, fallaConsulta = false, horarioPersonal = null, fallaOferta = false, persistir = 'si', ofertaDirectorio = null} = {}) {
-  const nodos = Object.fromEntries(['carrera','buscar','semestre','nivel-etiqueta','turno','sin','lista','mensaje','prueba','estado','proxima','global','resultados','limpiar','tus-materias'].map(id => [id, new Nodo('div')]));
+async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento = false, fallaConsulta = false, horarioPersonal = null, fallaOferta = false, persistir = 'si', ofertaDirectorio = null, guiaVista = false} = {}) {
+  const nodos = Object.fromEntries(['guia','abrir-guia','cerrar-guia','tema','carrera','buscar','semestre','nivel-etiqueta','turno','sin','lista','mensaje','prueba','estado','proxima','global','resultados','limpiar','tus-materias'].map(id => [id, new Nodo('div')]));
   nodos['tus-materias'].hidden = true;
   nodos.estado.append(new Nodo('summary'));
   const config = {periodo:'DEMO', zona:'America/Mexico_City', horario, endpoint:'https://script.google.com/demo', motivos:['caido','lleno','equivocado','otro'], enlaces:'/enlaces.json', enlaces_prueba:'/enlaces-prueba.json'};
@@ -114,11 +116,12 @@ async function iniciarDOM({hash = '', ruta = '/sate/grupos/', sinAlmacenamiento 
   datos.GRUPOS.textos['grupos.carrera_corta.z'] = 'Semestral';
   const guardado = new Map(), solicitudes = [], copias = [], eventos = {}, temporales = [];
   const datosLocal = {'ipnt.persistir':persistir}, datosSesion = {};
+  if (guiaVista) datosLocal['ipnt.grupos.real.guia'] = '1';
   if (horarioPersonal) (persistir === 'si' ? datosLocal : datosSesion)[claveHorario] = JSON.stringify(horarioPersonal);
   const sesion = almacen(datosSesion);
   const location = {pathname:ruta, search:'', hash, href:'https://ejemplo.test' + ruta + hash};
   const contexto = {GRUPOS:datos.GRUPOS, URL, URLSearchParams, Intl, Date, AbortSignal,
-    document:{createElement: t => new Nodo(t), createElementNS: (_,t) => new Nodo(t), getElementById: id => nodos[id]},
+    document:{documentElement:new Nodo('html'), createElement: t => new Nodo(t), createElementNS: (_,t) => new Nodo(t), getElementById: id => nodos[id]},
     location, history:{replaceState(_, __, valor) { location.hash = valor.includes('#') ? '#' + valor.split('#')[1] : ''; }},
     localStorage:{...datosLocal, getItem(k) { if (sinAlmacenamiento) throw Error('almacenamiento'); return guardado.get(k) ?? datosLocal[k] ?? null; }, setItem(k,v) { if (sinAlmacenamiento) throw Error('almacenamiento'); guardado.set(k,v); }},
     sessionStorage:sesion,
@@ -170,6 +173,29 @@ assert.match(css, /@media\(max-width:479px\)\{\.grupos-nivel\{grid-template-colu
 
 const app = await iniciarDOM({hash:'#g=3MM1'});
 const n = app.nodos;
+assert.equal(n.guia.open, true, 'Primera visita abre la guía');
+assert.equal(app.guardado.get('ipnt.grupos.real.guia'), '1');
+// Simula cancel, que es el evento nativo de Esc; no simula el teclado del navegador.
+await n.guia.emitir('cancel');
+assert.equal(n.guia.open, false);
+assert.equal(n['abrir-guia'].enfocado, true);
+await n['abrir-guia'].emitir('click');
+assert.equal(n.guia.open, true);
+await n['cerrar-guia'].emitir('click');
+assert.equal(n.guia.open, false);
+assert.equal(n['abrir-guia'].enfocado, true);
+const recurrente = await iniciarDOM({guiaVista:true});
+assert.ok(!recurrente.nodos.guia.open, 'No se abre en visitas posteriores');
+await recurrente.nodos['abrir-guia'].emitir('click');
+assert.equal(recurrente.nodos.guia.open, true);
+const bloqueado = await iniciarDOM({sinAlmacenamiento:true});
+assert.ok(!bloqueado.nodos.guia.open);
+await bloqueado.nodos['abrir-guia'].emitir('click');
+assert.equal(bloqueado.nodos.guia.open, true);
+await n.tema.emitir('click');
+assert.equal(JSON.parse(app.guardado.get('ipnt.grupos.tema')), 'oscuro');
+await n.tema.emitir('click');
+assert.equal(JSON.parse(app.guardado.get('ipnt.grupos.tema')), 'claro');
 assert.equal(n.lista.querySelectorAll('.grupos-panel').length, 1);
 assert.equal(n.lista.querySelectorAll('.materia').length, 2);
 assert.equal(n.lista.querySelectorAll('button.grupo')[0].dataset.grupo, '3MM1');

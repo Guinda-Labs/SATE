@@ -15,15 +15,31 @@
 .grupos-pagina summary{cursor:pointer;min-height:44px;padding-block:var(--ipn-esp-3)}
 .grupos-pagina [hidden]{display:none!important}
 .grupos-pagina .sr-only,.grupos-pagina .trampa{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.grupos-pagina>.inst{max-width:68rem;margin:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--ipn-esp-4);padding:var(--ipn-esp-4);border-bottom:1px solid var(--ipn-linea)}
-.grupos-pagina .inst-in{display:flex;align-items:center;gap:var(--ipn-esp-4);min-width:0}
-.grupos-pagina .inst-in img{display:block;height:var(--ipn-esp-8);width:auto;max-width:100%;object-fit:contain}
-.grupos-pagina .inst-in .unit{border-left:1px solid var(--ipn-linea);padding-left:var(--ipn-esp-4)}
-.grupos-pagina .inst .logo-dk{display:none}
+.grupos-encabezado{max-width:68rem;margin:auto;padding:var(--ipn-esp-5) var(--ipn-esp-4) 0}
+.grupos-marca{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--ipn-esp-5);padding-bottom:var(--ipn-esp-5)}
+.grupos-identidad{min-width:0}
+.grupos-identidad strong{font-size:var(--ipn-tamano-l);line-height:1.25}
+.grupos-pagina .grupos-identidad p{font-size:var(--ipn-tamano-s);color:var(--ipn-tenue);margin:var(--ipn-esp-2) 0 0;max-width:32ch}
+.grupos-lado{display:flex;align-items:center;gap:var(--ipn-esp-4)}
+.grupos-encabezado img{height:var(--ipn-esp-8);width:auto;display:block}
+.grupos-lado .unit img{height:var(--ipn-esp-7)}
+.grupos-encabezado nav{border-block:1px solid var(--ipn-linea);padding-block:var(--ipn-esp-2)}
+.grupos-encabezado .logo-dk{display:none}
+.grupos-pagina :is(#tema,#abrir-guia){display:inline-flex;align-items:center;justify-content:center;gap:var(--ipn-esp-2);font-size:var(--ipn-tamano-s)}
+.grupos-pagina :is(#tema,#abrir-guia) svg{width:var(--ipn-esp-5);height:var(--ipn-esp-5);flex:none}
+.grupos-titulo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--ipn-esp-3);margin-bottom:var(--ipn-esp-2)}
+.grupos-pagina .grupos-titulo h1{margin:0}
+.grupos-pagina #guia{width:min(44rem,calc(100% - var(--ipn-esp-6)));max-height:calc(100% - var(--ipn-esp-6));padding:var(--ipn-esp-5);border:1px solid var(--ipn-linea);border-radius:var(--ipn-radio);background:var(--ipn-superficie);color:var(--ipn-texto)}
+.grupos-pagina #guia::backdrop{background:var(--ipn-texto);opacity:.5}
+.grupos-guia-tarjetas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ipn-esp-5);margin-block:var(--ipn-esp-5)}
+.grupos-guia-tarjetas svg{width:var(--ipn-esp-5);height:var(--ipn-esp-5);fill:none;stroke:var(--ipn-acento);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.grupos-guia-tarjetas h3{font-size:var(--ipn-tamano-m);margin:var(--ipn-esp-2) 0}
+.grupos-guia-tarjetas p{font-size:var(--ipn-tamano-s)}
+@media(max-width:479px){.grupos-marca{gap:var(--ipn-esp-2)}.grupos-lado{flex-direction:column;gap:var(--ipn-esp-2)}.grupos-encabezado img{height:var(--ipn-esp-7)}.grupos-lado .unit img{height:var(--ipn-esp-6)}.grupos-identidad strong{font-size:var(--ipn-tamano-m)}.grupos-guia-tarjetas{grid-template-columns:minmax(0,1fr)}}
 .grupos-pagina .grupos-volver{display:inline-flex;align-items:center;min-height:44px;font-size:var(--ipn-tamano-s)}
-@media(prefers-color-scheme:dark){:root:not([data-tema=claro]) .grupos-pagina .inst .logo-dk{display:block}:root:not([data-tema=claro]) .grupos-pagina .inst .logo-lt{display:none}}
-:root[data-tema=oscuro] .grupos-pagina .inst .logo-dk{display:block}
-:root[data-tema=oscuro] .grupos-pagina .inst .logo-lt{display:none}
+@media(prefers-color-scheme:dark){:root:not([data-tema=claro]) .grupos-encabezado .logo-dk{display:block}:root:not([data-tema=claro]) .grupos-encabezado .logo-lt{display:none}}
+:root[data-tema=oscuro] .grupos-encabezado .logo-dk{display:block}
+:root[data-tema=oscuro] .grupos-encabezado .logo-lt{display:none}
 .grupos-estado{display:flex;flex-wrap:wrap;gap:var(--ipn-esp-2) var(--ipn-esp-4);align-items:center;margin-top:var(--ipn-esp-5);font-variant-numeric:tabular-nums}
 .grupos-pagina #estado{position:relative;font-size:var(--ipn-tamano-s)}
 .grupos-pagina #estado summary{display:flex;align-items:center;border-radius:var(--ipn-esp-6);background:var(--ipn-hundido);padding:var(--ipn-esp-2) var(--ipn-esp-3)}

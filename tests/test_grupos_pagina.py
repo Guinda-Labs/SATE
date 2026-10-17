@@ -51,12 +51,22 @@ def test_build_completo_y_textos(tmp_path, monkeypatch):
     assert claves and claves <= contenido.objeto_t().keys()
     assert "{{grupos." not in html and "/*__GRUPOS__*/" not in html
     assert "https://script.googleusercontent.com" in html
-    assert 'class="inst"' in html and 'src="../../assets/logos/ipn-horizontal-guinda.webp"' in html
+    assert 'class="grupos-encabezado"' in html and 'src="../../assets/logos/ipn-isologo-guinda.webp"' in html
+    assert 'src="../../assets/logos/ipn-isologo-calado.webp"' in html
+    assert 'SATE UPIITA' in html and 'Sistema de Apoyo a la Trayectoria Escolar' in html
+    assert '<dialog id="guia" aria-labelledby="guia-titulo">' in html
+    assert html.count('<article>') == 6
+    assert 'UPIITA · Oferta ' in html
+    assert (tmp_path / 'web/dist/assets/logos/ipn-isologo-guinda.webp').is_file()
+    assert (tmp_path / 'web/dist/assets/logos/ipn-isologo-calado.webp').is_file()
     assert 'src="../../assets/logos/upiita-oro.webp"' in html and "Volver a SATE" in html
     assert "<!--__GRUPOS_IDENTIDAD__-->" not in html
     assert all(f'id="{control}"' in html for control in ("semestre", "turno", "sin", "limpiar", "resultados"))
     assert 'role="switch"' in html and 'aria-live="polite"' in html
-    assert html.count('<details><summary>') == 2
+    assert html.count('<details><summary>') == 1
+    assert 'Cómo funciona' not in html.split('<footer>')[1].split('</footer>')[0]
+    plantilla = (ROOT / 'web/sate/grupos.html').read_text(encoding='utf-8')
+    assert set(re.findall(r'\{\{(grupos\.[a-z0-9_.]+)\}\}', plantilla)) <= contenido.objeto_t().keys()
     assert contenido.objeto_t()["grupos.lista.nivel"] == "Nivel {n}"
     assert contenido.objeto_t()["grupos.lista.semestre"] == "{n}.{ordinal} semestre"
     for carrera in build_grupos.CARRERAS:

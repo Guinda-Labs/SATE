@@ -107,6 +107,27 @@
   }
   const prueba = location.pathname.startsWith('/prueba/'), modo = prueba ? 'prueba' : '';
   const prefijo = 'ipnt.grupos.' + (prueba ? 'prueba.' : 'real.');
+  const guia = document.getElementById('guia'), abrirGuia = document.getElementById('abrir-guia');
+  const cerrarGuia = document.getElementById('cerrar-guia'), tema = document.getElementById('tema');
+  // showModal mantiene el foco dentro del diálogo e inactiva el resto de la página.
+  abrirGuia.addEventListener('click', () => guia.showModal());
+  cerrarGuia.addEventListener('click', () => guia.close());
+  guia.addEventListener('cancel', evento => { evento.preventDefault(); guia.close(); });
+  guia.addEventListener('close', () => abrirGuia.focus());
+  // Si no se puede recordar la visita, dejar la guía a petición para no repetirla.
+  try {
+    if (!localStorage.getItem(prefijo + 'guia')) {
+      localStorage.setItem(prefijo + 'guia', '1');
+      guia.showModal();
+    }
+  } catch (_) { /* Sin almacenamiento, se conserva el acceso manual. */ }
+  const temaGuardado = leer('ipnt.grupos.tema', null);
+  if (['claro','oscuro'].includes(temaGuardado)) document.documentElement.dataset.tema = temaGuardado;
+  tema.addEventListener('click', () => {
+    const actual = document.documentElement.dataset.tema || (matchMedia('(prefers-color-scheme:dark)').matches ? 'oscuro' : 'claro');
+    const siguiente = actual === 'oscuro' ? 'claro' : 'oscuro';
+    document.documentElement.dataset.tema = siguiente; guardar('ipnt.grupos.tema', siguiente);
+  });
   let config, oferta, enlaces = {}, locales = {}, cambio;
   let ofertaSate, planElegido, conteoTus;
   const tusMaterias = document.getElementById('tus-materias');
