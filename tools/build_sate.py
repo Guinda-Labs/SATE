@@ -759,7 +759,8 @@ def load_maps(offer, upiita=True, extra=None):
     return maps
 
 
-def main():
+def main(solo_datos=False):
+    """Compila la unidad. `solo_datos` escribe únicamente datos/<unidad>/*.json (sin páginas, JS ni CSS)."""
     import sys
     sys.path.insert(0, str(ROOT / "tools"))
     d = json.loads(SRC.read_text(encoding="utf-8"))
@@ -859,7 +860,12 @@ def main():
     sug = json.loads((ROOT / "data" / "sugerencias.json").read_text(encoding="utf-8")) if (ROOT / "data" / "sugerencias.json").exists() else {}
     data["sugerencias"] = sug.get(UNIDAD) or {}   # ajustes a las sugeridas (p. ej., materias que se cursan cerca de otra)
     payload = acentuar(json.dumps(tildes(data), ensure_ascii=False, separators=(",", ":")))
-    escribir_sate(json.loads(payload))
+    datos_json = json.loads(payload)
+    if solo_datos:
+        escribir_datos(datos_json)
+        print("SATE (solo datos)", UNIDAD, {k: len(v) for k, v in data["periodos"].items()})
+        return
+    escribir_sate(datos_json)
     import cuenta, saes, contenido
     import os
     site = os.environ.get("UPIITA_SITE", "")
@@ -953,12 +959,9 @@ def datos_dictamen():
         'textos': {k: v for k, v in contenido.objeto_t().items() if k.startswith('dictamen.')}}
 
 
-def escribir_sate(data):
-    import shutil, cuenta, saes, comun, contenido, skins, encuesta
-    from institucional import write_dist
-    dist = ROOT / "web/dist"
-    destino = dist / "sate"
-    datos = destino / "datos" / UNIDAD
+def escribir_datos(data):
+    """Solo los datos de la unidad (oferta, núcleo, trámites, electivas); no toca plantillas, JS ni CSS."""
+    datos = ROOT / "web/dist/sate/datos" / UNIDAD
     datos.mkdir(parents=True, exist_ok=True)
     for nombre, d in zip(("nucleo", "oferta", "tramites"), separar_datos(data)):
         if UNIDAD == 'upiita' and nombre == 'tramites':
@@ -970,6 +973,16 @@ def escribir_sate(data):
         electivas = {'oferta': rows, 'curric': curric, 'capturado': cap,
                      'pdfs': {k: base64.b64encode((ROOT / 'data/gestion_escolar' / f).read_bytes()).decode() for k, f in PDFS_ELECTIVAS.items()}}
         (datos / 'electivas.json').write_text(json.dumps(electivas, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+    return datos
+
+
+def escribir_sate(data):
+    """Datos y páginas de SATE (compilación completa)."""
+    import shutil, cuenta, saes, comun, contenido, skins, encuesta
+    from institucional import write_dist
+    dist = ROOT / "web/dist"
+    destino = dist / "sate"
+    datos = escribir_datos(data)
     (dist / ("horarios-" + UNIDAD + ".html")).write_text(redireccion(UNIDAD), encoding="utf-8")
     (dist / "horarios.html").write_text(redireccion(None), encoding="utf-8")
     fuente = ROOT / "web/sate"
@@ -1159,4 +1172,5 @@ document.addEventListener('click', e => {
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(solo_datos="--solo-datos" in sys.argv)

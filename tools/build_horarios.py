@@ -1,5 +1,6 @@
-"""Compatibilidad: la compilación de Horarios ahora produce SATE."""
+"""Compatibilidad: la compilación de Horarios ahora produce SATE (`--solo-datos`: solo los datos)."""
 from build_sate import *
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(solo_datos="--solo-datos" in sys.argv)
