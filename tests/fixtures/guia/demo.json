@@ -1,0 +1,1 @@
+{"id":"demo","titulo":"Reglamento ficticio","url":"https://example.org/demo.pdf","articulos":[{"n":"1","ubicacion":["Título primero","Capítulo único"],"texto":"Texto literal <seguro>. I. Primera fracción.","fracciones":[{"fr":"I","texto":"Primera fracción."}]}],"transitorios":[{"n":"PRIMERO","texto":"Disposición ficticia."}]}

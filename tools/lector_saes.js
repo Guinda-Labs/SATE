@@ -8,6 +8,7 @@
 (async function () {
   var TOOL = '__TOOL_URL__';
   var resultado = window.IPNTSateResultado;
+  if (typeof resultadoSate === 'function') resultado = resultadoSate;
   var UM = location.hostname.match(/(?:^|\.)saes\.([a-z0-9-]+)\.ipn\.mx$/i);
   if (!UM) {
     resultado(null, TOOL, '');

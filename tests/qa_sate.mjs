@@ -63,6 +63,8 @@ pruebas += 8;
 for (const unidad of Object.keys(config)) {
   const f = 'web/dist/horarios-'+unidad+'.html'; let destino;
   const c = vm.createContext({URLSearchParams,location:{search:'?demo=1',hash:'#code=x',replace:u=>destino=u}});
+  // Las redirecciones de HEAD incluyen la protección contra marcos ajenos.
+  vm.runInContext('window=globalThis; window.top=window.self=window;',c);
   for (const m of leer(f).matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)) vm.runInContext(m[1],c);
   assert.equal(destino,'sate/index.html?demo=1&sateUnidad='+unidad+'#code=x'); pruebas++;
 }

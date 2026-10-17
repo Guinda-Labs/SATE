@@ -20,9 +20,10 @@ def generar(solo_datos=False):
     destino.mkdir(parents=True, exist_ok=True)
     config = (ROOT / "data/grupos.json").read_text(encoding="utf-8")
     periodo = json.loads(config)["periodo"]
+    unidad = json.loads(config)["unidad"]
     fuente = json.loads((ROOT / "data/horarios_upiita.json").read_text(encoding="utf-8"))
     sate = json.loads((ROOT / "data/sate.json").read_text(encoding="utf-8"))
-    capacidades = sate["unidades"]["upiita"]
+    capacidades = sate["unidades"][unidad]
     casillas = {}
     for fila in fuente["proximo"]:
         ident = fila["Grupo"] + "|" + fila["Asignatura"]
@@ -43,7 +44,7 @@ def generar(solo_datos=False):
     pagina = pagina.replace('<!--__GRUPOS_REGLAS__-->', reglas)
     from encabezado import encabezado_sate, pestanas_encabezado
     etiquetas = contenido.objeto_t()
-    unidad_enc = dict(capacidades, siglas='UPIITA')
+    unidad_enc = dict(capacidades, siglas=unidad.upper())
     pestanas = pestanas_encabezado(sate, 'upiita', etiquetas, inicio='../index.html')
     pestanas.append(dict(id='grupos', href='./', texto=textos['grupos.pagina.pestana']))
     guia = ('<button id="abrir-guia" class="sate-btn-barra" type="button" aria-haspopup="dialog" aria-controls="guia" '

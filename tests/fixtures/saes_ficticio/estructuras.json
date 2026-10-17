@@ -1,0 +1,1124 @@
+{
+  "lector": {
+    "upiita_saes": 1,
+    "unidad": "upiita",
+    "materias": {
+      "Z101": [
+        "Álgebra ficticia",
+        1
+      ],
+      "Z301": [
+        "Control ficticio",
+        3
+      ],
+      "Z401": [
+        "Laboratorio ficticio",
+        4
+      ],
+      "Z501": [
+        "Materia pendiente ficticia",
+        5
+      ],
+      "Z601": [
+        "Materia desfasada ficticia",
+        6
+      ]
+    },
+    "boleta": "2099000001",
+    "nombre": "ALUMNO FICTICIO",
+    "carrera": "Z",
+    "carrera_nombre": "",
+    "plan": null,
+    "promedio": null,
+    "reprobadas_num": null,
+    "cita": {
+      "inicio": null,
+      "fin": null
+    },
+    "carga": {
+      "total": null,
+      "max": null,
+      "media": null,
+      "min": null,
+      "duracion": null,
+      "duracion_max": null
+    },
+    "avance": {
+      "obtenidos": null,
+      "faltan": null,
+      "cursados": null,
+      "disponibles": null,
+      "autorizada": null
+    },
+    "reprobadas": [],
+    "desfase_saes": null,
+    "reprobadas_periodo": [
+      [
+        "Z301",
+        "26/1",
+        1
+      ]
+    ],
+    "no_cursadas": [
+      [
+        "Z501",
+        null,
+        0,
+        5
+      ]
+    ],
+    "desfasadas_saes": [
+      [
+        "Z601",
+        "25/1",
+        2,
+        6
+      ]
+    ],
+    "en_curso": [],
+    "horario_inscrito": [],
+    "acreditadas": [
+      [
+        "Z101",
+        8,
+        "25/1",
+        "ORD"
+      ],
+      [
+        "Z401",
+        9,
+        "26/2",
+        "ETS"
+      ]
+    ],
+    "creditos_materias": {},
+    "kardex_reprobadas": [
+      [
+        "Z301",
+        5,
+        "26/1",
+        "ORD"
+      ]
+    ],
+    "agenda": [
+      [
+        "Periodo ficticio",
+        "2026-10-19",
+        "2027-02-01"
+      ]
+    ]
+  },
+  "paginas": {
+    "agenda_escolar.html": {
+      "selectores": [],
+      "tablas": [
+        [
+          [
+            "Evento",
+            "Inicio",
+            "Fin"
+          ],
+          [
+            "Periodo ficticio",
+            "Oct 19 2026",
+            "Feb 1 2027"
+          ]
+        ]
+      ]
+    },
+    "alumnos_default.html": {
+      "selectores": [],
+      "tablas": []
+    },
+    "calificaciones_sem.html": {
+      "selectores": [],
+      "tablas": []
+    },
+    "estado_alumno.html": {
+      "selectores": [],
+      "tablas": [
+        [
+          [
+            "No_Periodo",
+            "Clave",
+            "Descripción",
+            "Periodo",
+            "Veces"
+          ],
+          [
+            "3",
+            "Z301",
+            "Control ficticio",
+            "26/1",
+            "1"
+          ]
+        ],
+        [
+          [
+            "No_Periodo",
+            "Clave",
+            "Descripción",
+            "Periodo",
+            "Veces"
+          ],
+          [
+            "5",
+            "Z501",
+            "Materia pendiente ficticia",
+            "",
+            "0"
+          ]
+        ],
+        [
+          [
+            "No_Periodo",
+            "Clave",
+            "Descripción",
+            "Periodo",
+            "Veces"
+          ],
+          [
+            "6",
+            "Z601",
+            "Materia desfasada ficticia",
+            "25/1",
+            "2"
+          ]
+        ]
+      ]
+    },
+    "fichas_reinscripcion.html": {
+      "selectores": [],
+      "tablas": []
+    },
+    "horario_alumno.html": {
+      "selectores": [],
+      "tablas": []
+    },
+    "horarios_oferta.html": {
+      "selectores": [],
+      "oferta": [],
+      "tablas": []
+    },
+    "kardex.html": {
+      "selectores": [],
+      "tablas": [
+        [
+          [
+            "PRIMER SEMESTRE"
+          ],
+          [
+            "Clave",
+            "Materia",
+            "Fecha",
+            "Periodo",
+            "Forma Eval.",
+            "Calificación"
+          ],
+          [
+            "Z101",
+            "Álgebra ficticia",
+            "01/01/2025",
+            "25/1",
+            "ORD",
+            "8"
+          ]
+        ],
+        [
+          [
+            "Clave",
+            "Materia",
+            "Fecha",
+            "Periodo",
+            "Forma Eval.",
+            "Calificación"
+          ],
+          [
+            "Z301",
+            "Control ficticio",
+            "01/01/2026",
+            "26/1",
+            "ORD",
+            "5"
+          ]
+        ],
+        [
+          [
+            "Z401",
+            "Laboratorio ficticio",
+            "01/06/2026",
+            "26/2",
+            "ETS",
+            "9"
+          ]
+        ]
+      ]
+    },
+    "mapa_curricular.html": {
+      "selectores": [],
+      "mapa": [],
+      "tablas": []
+    },
+    "ocupabilidad_carrera_B_plan_09.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "B",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "09",
+          "opciones": [
+            {
+              "valor": "09",
+              "texto": "09"
+            },
+            {
+              "valor": "98",
+              "texto": "98"
+            }
+          ]
+        }
+      ],
+      "ocupabilidad": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ]
+    },
+    "ocupabilidad_carrera_B_plan_98.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "B",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "98",
+          "opciones": [
+            {
+              "valor": "09",
+              "texto": "09"
+            },
+            {
+              "valor": "98",
+              "texto": "98"
+            }
+          ]
+        }
+      ],
+      "error": "columnas"
+    },
+    "ocupabilidad_carrera_E_plan_18.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "E",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "18",
+          "opciones": [
+            {
+              "valor": "18",
+              "texto": "18"
+            }
+          ]
+        }
+      ],
+      "ocupabilidad": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ]
+    },
+    "ocupabilidad_carrera_M_plan_09.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "M",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "09",
+          "opciones": [
+            {
+              "valor": "09",
+              "texto": "09"
+            },
+            {
+              "valor": "98",
+              "texto": "98"
+            }
+          ]
+        }
+      ],
+      "ocupabilidad": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ]
+    },
+    "ocupabilidad_carrera_M_plan_98.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "M",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "98",
+          "opciones": [
+            {
+              "valor": "09",
+              "texto": "09"
+            },
+            {
+              "valor": "98",
+              "texto": "98"
+            }
+          ]
+        }
+      ],
+      "error": "columnas"
+    },
+    "ocupabilidad_carrera_S_plan_08.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "S",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "08",
+          "opciones": [
+            {
+              "valor": "08",
+              "texto": "08"
+            }
+          ]
+        }
+      ],
+      "ocupabilidad": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ]
+    },
+    "ocupabilidad_carrera_T_plan_09.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "T",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "09",
+          "opciones": [
+            {
+              "valor": "09",
+              "texto": "09"
+            },
+            {
+              "valor": "98",
+              "texto": "98"
+            }
+          ]
+        }
+      ],
+      "ocupabilidad": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ]
+    },
+    "ocupabilidad_carrera_T_plan_98.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "T",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "98",
+          "opciones": [
+            {
+              "valor": "09",
+              "texto": "09"
+            },
+            {
+              "valor": "98",
+              "texto": "98"
+            }
+          ]
+        }
+      ],
+      "error": "columnas"
+    },
+    "ocupabilidad_get.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "B",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "09",
+          "opciones": [
+            {
+              "valor": "09",
+              "texto": "09"
+            },
+            {
+              "valor": "98",
+              "texto": "98"
+            }
+          ]
+        }
+      ],
+      "ocupabilidad": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ]
+    },
+    "ocupabilidad_periodo_actual.html": {
+      "selectores": [
+        {
+          "nombre": "ctl00$mainCopy$dpdcarrera",
+          "valor": "B",
+          "opciones": [
+            {
+              "valor": "B",
+              "texto": "B"
+            },
+            {
+              "valor": "E",
+              "texto": "E"
+            },
+            {
+              "valor": "M",
+              "texto": "M"
+            },
+            {
+              "valor": "S",
+              "texto": "S"
+            },
+            {
+              "valor": "T",
+              "texto": "T"
+            }
+          ]
+        },
+        {
+          "nombre": "ctl00$mainCopy$dpdplan",
+          "valor": "09",
+          "opciones": [
+            {
+              "valor": "09",
+              "texto": "09"
+            },
+            {
+              "valor": "98",
+              "texto": "98"
+            }
+          ]
+        }
+      ],
+      "ocupabilidad": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ]
+    },
+    "respuesta_dictamen.html": {
+      "selectores": [],
+      "tablas": []
+    }
+  },
+  "consultas": {
+    "B/09": {
+      "carrera": "B",
+      "plan": "09",
+      "filas": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ],
+      "postbacks": [
+        "GET",
+        "ctl00$mainCopy$rblEsquema$0",
+        "ctl00$mainCopy$dpdcarrera"
+      ]
+    },
+    "B/98": {
+      "error": "columnas",
+      "postbacks": [
+        "GET",
+        "ctl00$mainCopy$rblEsquema$0",
+        "ctl00$mainCopy$dpdcarrera",
+        "ctl00$mainCopy$dpdplan"
+      ]
+    },
+    "E/18": {
+      "carrera": "E",
+      "plan": "18",
+      "filas": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ],
+      "postbacks": [
+        "GET",
+        "ctl00$mainCopy$rblEsquema$0",
+        "ctl00$mainCopy$dpdcarrera"
+      ]
+    },
+    "M/09": {
+      "carrera": "M",
+      "plan": "09",
+      "filas": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ],
+      "postbacks": [
+        "GET",
+        "ctl00$mainCopy$rblEsquema$0",
+        "ctl00$mainCopy$dpdcarrera"
+      ]
+    },
+    "M/98": {
+      "error": "columnas",
+      "postbacks": [
+        "GET",
+        "ctl00$mainCopy$rblEsquema$0",
+        "ctl00$mainCopy$dpdcarrera",
+        "ctl00$mainCopy$dpdplan"
+      ]
+    },
+    "S/08": {
+      "carrera": "S",
+      "plan": "08",
+      "filas": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ],
+      "postbacks": [
+        "GET",
+        "ctl00$mainCopy$rblEsquema$0",
+        "ctl00$mainCopy$dpdcarrera"
+      ]
+    },
+    "T/09": {
+      "carrera": "T",
+      "plan": "09",
+      "filas": [
+        {
+          "grupo": "1BM3",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 1,
+          "disponibles": 39
+        },
+        {
+          "grupo": "1BM4",
+          "materia": "B105",
+          "nombre": "MATERIA FICTICIA UNO",
+          "nivel": "1",
+          "cupo": 40,
+          "inscritos": 40,
+          "disponibles": 0
+        },
+        {
+          "grupo": "2BM1",
+          "materia": "B205",
+          "nombre": "MATERIA FICTICIA DOS",
+          "nivel": "2",
+          "cupo": 35,
+          "inscritos": 28,
+          "disponibles": 7
+        }
+      ],
+      "postbacks": [
+        "GET",
+        "ctl00$mainCopy$rblEsquema$0",
+        "ctl00$mainCopy$dpdcarrera"
+      ]
+    },
+    "T/98": {
+      "error": "columnas",
+      "postbacks": [
+        "GET",
+        "ctl00$mainCopy$rblEsquema$0",
+        "ctl00$mainCopy$dpdcarrera",
+        "ctl00$mainCopy$dpdplan"
+      ]
+    }
+  }
+}

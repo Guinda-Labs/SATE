@@ -2,6 +2,11 @@
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
+// El build normal retira QA; esta prueba solicita explícitamente su copia aislada.
+execFileSync(process.env.PYTHON || 'python',['tools/build_sate.py'],{
+  env:{...process.env,UNIDAD:'upiita',SATE_QA:'1'},stdio:'pipe'
+});
 const leer=p=>readFileSync(p,'utf8');
 const normal=leer('web/dist/sate.js'),qa=leer('web/dist/qa-sate.js');
 for(const [src,esQA] of [[normal,false],[qa,true]]){

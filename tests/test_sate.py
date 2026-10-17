@@ -184,6 +184,12 @@ class SateBuild(unittest.TestCase):
                 for unidad, cfg in config['unidades'].items():
                     rutas.update(f'datos/{unidad}/{nombre}.json' for nombre in ('nucleo', 'oferta'))
                     rutas.update('../' + cfg['logo'][tema] for tema in ('claro', 'oscuro') if 'logo' in cfg)
+                # Regla 4 de AGENTS.md: los logos institucionales no están en el repositorio; solo existen en el sitio
+                # publicado (assets/logos del sitio). No se piden por HTTP en la compilación local.
+                institucional = (ROOT / 'tools/institucional.py').read_text(encoding='utf-8')
+                logos = {r for r in rutas if r.startswith('../assets/logos/') and r.rsplit('/', 1)[1] in institucional}
+                self.assertTrue(all(r.endswith('.webp') for r in logos), logos)
+                rutas -= logos
                 for ruta in sorted(rutas):
                     with self.subTest(ruta=ruta):
                         with urllib.request.urlopen(base + ruta) as respuesta:

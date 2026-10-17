@@ -1,10 +1,14 @@
 """Regresiones de la integración UPIBI; perfiles y profesores ficticios."""
-import json, os, pathlib, re, subprocess, sys, unittest
+import importlib.util, json, os, pathlib, re, subprocess, sys, unittest
+from unittest.mock import patch
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
-os.environ['UNIDAD'] = 'upibi'
-import build_horarios as build
+# El build conserva configuración global: aislarlo del import de otras pruebas.
+spec = importlib.util.spec_from_file_location('build_upibi_prueba', ROOT/'tools/build_sate.py')
+build = importlib.util.module_from_spec(spec)
+with patch.dict(os.environ, UNIDAD='upibi'):
+    spec.loader.exec_module(build)
 import extract_mapa_upibi as extract
 
 
@@ -33,7 +37,7 @@ class UPIBI(unittest.TestCase):
                     self.assertFalse(overlap,(car,a,b))
 
     def test_navegador_conserva_centros_exactos_de_fila(self):
-        html = (ROOT/'web/sate/nucleo.js').read_text(encoding='utf8')
+        html = (ROOT/'web/sate/componentes.js').read_text(encoding='utf8')
         fn = re.search(r'function rowBands\(L\)\{.*?\n\}',html,re.S).group(0)
         script = fn + """
 const assert=require('assert');
@@ -127,10 +131,10 @@ const MS={disponible:()=>false},GO=MS;
     def test_proyeccion_por_periodo_y_referencia_de_carga(self):
         html=(ROOT/'web/sate/nucleo.js').read_text(encoding='utf8')
         fn=html[html.index('function plazoReferencia('):html.index('function statsDatos(')]
-        script="const assert=require('assert');let UNIDAD='upibi';Array.prototype.at=function(i){return this[i<0?this.length+i:i]};"+fn+"""
+        script="const assert=require('assert');const CAPACIDADES={cargaCalculada:true};Array.prototype.at=function(i){return this[i<0?this.length+i:i]};"+fn+"""
 const A={carga:{total:438,min:36.5,duracion:15,duracion_max:23}};
 assert.deepStrictEqual(plazoReferencia(A),{dur:null,max:12,calculado:true});
-UNIDAD='upiita';assert.deepStrictEqual(plazoReferencia(A),{dur:15,max:23,calculado:false});
+CAPACIDADES.cargaCalculada=false;assert.deepStrictEqual(plazoReferencia(A),{dur:15,max:23,calculado:false});
 const points=proyeccionCreditos({curva:[{per:53,acum:240}],fin:57,total:438,obt:240,ritmo:49.5});
 assert.deepStrictEqual(points.map(d=>d.acum),[240,289.5,339,388.5,438]);
 assert.deepStrictEqual(points.map(d=>d.per),[53,54,55,56,57]);
@@ -161,8 +165,8 @@ assert.strictEqual(legend(13,{}),'');
         self.assertEqual(result.returncode,0,result.stderr)
 
     def test_coordenadas_svg_con_zoom_scroll_y_resize(self):
-        html=(ROOT/'web/sate/nucleo.js').read_text(encoding='utf8')
-        fn=html[html.index('function montarGrafica('):html.index('let ST_RENDER=')]
+        html=(ROOT/'web/sate/desempeno.js').read_text(encoding='utf8')
+        fn=re.search(r'function montarGrafica\(host,fig\)\{.*?\n\}',html,re.S).group(0)
         script="""
 const assert=require('assert');
 class DOMMatrix {constructor(a){[this.a,this.b,this.c,this.d,this.e,this.f]=a}}

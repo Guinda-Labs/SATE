@@ -1,4 +1,4 @@
-"""Contrato de capturas anónimas; ejecuta los parsers de producción con Node, sin navegador."""
+"""Contrato de fixtures ficticios; ejecuta los parsers de producción con Node, sin navegador."""
 import argparse
 from html.parser import HTMLParser
 import json
@@ -8,7 +8,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
-FIXTURES = ROOT / 'tests/fixtures/saes/upiita/2026-10-14'
+FIXTURES = ROOT / 'tests/fixtures/saes_ficticio'
 RUTAS = {
     'alumnos_default': '/Alumnos/default.aspx',
     'kardex': '/Alumnos/boleta/kardex.aspx',
@@ -63,8 +63,7 @@ def indice():
                 _, seleccion = f.stem.split('_carrera_')
                 carrera, plan = seleccion.split('_plan_')
                 campos.update({'__EVENTTARGET': prefijo + 'dpdplan', prefijo + 'dpdcarrera': carrera, prefijo + 'dpdplan': plan})
-        procedencia = ('Directorio funcional inferido y action del formulario; falta manifiesto de URL absoluta original'
-                       if f.stem in {'calificaciones_sem', 'respuesta_dictamen'} else 'Ruta de solicitud del marcador o navegación capturada')
+        procedencia = 'Fixture sintético; ruta del marcador de producción, sin captura de alumnado'
         secuencia = []
         if metodo == 'POST':
             secuencia = [prefijo + 'rblEsquema$0']
@@ -72,7 +71,7 @@ def indice():
                 secuencia += [prefijo + 'dpdcarrera', prefijo + 'dpdplan']
         out.append({'archivo': f.name, 'ruta': ruta, 'metodo': metodo, 'campos': campos,
                     'secuencia': secuencia, 'procedencia_ruta': procedencia,
-                    'captura': '2026-10-14', 'nota': 'Estado final capturado; ViewState y validación ficticios. No reproduce tokens del servidor.'})
+                    'captura': None, 'nota': 'Datos ficticios de regresión; no reproduce tokens del servidor.'})
     return out
 
 

@@ -167,7 +167,7 @@
     if (!ofertaSate) return;
     tusMaterias.replaceChildren(); tusMaterias.hidden = false; conteoTus = null;
     const horario = horarioPersonal(), seleccion = seleccionHorario(horario, planElegido);
-    const link = elemento('a', t('grupos.tus.horarios'), 'grupos-volver'); link.href = '../index.html#/upiita/horarios';
+    const link = elemento('a', t('grupos.tus.horarios'), 'grupos-volver'); link.href = '../index.html#/' + config.unidad + '/horarios';
     const hayHorario = seleccion.planes.some(p => horario.plans[p]?.sel?.length || horario.plans[p]?.own?.length);
     if (!hayHorario) {
       const linea = elemento('p', t('grupos.tus.sin_horario') + ' ', 'tenue'); linea.append(link); tusMaterias.append(linea); return;
@@ -529,7 +529,7 @@
       window.addEventListener('storage', () => { planElegido = undefined; renderizarTusMaterias(); });
       // Carga independiente: una oferta de SATE ausente no afecta al directorio.
       try {
-        const r = await fetch('../datos/upiita/oferta.json');
+        const r = await fetch('../datos/' + config.unidad + '/oferta.json');
         if (!r.ok) throw new Error('oferta');
         const datos = await r.json();
         if (!Array.isArray(datos.asig) || !datos.periodos) throw new Error('formato');

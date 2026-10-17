@@ -1,0 +1,279 @@
+[
+  {
+    "archivo": "agenda_escolar.html",
+    "ruta": "/Academica/agenda_escolar.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "alumnos_default.html",
+    "ruta": "/Alumnos/default.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "calificaciones_sem.html",
+    "ruta": "/Alumnos/Informacion_semestral/calificaciones_sem.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "estado_alumno.html",
+    "ruta": "/Alumnos/boleta/Estado_Alumno.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "fichas_reinscripcion.html",
+    "ruta": "/Alumnos/Reinscripciones/fichas_reinscripcion.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "horario_alumno.html",
+    "ruta": "/Alumnos/Informacion_semestral/Horario_Alumno.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "horarios_oferta.html",
+    "ruta": "/Academica/horarios.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "kardex.html",
+    "ruta": "/Alumnos/boleta/kardex.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "mapa_curricular.html",
+    "ruta": "/Academica/mapa_curricular.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_carrera_B_plan_09.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "POST",
+    "campos": {
+      "__EVENTTARGET": "ctl00$mainCopy$dpdplan",
+      "ctl00$mainCopy$rblEsquema": "1",
+      "ctl00$mainCopy$dpdcarrera": "B",
+      "ctl00$mainCopy$dpdplan": "09"
+    },
+    "secuencia": [
+      "ctl00$mainCopy$rblEsquema$0",
+      "ctl00$mainCopy$dpdcarrera",
+      "ctl00$mainCopy$dpdplan"
+    ],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_carrera_B_plan_98.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "POST",
+    "campos": {
+      "__EVENTTARGET": "ctl00$mainCopy$dpdplan",
+      "ctl00$mainCopy$rblEsquema": "1",
+      "ctl00$mainCopy$dpdcarrera": "B",
+      "ctl00$mainCopy$dpdplan": "98"
+    },
+    "secuencia": [
+      "ctl00$mainCopy$rblEsquema$0",
+      "ctl00$mainCopy$dpdcarrera",
+      "ctl00$mainCopy$dpdplan"
+    ],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_carrera_E_plan_18.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "POST",
+    "campos": {
+      "__EVENTTARGET": "ctl00$mainCopy$dpdplan",
+      "ctl00$mainCopy$rblEsquema": "1",
+      "ctl00$mainCopy$dpdcarrera": "E",
+      "ctl00$mainCopy$dpdplan": "18"
+    },
+    "secuencia": [
+      "ctl00$mainCopy$rblEsquema$0",
+      "ctl00$mainCopy$dpdcarrera",
+      "ctl00$mainCopy$dpdplan"
+    ],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_carrera_M_plan_09.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "POST",
+    "campos": {
+      "__EVENTTARGET": "ctl00$mainCopy$dpdplan",
+      "ctl00$mainCopy$rblEsquema": "1",
+      "ctl00$mainCopy$dpdcarrera": "M",
+      "ctl00$mainCopy$dpdplan": "09"
+    },
+    "secuencia": [
+      "ctl00$mainCopy$rblEsquema$0",
+      "ctl00$mainCopy$dpdcarrera",
+      "ctl00$mainCopy$dpdplan"
+    ],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_carrera_M_plan_98.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "POST",
+    "campos": {
+      "__EVENTTARGET": "ctl00$mainCopy$dpdplan",
+      "ctl00$mainCopy$rblEsquema": "1",
+      "ctl00$mainCopy$dpdcarrera": "M",
+      "ctl00$mainCopy$dpdplan": "98"
+    },
+    "secuencia": [
+      "ctl00$mainCopy$rblEsquema$0",
+      "ctl00$mainCopy$dpdcarrera",
+      "ctl00$mainCopy$dpdplan"
+    ],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_carrera_S_plan_08.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "POST",
+    "campos": {
+      "__EVENTTARGET": "ctl00$mainCopy$dpdplan",
+      "ctl00$mainCopy$rblEsquema": "1",
+      "ctl00$mainCopy$dpdcarrera": "S",
+      "ctl00$mainCopy$dpdplan": "08"
+    },
+    "secuencia": [
+      "ctl00$mainCopy$rblEsquema$0",
+      "ctl00$mainCopy$dpdcarrera",
+      "ctl00$mainCopy$dpdplan"
+    ],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_carrera_T_plan_09.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "POST",
+    "campos": {
+      "__EVENTTARGET": "ctl00$mainCopy$dpdplan",
+      "ctl00$mainCopy$rblEsquema": "1",
+      "ctl00$mainCopy$dpdcarrera": "T",
+      "ctl00$mainCopy$dpdplan": "09"
+    },
+    "secuencia": [
+      "ctl00$mainCopy$rblEsquema$0",
+      "ctl00$mainCopy$dpdcarrera",
+      "ctl00$mainCopy$dpdplan"
+    ],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_carrera_T_plan_98.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "POST",
+    "campos": {
+      "__EVENTTARGET": "ctl00$mainCopy$dpdplan",
+      "ctl00$mainCopy$rblEsquema": "1",
+      "ctl00$mainCopy$dpdcarrera": "T",
+      "ctl00$mainCopy$dpdplan": "98"
+    },
+    "secuencia": [
+      "ctl00$mainCopy$rblEsquema$0",
+      "ctl00$mainCopy$dpdcarrera",
+      "ctl00$mainCopy$dpdplan"
+    ],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_get.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "ocupabilidad_periodo_actual.html",
+    "ruta": "/Academica/Ocupabilidad_grupos.aspx",
+    "metodo": "POST",
+    "campos": {
+      "__EVENTTARGET": "ctl00$mainCopy$rblEsquema$0",
+      "ctl00$mainCopy$rblEsquema": "1"
+    },
+    "secuencia": [
+      "ctl00$mainCopy$rblEsquema$0"
+    ],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  },
+  {
+    "archivo": "respuesta_dictamen.html",
+    "ruta": "/Alumnos/Dictamenes/respuesta_dictamen.aspx",
+    "metodo": "GET",
+    "campos": {},
+    "secuencia": [],
+    "procedencia_ruta": "Fixture sintético; ruta del marcador de producción, sin captura de alumnado",
+    "captura": null,
+    "nota": "Datos ficticios de regresión; no reproduce tokens del servidor."
+  }
+]
