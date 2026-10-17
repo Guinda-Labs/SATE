@@ -540,5 +540,7 @@
       }
     } catch (error) { notificar(t('grupos.error.datos')); console.warn('[grupos]', {accion:'cargar', error:error.name}); }
   }
+  // En teléfono la barra de pestañas se desplaza: muestra la pestaña actual.
+  try { document.querySelector('.sate-pestana[aria-current="page"]')?.scrollIntoView({block:'nearest', inline:'center'}); } catch (_) {}
   iniciar();
 })(typeof globalThis !== 'undefined' ? globalThis : this);

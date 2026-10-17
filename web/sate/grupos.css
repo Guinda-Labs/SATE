@@ -76,3 +76,7 @@
 .grupos-pagina #abrir-guia svg{width:1.25rem;height:1.25rem}
 .grupos-pagina .unirse{display:inline-flex;align-items:center;gap:var(--ipn-esp-2);text-decoration:none;color:var(--ipn-sobre-acento)}
 @media(max-width:479px){#abrir-guia span{display:none}.grupos-guia-tarjetas{grid-template-columns:minmax(0,1fr)}.grupos-encabezado .sate-identidad h1{font-size:var(--ipn-tamano-m)}.grupos-encabezado .sate-identidad{flex-wrap:wrap}.grupos-encabezado .header-actions{gap:var(--ipn-esp-1)}}
+
+/* Acción secundaria discreta: sin subrayado hasta pasar el cursor. */
+.grupos-pagina .materia .sate-enlace{text-decoration:none;font-weight:600}
+.grupos-pagina .materia .sate-enlace:hover{text-decoration:underline;text-underline-offset:3px}
