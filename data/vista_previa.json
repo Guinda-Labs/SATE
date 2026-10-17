@@ -22,12 +22,12 @@
     },
     "sate/grupos/index.html": {
       "titulo": "Grupos de WhatsApp · SATE UPIITA",
-      "descripcion": "Directorio de grupos de WhatsApp de clase de la UPIITA, por grupo, materia, carrera y nivel. Sin datos personales.",
+      "descripcion": "Todos los grupos de WhatsApp de las materias de la UPIITA en un solo lugar. Busca por grupo, materia, carrera o nivel.",
       "titular": "Encuentra el grupo de tu materia",
-      "subtitulo": "Grupos de WhatsApp de clase de la UPIITA.",
+      "subtitulo": "Todos los grupos de WhatsApp de la UPIITA.",
       "pie": "UPIITA · Oferta {periodo}",
       "imagen": "grupos.png",
-      "alt": "SATE: grupos de WhatsApp de clase de la UPIITA"
+      "alt": "SATE: todos los grupos de WhatsApp de la UPIITA en un solo lugar"
     },
     "sate/cupos.html": {
       "titulo": "Cupos del SAES · SATE",
