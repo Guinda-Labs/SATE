@@ -43,7 +43,7 @@ async function drawSchedule(part,k=3){
   const columnasLista=c=>c.own?[[c.own.n],['Actividad extracurricular'],[`${c.own.d.map(d=>DAYS[d]).join(' ')} ${hm(c.own.a)}–${hm(c.own.b)}`]]:
     [envolver('400 14px',`${c[8]} ${pretty(name(c))}`,380),envolver('400 14px',profs(c),320),
      envolver('400 14px',pattern(c).join('; ')+((s=>s?` · ${txH('salon')} ${s}`:'')([...new Set((c[10]||[]).filter(Boolean).map(shortRoom))].join(', '))),400)];
-  const ROWH=Math.max(46,...rowsList.map(c=>28+(Math.max(...columnasLista(c).map(x=>x.length))-1)*18+18)), listTop=part==='list'?HEAD:gridTop+gridH+48;
+  const ROWH=part==='week'?46:Math.max(46,...rowsList.map(c=>28+(Math.max(...columnasLista(c).map(x=>x.length))-1)*18+18)), listTop=part==='list'?HEAD:gridTop+gridH+48;
   const H=part==='week'?gridTop+gridH+70:listTop+40+rowsList.length*ROWH+70;
   const cv=document.createElement('canvas');cv.width=W*k;cv.height=H*k;const g=cv.getContext('2d');g.scale(k,k);
   g.fillStyle=BG;g.fillRect(0,0,W,H);
