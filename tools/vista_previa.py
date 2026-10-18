@@ -57,7 +57,9 @@ def aplicar(html, nombre, site=None):
             f'<meta property="og:site_name" content="{"GuindaLabs" if clave == "index.html" else _CFG["sitio"]}">',
             '<meta property="og:locale" content="es_MX">',
             f'<meta property="og:title" content="{e(titulo)}">', f'<meta property="og:description" content="{e(desc)}">',
-            f'<meta property="og:image" content="{e(img)}">', '<meta property="og:image:width" content="1200">',
+            # WhatsApp y Facebook: imagen 1200×630 (1.91:1), PNG < 600 KB, con tipo y URL segura explícitos.
+            f'<meta property="og:image" content="{e(img)}">', f'<meta property="og:image:secure_url" content="{e(img)}">',
+            '<meta property="og:image:type" content="image/png">', '<meta property="og:image:width" content="1200">',
             '<meta property="og:image:height" content="630">',
             f'<meta property="og:image:alt" content="{e(p["alt"])}">',
             '<meta name="twitter:card" content="summary_large_image">',
