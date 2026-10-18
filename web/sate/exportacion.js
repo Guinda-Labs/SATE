@@ -26,8 +26,24 @@ async function drawSchedule(part,k=3){
   const days=Math.max(5,...allSlots.map(b=>b[0]+1));
   // solo de la primera clase a la última de la semana
   const lo=allSlots.length?Math.min(...allSlots.map(b=>b[1])):START, hi=allSlots.length?Math.max(...allSlots.map(b=>b[2])):START+BLOCK;
-  const HEAD=110, gridTop=HEAD+44, hourPx=46, gridH=(hi-lo)/60*hourPx, LEFT=PAD+56, colW=(W-LEFT-PAD)/days;
-  const rowsList=[...D.sel,...D.own.map(o=>({own:o}))], ROWH=46, listTop=part==='list'?HEAD:gridTop+gridH+48;
+  const HEAD=110, gridTop=HEAD+44, LEFT=PAD+56, colW=(W-LEFT-PAD)/days;
+  // Nada se corta: el alto de la hora y de cada renglón de la lista se mide con el texto completo.
+  const mg=document.createElement('canvas').getContext('2d');
+  const envolver=(fuente,t,w)=>{mg.font=`${fuente} ${F}`;return wrapText(mg,t,w)};
+  const blocks=[...D.sel.flatMap(c=>c[6].map(([d,a,b],i)=>({c,d,a,b,r:(c[10]||[])[i]||''}))),...D.own.flatMap(o=>o.d.map(d=>({o,d,a:o.a,b:o.b})))];
+  const textoBloque=B=>{const w=colW-6-16;
+    const titulo=envolver('600 13px',B.c?pretty(name(B.c)):B.o.n,w);
+    const extra=[[[B.c&&EXP.show.g?B.c[3]:'',`${hm(B.a)}–${hm(B.b)}`].filter(Boolean).join(' · ')],
+      B.c&&EXP.show.p?envolver('400 12px',proper(profs(B.c)),w):[],
+      B.r?envolver('400 12px',`${txH('salon')} ${shortRoom(B.r)}`,w):[]].flat();
+    return {titulo,extra}};
+  const altoBloque=B=>{const t=textoBloque(B);return 18+(t.titulo.length-1)*16+t.extra.length*15+6};
+  const hourPx=Math.max(46,...blocks.map(B=>(altoBloque(B)+4)*60/(B.b-B.a))), gridH=(hi-lo)/60*hourPx;
+  const rowsList=[...D.sel,...D.own.map(o=>({own:o}))];
+  const columnasLista=c=>c.own?[[c.own.n],['Actividad extracurricular'],[`${c.own.d.map(d=>DAYS[d]).join(' ')} ${hm(c.own.a)}–${hm(c.own.b)}`]]:
+    [envolver('400 14px',`${c[8]} ${pretty(name(c))}`,380),envolver('400 14px',profs(c),320),
+     envolver('400 14px',pattern(c).join('; ')+((s=>s?` · ${txH('salon')} ${s}`:'')([...new Set((c[10]||[]).filter(Boolean).map(shortRoom))].join(', '))),400)];
+  const ROWH=Math.max(46,...rowsList.map(c=>28+(Math.max(...columnasLista(c).map(x=>x.length))-1)*18+18)), listTop=part==='list'?HEAD:gridTop+gridH+48;
   const H=part==='week'?gridTop+gridH+70:listTop+40+rowsList.length*ROWH+70;
   const cv=document.createElement('canvas');cv.width=W*k;cv.height=H*k;const g=cv.getContext('2d');g.scale(k,k);
   g.fillStyle=BG;g.fillRect(0,0,W,H);
@@ -45,20 +61,14 @@ async function drawSchedule(part,k=3){
       g.fillStyle=MUT;g.font=`400 13px ${F}`;g.textAlign='right';g.fillText(hm(m),LEFT-10,y+15);g.textAlign='left'}
     g.beginPath();g.moveTo(LEFT,gridTop+gridH);g.lineTo(W-PAD,gridTop+gridH);g.stroke();
     for(let d=0;d<=days;d++){const x=LEFT+d*colW;g.beginPath();g.moveTo(x,gridTop);g.lineTo(x,gridTop+gridH);g.stroke()}
-    const blocks=[...D.sel.flatMap(c=>c[6].map(([d,a,b],i)=>({c,d,a,b,r:(c[10]||[])[i]||''}))),...D.own.flatMap(o=>o.d.map(d=>({o,d,a:o.a,b:o.b})))];
     blocks.forEach(B=>{
       const x=LEFT+B.d*colW+3,y=gridTop+(B.a-lo)/60*hourPx+2,w=colW-6,h=(B.b-B.a)/60*hourPx-4,hu=B.c?hue(B.c):0;
       g.save();g.beginPath();g.roundRect?g.roundRect(x,y,w,h,6):g.rect(x,y,w,h);g.clip();
       if(B.c){g.fillStyle=blkBg(hu);g.fillRect(x,y,w,h);g.fillStyle=blkBar(hu);g.fillRect(x,y,5,h)}
       else ownFill(x,y,w,h)
-      g.fillStyle=INK;g.font=`600 13px ${F}`;
-      const title=B.c?pretty(name(B.c)):B.o.n, lines=wrapText(g,title,w-16);let ty=y+18;
-      lines.slice(0,Math.max(1,Math.floor((h-22)/16))).forEach(l=>{g.fillText(l,x+11,ty);ty+=16});
-      g.fillStyle=MUT;g.font=`400 12px ${F}`;
-      const meta=[B.c&&EXP.show.g?B.c[3]:'',`${hm(B.a)}–${hm(B.b)}`].filter(Boolean).join(' · ');
-      if(ty<y+h-4){g.fillText(meta,x+11,ty);ty+=15}
-      if(B.r&&ty<y+h-4){g.fillText(wrapText(g,`${txH('salon')} ${shortRoom(B.r)}`,w-16)[0],x+11,ty);ty+=15}
-      if(B.c&&EXP.show.p&&ty<y+h-4)g.fillText(wrapText(g,proper(profs(B.c)),w-16)[0],x+11,ty);
+      const T=textoBloque(B);let ty=y+18;
+      g.fillStyle=INK;g.font=`600 13px ${F}`;T.titulo.forEach(l=>{g.fillText(l,x+11,ty);ty+=16});
+      g.fillStyle=MUT;g.font=`400 12px ${F}`;T.extra.forEach(l=>{g.fillText(l,x+11,ty);ty+=15});
       g.restore();
     });
   }
@@ -68,10 +78,11 @@ async function drawSchedule(part,k=3){
     g.font=`600 13px ${F}`;g.fillStyle=MUT;cols.forEach(([x,t])=>g.fillText(t,x,listTop+36));
     rowsList.forEach((c,i)=>{const y=listTop+40+i*ROWH;g.strokeStyle=LINE;g.beginPath();g.moveTo(PAD,y);g.lineTo(W-PAD,y);g.stroke();
       g.fillStyle=INK;g.font=`400 14px ${F}`;
-      if(c.own){g.fillText('—',PAD,y+28);g.fillText(c.own.n,PAD+80,y+28);g.fillStyle=MUT;g.fillText('Actividad extracurricular',PAD+470,y+28);g.fillText(`${c.own.d.map(d=>DAYS[d]).join(' ')} ${hm(c.own.a)}–${hm(c.own.b)}`,PAD+800,y+28);return}
+      const [mat,prof,hor]=columnasLista(c),lineasEn=(ls,x0)=>ls.forEach((l,j)=>g.fillText(l,x0,y+28+j*18));
+      if(c.own){g.fillText('—',PAD,y+28);lineasEn(mat,PAD+80);g.fillStyle=MUT;lineasEn(prof,PAD+470);lineasEn(hor,PAD+800);return}
       g.fillStyle=blkBar(hue(c));g.fillRect(PAD-12,y+12,5,22);g.fillStyle=INK;
-      g.fillText(c[3],PAD,y+28);g.fillText(wrapText(g,`${c[8]} ${pretty(name(c))}`,380)[0],PAD+80,y+28);
-      g.fillStyle=MUT;g.fillText(wrapText(g,profs(c),320)[0],PAD+470,y+28);const salones=[...new Set((c[10]||[]).filter(Boolean).map(shortRoom))].join(', ');g.fillText(wrapText(g,pattern(c).join('; ')+(salones?` · ${txH('salon')} ${salones}`:''),400)[0],PAD+800,y+28);
+      g.fillText(c[3],PAD,y+28);lineasEn(mat,PAD+80);
+      g.fillStyle=MUT;lineasEn(prof,PAD+470);lineasEn(hor,PAD+800);
       g.fillStyle=INK;g.textAlign='right';g.fillText(fmtCr(c[7]),W-PAD,y+28);g.textAlign='left'});
   }
   const cap=new Date(DATA.capturado).toLocaleDateString('es-MX',{dateStyle:'long'});
@@ -86,7 +97,7 @@ const proper=t=>String(t).toLowerCase().replace(/(^|[\s,/(-])(\p{L})/gu,(m,a,b)=
 const classLabel=c=>[pretty(name(c)),EXP.show.g?c[3]:'',EXP.show.p?proper(profs(c)):''].filter(Boolean).join('\n');
 function weekGrid(){
   const D=scheduleData();
-  const items=[...D.sel.flatMap(c=>c[6].map(([d,a,b])=>({d,a,b,t:classLabel(c),own:false}))),...D.own.flatMap(o=>o.d.map(d=>({d,a:o.a,b:o.b,t:o.n,own:true})))];
+  const items=[...D.sel.flatMap(c=>c[6].map(([d,a,b],i)=>{const r=(c[10]||[])[i];return {d,a,b,t:classLabel(c)+(r?'\n'+txH('salon')+' '+shortRoom(r):''),own:false}})),...D.own.flatMap(o=>o.d.map(d=>({d,a:o.a,b:o.b,t:o.n,own:true})))];
   const days=Math.max(5,...items.map(x=>x.d+1));
   const bounds=[...new Set(items.flatMap(x=>[x.a,x.b]))].sort((a,b)=>a-b);
   const rows=bounds.slice(0,-1).map((t,i)=>[t,bounds[i+1]]);
@@ -113,7 +124,13 @@ async function drawTable(part,k=3){
   const DK=EXP.dark, {rows,days,cells,D}=weekGrid(), W=1000, PAD=40, F='Arial,"Noto Sans",system-ui,sans-serif', INK=DK?'#efeaec':'#000', GRAY=DK?'#2b272b':'#e7e7e7', OWN=EXP.own,
     BG=DK?'#141214':'#fff', SUB=DK?'#cfc7cb':'#333', FOOT=DK?'#a59ca1':'#555';
   // HR: renglones de título y encabezado, delgados como en el formato del equipo
-  const THIN=1.4, THICK=3.4, HOURW=118, colW=(W-2*PAD-HOURW)/days, ROWH=46+21*((EXP.show.g?1:0)+(EXP.show.p?1:0)), HR=24, TOP=PAD+58, LROW=D.sel.some(c=>(c[10]||[]).filter(Boolean).length>1)?57:40;
+  const THIN=1.4, THICK=3.4, HOURW=118, colW=(W-2*PAD-HOURW)/days, HR=24, TOP=PAD+58, C=[['Grupo',70],['Materia',262],['Profesor',314],['Créd',58],['Salón',216]], LH=17;
+  // Nada se corta: cada renglón mide lo que necesita su recuadro más largo (texto envuelto a su ancho real).
+  const mg=document.createElement('canvas').getContext('2d');mg.font=`400 14px ${F}`;
+  const lineas=(t,w)=>String(t).split('\n').reduce((n,seg)=>n+wrapText(mg,seg,w-10).length,0);
+  const ROWH=Math.max(46,...cells.filter(c=>c.it).map(c=>Math.ceil((lineas(c.it.t,colW*c.span)*LH+12)/(c.r1-c.r0))));
+  const filaLista=c=>[c[3],pretty(name(c)),proper(profs(c)),fmtCr(c[7]),c[10]?[...new Set(c[10].filter(Boolean).map(shortRoom))].join(', '):''];
+  const LROW=Math.max(40,...D.sel.map(c=>Math.max(...filaLista(c).map((t,j)=>lineas(t,C[j][1])))*LH+12));
   const tableH=part==='list'?0:2*HR+rows.length*ROWH;
   const listTop=part==='list'?TOP:TOP+tableH+34;
   const H=part==='week'?TOP+tableH+46:listTop+2*HR+D.sel.length*LROW+70;
@@ -123,7 +140,7 @@ async function drawTable(part,k=3){
   g.fillStyle=INK;g.font=`700 19px ${F}`;g.fillText(`Horario ${ws().plan} · ${pretty(carN)}`,PAD,PAD+8);
   g.font=`400 13px ${F}`;g.fillStyle=SUB;g.fillText(`${perLabel()} · ${fmtCr(D.cr)} créditos · ${D.sel.length} materias`,PAD,PAD+30);
   const cellText=(t,x,y,w,h,bold,italic)=>{g.fillStyle=INK;g.font=`${italic?'italic ':''}${bold?700:400} 14px ${F}`;g.textAlign='center';
-    const ls=String(t).split('\n').flatMap(seg=>wrapText(g,seg,w-10)).slice(0,Math.max(1,Math.floor((h-4)/17)));const y0=y+h/2-(ls.length-1)*8.5+5;ls.forEach((l,i)=>g.fillText(l,x+w/2,y0+i*17));g.textAlign='left'};
+    const ls=String(t).split('\n').flatMap(seg=>wrapText(g,seg,w-10));const y0=y+h/2-(ls.length-1)*8.5+5;ls.forEach((l,i)=>g.fillText(l,x+w/2,y0+i*17));g.textAlign='left'};
   const fill=(x,y,w,h,c)=>{g.fillStyle=c;if(DK&&c===OWN)g.globalAlpha=.32;g.fillRect(x,y,w,h);g.globalAlpha=1};
   const line=(x1,y1,x2,y2,lw)=>{g.strokeStyle=INK;g.lineWidth=lw;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke()};
   const rect=(x,y,w,h,lw)=>{g.strokeStyle=INK;g.lineWidth=lw;g.strokeRect(x,y,w,h)};
@@ -143,10 +160,10 @@ async function drawTable(part,k=3){
     rect(X0,Y0,TW,TH,THICK);line(X0,Y0+HR,X0+TW,Y0+HR,THICK);line(X0,BY,X0+TW,BY,THICK);line(X0+HOURW,Y0+HR,X0+HOURW,Y0+TH,THICK);
   }
   if(part!=='week'){
-    const C=[['Grupo',70],['Materia',262],['Profesor',314],['Créd',58],['Salón',216]], X0=PAD, TW=C.reduce((t,c)=>t+c[1],0), TH=2*HR+D.sel.length*LROW;
+    const X0=PAD, TW=C.reduce((t,c)=>t+c[1],0), TH=2*HR+D.sel.length*LROW;
     cellText('Lista de profesores por materia',X0,listTop,TW,HR,true);
     let x=X0;C.forEach(([t,w])=>{cellText(t,x,listTop+HR,w,HR,false,true);x+=w});
-    D.sel.forEach((c,i)=>{x=X0;const y=listTop+2*HR+i*LROW;[c[3],pretty(name(c)),proper(profs(c)),fmtCr(c[7]),c[10]?[...new Set(c[10].filter(Boolean).map(shortRoom))].join(', '):''].forEach((t,j)=>{cellText(t,x,y,C[j][1],LROW);x+=C[j][1]});
+    D.sel.forEach((c,i)=>{x=X0;const y=listTop+2*HR+i*LROW;filaLista(c).forEach((t,j)=>{cellText(t,x,y,C[j][1],LROW);x+=C[j][1]});
       line(X0,y,X0+TW,y,THIN)});
     x=X0;C.slice(0,-1).forEach(([,w])=>{x+=w;line(x,listTop+HR,x,listTop+TH,THIN)});
     rect(X0,listTop,TW,TH,THICK);line(X0,listTop+HR,X0+TW,listTop+HR,THICK);line(X0,listTop+2*HR,X0+TW,listTop+2*HR,THICK);
