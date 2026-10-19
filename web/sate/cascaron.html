@@ -582,7 +582,7 @@ details.box2>summary{cursor:pointer;font-weight:600;font-size:.92rem}
 .blk:not(.ghost){display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:2px 4px}
 .blk>*{flex-shrink:0;max-width:100%}
 .blk b{flex:0 0 100%;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;font-weight:600;font-size:.72rem;line-height:1.2}
-.blk .t{font-family:var(--ipn-fuente-mono);font-size:.64rem;opacity:.85}
+.blk .t{font-family:var(--ipn-fuente-mono);font-size:.64rem;opacity:.85;flex-shrink:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .blk.own{background:repeating-linear-gradient(135deg,var(--own) 0 6px,var(--ipn-superficie) 6px 12px);color:var(--ipn-texto);border-left-color:var(--ipn-tenue)}
 .blk.clash{outline:2px solid var(--ipn-error);outline-offset:-2px}
 .blk.ghost{background:transparent;border:2px dashed var(--ipn-acento);color:var(--ipn-texto);cursor:default;pointer-events:none}
