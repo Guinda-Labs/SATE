@@ -269,9 +269,10 @@ function calItems(){
   items.forEach(a=>{a.pasada=a.fin<hoy;a.hoy=a.ini<=hoy&&hoy<=a.fin;a.hoyD=hoy});
   return {C,items};
 }
+// Solo el aviso de reinscripción usa .cal-reinscripcion; las cuadrículas de horario (.cal) no son suyas.
 function drawCals(){
   const R=calItems(), f=(x,o)=>x.toLocaleDateString('es-MX',o).replace('.','');
-  document.querySelectorAll('.cal').forEach(el=>{
+  document.querySelectorAll('.cal-reinscripcion').forEach(el=>{
     el.hidden=!R;if(!R){el.innerHTML='';return}
     const {C,items}=R, pers=isPersonal()&&!!CALAP, completo=el.classList.contains('cal-completo'), mio=pers&&!completo&&store.get('calVer','mio')==='mio';
     let vis=mio?items.filter(a=>a.si):items;if(!vis.length)vis=items;
@@ -292,7 +293,7 @@ function drawCals(){
 }
 document.addEventListener('click',e=>{const v=e.target.closest('[data-calver-ver]');if(!v)return;
   CALSEL=+v.dataset.calverVer;drawCals();if(!document.querySelector(`.cal [data-calc="${CALSEL}"]`)){store.set('calVer','todo');drawCals()}   // la actividad no está en «Lo que me aplica»
-  const c=[...document.querySelectorAll('.cal')].find(x=>x.offsetParent);const card=c?.querySelector(`[data-calc="${CALSEL}"]`);
+  const c=[...document.querySelectorAll('.cal-reinscripcion')].find(x=>x.offsetParent);const card=c?.querySelector(`[data-calc="${CALSEL}"]`);
   if(c){c.scrollIntoView({behavior:'smooth',block:'start'});if(card)c.querySelector('.cal-strip').scrollLeft=Math.max(0,card.offsetLeft-8)}});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-calc],[data-calver]');if(!b)return;
   if(b.dataset.calver){store.set('calVer',b.dataset.calver);CALSEL=null}else CALSEL=+b.dataset.calc;
