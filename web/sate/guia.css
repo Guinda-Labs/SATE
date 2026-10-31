@@ -127,6 +127,7 @@
 .guia-arbol>ul{margin-left:0;padding-left:0;border:0}
 .guia-funciones,.guia-procedimientos{display:grid;gap:var(--ipn-esp-3);padding-left:var(--ipn-esp-5)}
 .guia-funciones li p,.guia-procedimientos li p{margin:0}
+.guia-funciones li>a,.guia-procedimientos li>a{font-size:var(--ipn-tamano-xs);color:var(--ipn-tenue)}
 .guia-nodo--tenue{opacity:.45}
 .guia-coincide{color:var(--ipn-acento);font-weight:600;text-decoration:underline}
 .guia-etapas button:focus-visible,.guia-elegir:focus-visible,.guia-controles button:focus-visible,.guia-arbol summary:focus-visible{outline:2px solid var(--ipn-acento);outline-offset:2px}

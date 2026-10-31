@@ -324,7 +324,8 @@
     let v;
     try {
     if (unidadRealce || r.unidad !== u) aplicarRealce(r.unidad);
-    if (r.unidad !== u) { IPNT.set('ipnt.unidad', r.unidad); location.reload(); return; }
+    // La Guía ligera no carga nucleo.js (IPNT); la ruta ya trae la unidad al recargar.
+    if (r.unidad !== u) { window.IPNT?.set('ipnt.unidad', r.unidad); location.reload(); return; }
     v = ++version;
     const marca = r.vista ? r.padre : r.pestana;
     seleccionProgramada = true; tabs.seleccionar(marca); seleccionProgramada = false; barra.marcar(marca);

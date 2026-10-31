@@ -22,6 +22,11 @@ def texto(valor):
     return re.sub(r'\s+', ' ', valor or '').strip()
 
 
+def nombre_visible(valor):
+    # La transcripción oficial permanece en nombre_oficial; el selector usa una forma limpia.
+    return re.sub(r'\s*\.\s*(?=\()', ' ', texto(valor)).rstrip('.').strip()
+
+
 def bloque(valor):
     if not isinstance(valor, dict) or valor.get('verificado') is False or not valor.get('texto'):
         return None
@@ -61,7 +66,8 @@ def importar(origen=ORIGEN):
     catalogo = {}
     for item in inventario:
         if item.get('presente') and item.get('tipo') in ('MO', 'MP'):
-            entrada = catalogo.setdefault(item['siglas'], {'siglas': item['siglas'], 'nombre': item['unidad'],
+            entrada = catalogo.setdefault(item['siglas'], {'siglas': item['siglas'], 'nombre': nombre_visible(item['unidad']),
+                                                              'nombre_oficial': texto(item['unidad']),
                                                               'tipo': TIPOS[item['categoria']], 'pdf': {}})
             entrada['pdf'][item['tipo']] = item['url']
     DESTINO.mkdir(parents=True, exist_ok=True)

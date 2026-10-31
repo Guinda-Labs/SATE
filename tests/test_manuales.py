@@ -1,11 +1,33 @@
 """Invariantes de los manuales publicados."""
 import json
+import sys
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CARPETA = ROOT / 'data/manuales'
 ORIGEN = Path('D:/Documents/Development/UPIITA_DEV/coordinacion-wt/ipt-estado/ipn-tools/manuales-pipeline/salida-r28')
+sys.path.insert(0, str(ROOT / 'tools'))
+from importar_manuales import nombre_visible
+
+
+class PruebasIndice(unittest.TestCase):
+    def test_nombres_de_selector_sin_puntuacion_final(self):
+        self.assertEqual(nombre_visible('Unidad Profesional Interdisciplinaria en Ingeniería y Tecnologías Avanzadas. (UPIITA)'),
+                         'Unidad Profesional Interdisciplinaria en Ingeniería y Tecnologías Avanzadas (UPIITA)')
+        self.assertEqual(nombre_visible('Dirección General.'), 'Dirección General')
+
+    def test_todas_las_unidades_tienen_tipo_conocido(self):
+        tipos = {'nivel superior', 'nivel medio superior', 'investigación científica y tecnológica',
+                 'vinculación y desarrollo regional', 'órgano de apoyo', 'área central', 'unidad administrativa'}
+        inventario = json.loads((CARPETA / 'indice.json').read_text(encoding='utf-8'))
+        self.assertTrue(inventario['unidades'])
+        for unidad in inventario['unidades']:
+            with self.subTest(siglas=unidad['siglas']):
+                self.assertIn(unidad.get('tipo'), tipos)
+                self.assertTrue(unidad.get('nombre'))
+                self.assertFalse(unidad['nombre'].endswith('.'))
+                self.assertTrue(unidad.get('nombre_oficial'))
 
 
 class ManualesTest(unittest.TestCase):

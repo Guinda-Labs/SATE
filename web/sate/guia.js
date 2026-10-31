@@ -2039,9 +2039,14 @@
     const cab = cabecera([...migasBase(), {texto: tituloApartado('acudir')}], tituloApartado('acudir'), t('sate.guia.acudir_intro'));
     const unidades = indice.unidades;
     const predeterminado = indice.sate[unidad()] || unidades[0]?.siglas;
+    const tipos = [...new Set(unidades.map(u => u.tipo))].sort((a,b) => a.localeCompare(b, 'es'));
+    const claveTipo = tipo => ({'nivel medio superior':'tipo_nivel_medio_superior','nivel superior':'tipo_nivel_superior',
+      'investigación científica y tecnológica':'tipo_investigacion','vinculación y desarrollo regional':'tipo_vinculacion',
+      'órgano de apoyo':'tipo_organos_apoyo','área central':'tipo_areas_centrales','unidad administrativa':'tipo_unidades_administrativas'}[tipo] || 'tipo_otros');
     const selector = h('select', {'class':'guia-manual-selector', 'aria-label':tx('elegir_unidad')}, [
-      h('optgroup', {label:tx('unidades')}, unidades.map(u => h('option', {value:u.siglas, texto:u.nombre}))),
-      h('optgroup', {label:tx('general')}, [h('option', {value:'general', texto:tx('general')})])
+      h('optgroup', {label:tx('general')}, [h('option', {value:'general', texto:tx('general')})]),
+      ...tipos.map(tipo => h('optgroup', {label:tx(claveTipo(tipo))}, unidades.filter(u => u.tipo === tipo)
+        .sort((a,b) => a.nombre.localeCompare(b.nombre, 'es')).map(u => h('option', {value:u.siglas, texto:u.nombre}))))
     ]);
     selector.value = predeterminado;
     const resumen = h('p', {role:'status', 'aria-live':'polite', 'class':'guia-resumen'});
@@ -2060,21 +2065,22 @@
       const funciones = area.funciones.length ? area.funciones : grupo?.funciones || [];
       const doc = selector.value === 'general' ? 'mog' : 'mo';
       const info = selector.value === 'general' ? indice.general : unidades.find(u => u.siglas === selector.value);
-      const cita = (tipo, pagina) => h('a', {href:info.pdf[tipo] + (pagina ? '#page=' + pagina : ''), target:'_blank', rel:'noopener noreferrer',
-        texto:tx(tipo === 'MP' ? 'cita_mp' : doc === 'mog' ? 'cita_mog' : 'cita_mo').replace('{unidad}',info.nombre).replace('{pagina}',pagina || '')});
+      const cita = (tipo, pagina, etiqueta) => h('a', {href:info.pdf[tipo] + (pagina ? '#page=' + pagina : ''), target:'_blank', rel:'noopener noreferrer',
+        texto:etiqueta || tx(tipo === 'MP' ? 'cita_mp' : doc === 'mog' ? 'cita_mog' : 'cita_mo').replace('{unidad}',info.nombre).replace('{pagina}',pagina || '')});
+      const rangoPaginas = lista => { const ps=lista.map(x=>x.p).filter(Number.isFinite); return ps.length ? Math.min(...ps) === Math.max(...ps) ? String(ps[0]) : Math.min(...ps)+'–'+Math.max(...ps) : ''; };
       const campo = (titulo, nodos) => h('div', {}, [h('dt', {texto:titulo}), h('dd', {}, nodos)]);
       const padre = mapa.get(area.depende_de);
-      const dependiente = padre ? h('button', {type:'button', 'class':'guia-elegir', texto:padre.nombre}) : h('span', {texto:tx('sin_dependencia')});
+      const dependiente = padre ? h('button', {type:'button', 'class':'guia-elegir', texto:padre.nombre}) : null;
       if (padre) dependiente.addEventListener('click', () => elegir(padre));
       const procedimientos = actual.procedimientos.filter(p => p.area && norm(p.area) === norm(area.nombre));
       return h('article', {'class':'guia-ficha'}, [
         h('h3', {'data-oficial':doc, texto:area.nombre}),
         h('dl', {}, [
-          campo(tx('depende'), [dependiente]),
+          padre ? campo(tx('depende'), [dependiente]) : null,
           curada?.para || curada?.orientacion ? campo(tx('orientacion'), [h('p', {}, enLinea(curada.orientacion?.texto || curada.para, d))]) : null,
           objetivo ? campo(tx('objetivo'), [h('p', {'data-oficial':doc, texto:objetivo.t}), cita('MO', objetivo.p)]) : null,
-          funciones.length ? campo(tx('funciones'), [h('ul', {'class':'guia-funciones'}, funciones.map(f => h('li', {}, [h('p', {'data-oficial':doc, texto:f.t}), cita('MO',f.p)])))]) : null,
-          procedimientos.length ? campo(tx('procedimientos'), [h('ul', {'class':'guia-procedimientos'}, procedimientos.map(p => h('li', {}, [h('strong', {'data-oficial':'mp', texto:p.nombre}), p.objetivo ? h('p', {'data-oficial':'mp', texto:p.objetivo.t}) : null, cita('MP',p.pagina)])))]) : null,
+          funciones.length ? campo(tx('funciones'), [cita('MO', funciones[0].p, tx('cita_bloque_mo').replace('{paginas}', rangoPaginas(funciones))), h('ul', {'class':'guia-funciones'}, funciones.map(f => h('li', {}, [h('p', {'data-oficial':doc, texto:f.t}), cita('MO',f.p, tx('pagina').replace('{pagina}',f.p))])))]) : null,
+          procedimientos.length ? campo(tx('procedimientos'), [cita('MP', procedimientos[0].pagina, tx('cita_bloque_mp').replace('{paginas}', rangoPaginas(procedimientos.map(p => ({p:p.pagina}))))), h('ul', {'class':'guia-procedimientos'}, procedimientos.map(p => h('li', {}, [h('strong', {'data-oficial':'mp', texto:p.nombre}), p.objetivo ? h('p', {'data-oficial':'mp', texto:p.objetivo.t}) : null, cita('MP',p.pagina, tx('pagina').replace('{pagina}',p.pagina))])))]) : null,
           preguntas.length ? campo(tx('preguntas'), [h('ul', {}, preguntas.map(p => h('li', {}, [h('a', {href:rutaGuia(p.apartado,p.id), texto:p.pregunta})])))]) : null
         ])
       ]);
@@ -2111,7 +2117,9 @@
           'aria-current':seleccionado === a.id ? 'true' : null, 'data-oficial':selector.value === 'general' ? 'mog':'mo', texto:a.nombre});
         boton.addEventListener('click', e => { e.preventDefault(); elegir(a); });
         if (!descendientes.length) return h('li', {}, [boton]);
-        return h('li', {}, [h('details', {open:palabras.length > 0 || a.depende_de === null}, [
+        const profundidad = (() => { let n=a, nivel=0; while (n.depende_de && mapa.has(n.depende_de)) { nivel++; n=mapa.get(n.depende_de); } return nivel; })();
+        const mog = selector.value === 'general';
+        return h('li', {}, [h('details', {open:palabras.length > 0 || (mog ? profundidad < 2 : profundidad === 0)}, [
           h('summary', {}, [boton]), h('ul', {}, descendientes.map(rama))])]);
       }
       const lista = h('div', {'class':'guia-arbol'}, [h('ul', {}, (hijos.get(null) || []).map(rama))]);
