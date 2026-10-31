@@ -1253,6 +1253,7 @@ def escribir_datos(data):
     import shutil
     reglamentos = ROOT / 'web/dist/sate/datos/reglamentos'
     shutil.copytree(ROOT / 'data/reglamentos', reglamentos, dirs_exist_ok=True)
+    shutil.copytree(ROOT / 'data/manuales', ROOT / 'web/dist/sate/datos/manuales', dirs_exist_ok=True)
     # --solo-datos debe producir los mismos bytes públicos que el build completo.
     for archivo in reglamentos.rglob('*.json'):
         documento = json.loads(archivo.read_text(encoding='utf-8'))

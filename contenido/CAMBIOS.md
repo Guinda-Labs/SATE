@@ -1,6 +1,10 @@
 <!-- SPDX-License-Identifier: CC0-1.0 -->
 # Cambios de textos
 
+## 2026-10-31 · 2026.10.30 · Codex (R28-MAN)
+
+Se agregaron claves `sate.guia.manual.*` para el selector, árbol, ficha y citas de manuales oficiales.
+
 ## 2026-10-15 · 2026.10.26 · Claude (GUIA5)
 
 | Claves | Cambio |

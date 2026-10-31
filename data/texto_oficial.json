@@ -750,6 +750,2216 @@
         "/secciones/*/items/*/lugar",
         "/secciones/*/items/*/contacto"
       ]
+    },
+    "data/manuales/CAMPECHE.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/CAMPECHE/MO-CVDR-CAMPECHE.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CANCUN.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/CANCUN/MO-CVDR-CANCUN.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CBG.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CBG/MO-CBG.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CDA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CDA/MO-CDA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT1.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT1/MO-CECyT1.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT10.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT10/MO-CECyT10.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT11.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT11/MO-CECYT11.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT12.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT12/MO-CECyT12.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT14.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT14/MO_CECyT14.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT15.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT15/MO_CECyT15.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT16.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT16/MO_CECyT16.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT17.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT17/MO-CECyT17.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT18.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT18/MO-CECYT18.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT19.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT19/MO-CECYT19.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT2.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT2/MO-CECyT2.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT3.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT3/MO-CECyT3.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT4.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT4/MO-CECyT4.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT5.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT5/MO-CECyT5.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT6.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT6/MO-CECYT6.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT7.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT7/MO_CECyT7.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT8.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT8/MO-CECyT8.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CECYT9.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CECYT9/MO-CECyT9.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CENAC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/OP/CENAC/MO_CENAC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CEPROBI.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CEPROBI/MO_CEPROBI.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CET1.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/MS/CET1/MO-CET1.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CGPeII.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/CGPeII/MO-CGPII.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIBA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIBA/MO_CIBA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIC/MO_CIC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CICATA-ALT.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CICATA-ALT/MO_CICATA_ALTAMIRA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CICATA-LEG.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CICATA-LEG/MO_CICATA_Legaria.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CICATA-MOR.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CICATA-MOR/MO-CICATA-MOR.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CICIMAR.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CICIMAR/MO_CICIMAR.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CICS-MILPA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/CICS-MILPA/MO_CICSMA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CICS-STO.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/CICS-STO/MO_CICSST.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIDETEC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIDETEC/MO_CIDETEC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIECAS.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIECAS/MO_CIECAS.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CII.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/CII/MO_CII.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIIDIR-DGO.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIIDIR-DGO/MO_CIIDIR_DURANGO.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIIDIR-MICH.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIIDIR-MICH/MO_CIIDIR_MICH.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIIDIR-OAX.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIIDIR-OAX/MO_CIIDIR_OAX.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIIDIR-SIN.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIIDIR-SIN/MO_CIIDIR_SINALOA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIIEMAD.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIIEMAD/MO_CIIEMAD.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIITA-CHI.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/DIeITA/CIITA-CHI/MO-CIITA-CHI.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIITA-VER.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/DIeITA/CIITA-VER/MO-CIITA-VER.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CIITEC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CIITEC/MO-CIITEC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CITEDI.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CITEDI/MO_CITEDI.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CMPL.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/CI/CMPL/MO-CMPL.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CNYMC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/DIeITA/CNYMC/MO_CNMN.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/COCENDI.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/COCENDI/MO_COCENDI.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CPPS.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/CPPS/MO_CPS.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/CULIACAN.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/CULIACAN/MO-CVDR-CULIACAN.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DAD.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DAD/MO-DAD.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DAE.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DAE/MO_DAE.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DAES.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DAES/MO-DAES.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DAJ.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DAJ/MO_DAJ.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DCH.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DCH/MO_DCH.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DCyC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DCyC/MO_DCyC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DDByP.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DDByP/MO-DByP.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DDC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DDC/MO-DDC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DDICYT.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DDICYT/MO-DDICYT.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DDP.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DDP/MO-DDP.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DECANATO.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DECANATO/MO_PDECANATO.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DEMS.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DEMS/MO_DEMS.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DES.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DES/MO-DES.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DESS.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DESS/MO_DEySS.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DEVIR.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DEVIR/MO-DEVIR.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DFIE.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DFIE/MO-DFIE.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DFLEX.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DFLEX/MO-DFLE.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DG.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DG/MO_DG.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DIET.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DIET/MO-DIET.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DII.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DII/MO-DII.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DINV.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DINV/MO-DI.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DPOSG.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DPOSG/MO_DP.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DPyO.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DPyO/MO-DPyO.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DPyP.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DPyP/MO_DPP.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DRF.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DRF/MO_DRF.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DRI.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DRI/MO-DRI.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DRMyS.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DRMyS/MO_DRMyS.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DSETT.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DSETT/MO-DSETT.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DSG.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DSG/MO_DSG.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DSI.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DSI/MO-DSI.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DURANGO.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/DURANGO/MO-CVDR-DURANGO.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/DVyDR.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/DVyDR/MO-DVyDR.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ENByA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ENByA/MO-ENByA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ENCB.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ENCB/MO_ENCB.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ENMH.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ENMH/MO_ENMH.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ER-XHIPN.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/ER-XHIPN/MO-ER-XHIPN.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESCA-STO.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESCA-STO/MO_ESCA_STO.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESCA-TEP.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESCA-TEP/MO-ESCA-TEP.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESCOM.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESCOM/MO_ESCOM.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESE.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESE/MO_ESE.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESEO.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESEO/MO_ESEO.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESFM.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESFM/MO_ESFM.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESIA-TEC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESIA-TEC/MO_ESIA_TEC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESIA-TIC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESIA-TIC/MO_ESIA_TIC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESIME-AZC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESIME-AZC/MO_ESIME_AZC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESIME-CULH.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESIME-CULH/MO-ESIME-CULH.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESIME-TIC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESIME-TIC/MO_ESIME_TIC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESIME-ZAC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESIME-ZAC/MO_ESIME_ZAC.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESIQIE.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESIQIE/MO_ESIQIE.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESIT.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESIT/MO_ESIT.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/ESM.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/ESM/MO_ESM.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/EST.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/EST/MO_EST.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/MAZATLAN.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/MAZATLAN/MO-CVDR-MAZATLAN.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/MOCHIS.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/MOCHIS/MO-CVDR-MOCHIS.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/MORELIA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/MORELIA/MO-CVDR-MORELIA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/OAG.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/OAG/MO_OAG.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/OAXACA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/OAXACA/MO-CVDR-OAXACA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/SA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/SA/MO-SECACAD.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/SADMIN.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/SADMIN/MO_SAD.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/SECGRAL.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/SECGRAL/MO_SGAL.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/SIeIS.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/SIeIS/MO-SIIS.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/SIyP.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/SIyP/MO-SIP.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/SONORA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/SONORA/MO-CVDR-CAJEME-SONORA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/SSE.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/SSE/MO_SSE.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/TAMPICO.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/TAMPICO/MO-CVDR-TAMPICO.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/TECNOPOLI.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/TECNOPOLI/MO-TECNOPOLI.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/TIJUANA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/TIJUANA/MO-CVDR-TIJUANA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/TLAXCALA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/EC/TLAXCALA/MO-CVDR-TLAXCALA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPGPG.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/AC/UPGPG/MO-UPGPG.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPIBI.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/UPIBI/MO_UPIBI.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPIEM.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/UPIEM/MO-UPIEM.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPIIC.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": null,
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPIIG.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/UPIIG/MO_UPIIG.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPIIH.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/UPIIH/MO-UPIIH.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPIIP.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/UPIIP/MO_UPIIP.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPIIT.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/UPIIT/MO_UPIIT.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPIITA.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/UPIITA/MO_UPIITA.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/UPIIZ.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización",
+        "url": "https://www.aplicaciones.abogadogeneral.ipn.mx/MOP/NS/UPIIZ/MO_UPIIZ.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
+    },
+    "data/manuales/IPN-general.json": {
+      "oficial": true,
+      "fuente": {
+        "documento": "Manual de Organización General del IPN",
+        "url": "https://www.ipn.mx/assets/files/normatividad/docs/pdf/MO-MOG-IPN.pdf",
+        "localizador": "página física en cada objetivo, función o procedimiento"
+      },
+      "campos": [
+        "/areas/*/nombre",
+        "/areas/*/objetivo/t",
+        "/areas/*/funciones/*/t",
+        "/procedimientos/*/nombre",
+        "/procedimientos/*/objetivo/t",
+        "/grupos/*/objetivo/t",
+        "/grupos/*/funciones/*/t"
+      ]
     }
   }
 }

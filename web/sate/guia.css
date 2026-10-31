@@ -120,6 +120,13 @@
 .guia-arbol summary>.guia-nodo{flex:1}
 .guia-arbol summary>small{flex:none}
 .guia-arbol section+section,.guia-arbol-fuente{margin-top:var(--ipn-esp-6)}
+.guia-manual-barra{display:flex;flex-wrap:wrap;gap:var(--ipn-esp-3);align-items:end}
+.guia-manual-barra label{display:grid;gap:var(--ipn-esp-2);min-width:0;flex:1 1 22rem;color:var(--ipn-tenue);font-size:var(--ipn-tamano-s)}
+.guia-manual-selector{box-sizing:border-box;width:100%;min-height:var(--ipn-control-alto);padding:var(--ipn-esp-2) var(--ipn-esp-3);border:1px solid var(--ipn-borde-control);border-radius:var(--ipn-radio-control);background:var(--ipn-superficie);color:var(--ipn-texto);font:inherit}
+.guia-manual-selector:focus-visible{outline:2px solid var(--ipn-acento);outline-offset:2px}
+.guia-arbol>ul{margin-left:0;padding-left:0;border:0}
+.guia-funciones,.guia-procedimientos{display:grid;gap:var(--ipn-esp-3);padding-left:var(--ipn-esp-5)}
+.guia-funciones li p,.guia-procedimientos li p{margin:0}
 .guia-nodo--tenue{opacity:.45}
 .guia-coincide{color:var(--ipn-acento);font-weight:600;text-decoration:underline}
 .guia-etapas button:focus-visible,.guia-elegir:focus-visible,.guia-controles button:focus-visible,.guia-arbol summary:focus-visible{outline:2px solid var(--ipn-acento);outline-offset:2px}
