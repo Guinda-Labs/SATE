@@ -293,5 +293,7 @@ class SateBuild(unittest.TestCase):
                 self.assertTrue(archivo.is_relative_to(ROOT / 'web/dist'), ruta)
 
 
+
+
 if __name__ == '__main__':
     unittest.main()

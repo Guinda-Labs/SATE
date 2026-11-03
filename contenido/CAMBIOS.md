@@ -33,6 +33,12 @@ Se agregaron claves `sate.guia.manual.*` para el selector, árbol, ficha y citas
 | `sate.electivas.categoria_catalogo/nombre_ayuda` | Nuevas: la categoría del catálogo va aparte y el nombre de la actividad se puede cambiar. |
 | `sate.cupos.config_titulo` y relacionadas | Barra de configuración de Cupos (avisos y consulta automática), «Última consulta» con aviso de consulta antigua y medidor por fila. `avisos_mas` se conserva porque el marcador del SAES todavía la usa. |
 
+## 2026-10-17 · 2026.10.25 · Codex (GRUPOS-B)
+
+| Claves | Cambio |
+|---|---|
+| `grupos.*` | Nuevas: directorio, filtros, formularios, estados de publicación y mensajes de la API. |
+
 ## 2026-10-15 · 2026.10.24 · Claude (GOOG1)
 
 | Claves | Cambio |

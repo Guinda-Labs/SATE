@@ -2272,3 +2272,168 @@ seccion_cultura = "Cultura"
 seccion_idiomas = "Idiomas"
 seccion_centrales = "Servicios estudiantiles centrales"
 seccion_unidad = "Servicios {unidad}"
+
+[grupos.tus]
+titulo = "Tus materias"
+horarios = "Ver en Horarios"
+sin_horario = "Arma tu horario en SATE y aquí verás los grupos de tus materias."
+plan = "Plan"
+plan_vacio = "Este plan no tiene materias seleccionadas."
+contador = "{con} de {total} de tus materias con grupo"
+
+
+[grupos.pagina]
+pestana = "Grupos"
+titulo = "Grupos de WhatsApp"
+descripcion = "Todos los grupos de WhatsApp de la UPIITA · Oferta {periodo}"
+identidad = "SATE / UPIITA-IPN"
+marca = "SATE UPIITA"
+nombre = "Sistema de Apoyo a la Trayectoria Escolar"
+subtitulo = "UPIITA · Oferta {periodo}"
+tema = "Cambiar tema claro u oscuro"
+navegacion = "Navegación de SATE"
+volver = "Volver a SATE"
+prueba = "Versión de prueba: lo que agregues aquí no se publica"
+inmediato = "Los enlaces que agregues se ven al momento en tu navegador y para todos en unos minutos."
+
+
+[grupos.guia]
+boton = "Guía"
+titulo = "Cómo se usa"
+cerrar = "Cerrar guía"
+buscar = "Busca tu grupo o materia"
+buscar_texto = "Escribe el grupo o el nombre de la materia. Abre un grupo para ver sus enlaces."
+filtrar = "Filtra por carrera, nivel y turno"
+filtrar_texto = "Combina los filtros o activa Solo sin enlace para encontrar los que faltan."
+tus = "Tus materias"
+tus_texto = "Si guardaste tu horario en SATE en este navegador, verás sus materias al inicio."
+agregar = "Agrega un enlace"
+agregar_texto = "Pega el enlace de WhatsApp de la materia. Se revisa en vivo que no exista; gana el primero en guardarlo."
+reemplazar = "Reemplaza un enlace caído"
+reemplazar_texto = "Abre las opciones del enlace y elige Reemplazar enlace. Se pide el motivo y queda registro del anterior."
+compartir = "Comparte tu grupo"
+compartir_texto = "Usa Compartir para copiar el acceso directo a tu grupo en el directorio."
+estado = "Último cambio indica cuándo se publicó el directorio; Próxima verificación, cuándo se revisarán nuevos enlaces para publicarlos."
+
+
+[grupos.estado]
+linea = "Último cambio publicado: {ultima} · Próxima verificación: {proxima}"
+sin_cambio = "Sin publicación todavía"
+revisando = "Revisando si alguien ya lo subió…"
+alguien = "Alguien ya lo subió. Ya puedes unirte con el enlace vigente."
+guardando = "Guardando el enlace…"
+guardado = "Enlace guardado"
+cambio = "Alguien cambió el enlace antes. Se muestra el vigente; revísalo antes de reemplazarlo."
+copiado = "Enlace copiado."
+reemplazado = "Reemplazado {fecha} · {motivo}"
+pastilla = "● Al día · {hora}"
+proxima = "Próxima verificación: {hora}"
+global = "{con} de {total} materias con grupo"
+compartido = "Enlace del grupo copiado"
+
+
+[grupos.filtro]
+carrera = "Carrera"
+todas = "Todas"
+grupo = "Busca grupo o materia"
+ejemplo = "Busca grupo o materia"
+titulo = "Filtros del directorio"
+nivel = "Nivel"
+nivel_semestre = "Nivel / semestre"
+turno = "Turno"
+todos = "Todos"
+matutino = "Matutino"
+vespertino = "Vespertino"
+mixto = "Mixto"
+sin = "Solo sin enlace"
+limpiar = "Limpiar"
+
+
+[grupos.carrera]
+b = "Biónica"
+e = "Energía"
+m = "Mecatrónica"
+s = "Automotrices"
+t = "Telemática"
+
+
+[grupos.carrera_corta]
+b = "Biónica"
+e = "Energía"
+m = "Mecatr."
+s = "Autom."
+t = "Telem."
+
+
+[grupos.lista]
+contador = "{con}/{total}"
+vacio = "No hay grupos con esos filtros. Revisa el grupo o elige otra carrera."
+resultados = "{grupos} · {materias}"
+grupo_uno = "{n} grupo"
+grupo_varios = "{n} grupos"
+materia_una = "{n} materia"
+materia_varias = "{n} materias"
+tu = "Tu grupo"
+nivel = "Nivel {n}"
+semestre = "{n}.{ordinal} semestre"
+
+
+[grupos.accion]
+unirse = "Unirse"
+agregar = "+ Agregar"
+reemplazar = "Reemplazar enlace"
+copiar = "Copiar enlace"
+opciones = "Opciones"
+pegar = "Pegar"
+guardar = "Guardar enlace"
+cancelar = "Cancelar"
+compartir = "Compartir"
+
+
+[grupos.form]
+url = "Enlace de WhatsApp"
+ayuda = "Pega el enlace del grupo de esta materia."
+registro = "Queda registro del enlace anterior."
+motivo = "Motivo del reemplazo"
+detalle = "Describe el motivo (máximo 140 caracteres)"
+web = "Deja este campo vacío"
+
+
+[grupos.motivo]
+caido = "El enlace ya no funciona"
+lleno = "El grupo está lleno"
+equivocado = "Es de otro grupo o materia"
+otro = "Otro"
+
+
+[grupos.error]
+url = "Usa un enlace de chat.whatsapp.com con un código de 20 a 24 letras o números."
+invalido = "No se guardó: el enlace o el motivo no es válido. Revisa los campos e intenta de nuevo."
+cerrado = "Por ahora no se pueden guardar enlaces. Puedes seguir consultando el directorio; intenta más tarde."
+limite = "Se alcanzó el límite temporal de cambios. No se guardó el enlace; espera unos minutos e intenta de nuevo."
+red = "No se pudo confirmar el cambio. Revisa tu conexión y vuelve a intentarlo; si ya se guardó, verás el enlace vigente."
+pendiente = "El directorio aún no recibe enlaces. Intenta de nuevo cuando esté habilitado."
+copiar = "No se pudo copiar. Abre Unirse y copia el enlace desde la barra de direcciones."
+compartir = "No se pudo compartir el grupo. Intenta copiar su dirección desde la barra del navegador."
+pegar = "No se pudo leer el portapapeles. Pega el enlace directamente en el campo."
+datos = "No se pudo cargar el directorio. Revisa tu conexión y recarga la página."
+
+
+[grupos.info]
+titulo = "Cómo funciona"
+oferta = "Los grupos y materias vienen de la oferta {periodo} del SAES."
+consulta = "Antes de agregar un enlace, se revisa en vivo que nadie lo haya subido."
+primero = "Si dos personas agregan a la vez, se conserva el primer enlace."
+reemplazo = "Reemplazar pide un motivo y deja registro del enlace anterior."
+privacidad = "No se guardan datos personales."
+
+
+[grupos.reglas]
+titulo = "Reglas"
+antes = "Antes de usar el directorio"
+aceptar = "De acuerdo"
+guia = "Ver la guía"
+abuso = "El mal uso se puede revertir y bloquear."
+clases = "Solo grupos de materias de la UPIITA."
+funcionan = "No reemplaces enlaces que funcionan."
+dominio = "El enlace debe ser de chat.whatsapp.com."

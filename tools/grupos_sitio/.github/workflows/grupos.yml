@@ -1,0 +1,40 @@
+name: Grupos de WhatsApp
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+concurrency:
+  group: grupos
+  cancel-in-progress: false
+permissions:
+  contents: write
+  pages: write
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Consultar y preparar cambios
+        env:
+          GRUPOS_CLAVE: ${{ secrets.GRUPOS_CLAVE }}
+        run: python3 .github/grupos/publicar.py
+      - name: Guardar cambios
+        id: guardar
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          shopt -s nullglob
+          archivos=(sate/grupos/enlaces*.json)
+          if [ ${#archivos[@]} -eq 0 ]; then exit 0; fi
+          git add -- "${archivos[@]}"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Actualizar enlaces de grupos de WhatsApp'
+          git push || { git pull --rebase && git push; }
+          echo 'cambio=1' >> "$GITHUB_OUTPUT"
+      # Respaldo: los push con GITHUB_TOKEN podrían no reconstruir Pages (modo legacy).
+      - name: Pedir reconstrucción de Pages
+        if: steps.guardar.outputs.cambio == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST repos/${{ github.repository }}/pages/builds || true

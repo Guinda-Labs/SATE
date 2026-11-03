@@ -1,0 +1,48 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: MIT; GENERADO desde web/sate/grupos.html y contenido/textos/es.toml -->
+<html lang="es"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; script-src-attr 'none'; base-uri 'self'; form-action 'self'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com; frame-src 'none';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{grupos.pagina.titulo}}</title><meta name="description" content="{{grupos.pagina.descripcion}}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wdth,wght@0,62.5..100,300..800;1,100,400&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<style>/*__SATE_ESTILO__*/</style><link rel="stylesheet" href="../componentes.css"><link rel="stylesheet" href="../encabezado.css"><link rel="stylesheet" href="grupos.css">
+</head><body class="grupos-pagina">
+<div class="sate-contenedor">
+<!--__GRUPOS_ENCABEZADO__-->
+<main>
+<div id="prueba" class="sate-aviso" data-estado="aviso" hidden>{{grupos.pagina.prueba}}</div>
+<h2>{{grupos.pagina.titulo}}</h2><p class="tenue">{{grupos.pagina.subtitulo}}</p>
+<div class="grupos-estado"><details id="estado"><summary></summary><div><p id="proxima"></p><p>{{grupos.pagina.inmediato}}</p></div></details><span id="global" class="tenue"></span></div>
+<section id="tus-materias" class="grupos-seccion" aria-label="{{grupos.tus.titulo}}" hidden></section>
+<section class="filtros" aria-label="{{grupos.filtro.titulo}}">
+<label class="buscador tramite-campo"><span class="sr-only">{{grupos.filtro.grupo}}</span><input id="buscar" type="search" autocomplete="off" placeholder="{{grupos.filtro.ejemplo}}"></label>
+<div id="carrera" class="tramite-chips" role="group" aria-label="{{grupos.filtro.carrera}}"></div>
+<div class="grupos-opciones"><label class="tramite-campo"><span id="nivel-etiqueta">{{grupos.filtro.nivel}}</span><select id="semestre"><option value="">{{grupos.filtro.todos}}</option></select></label><label class="tramite-campo">{{grupos.filtro.turno}}<select id="turno"><option value="">{{grupos.filtro.todos}}</option><option value="M">{{grupos.filtro.matutino}}</option><option value="V">{{grupos.filtro.vespertino}}</option><option value="X">{{grupos.filtro.mixto}}</option></select></label>
+<label class="grupos-interruptor"><input id="sin" type="checkbox" role="switch">{{grupos.filtro.sin}}</label><button id="limpiar" class="sate-enlace" type="button" hidden>{{grupos.filtro.limpiar}}</button></div>
+</section>
+<p id="resultados" class="tenue" role="status" tabindex="-1"></p><div id="lista"></div>
+<footer>
+<a id="abrir-reglas" class="sate-enlace" href="#reglas" aria-haspopup="dialog" aria-controls="reglas">{{grupos.reglas.titulo}}</a></footer>
+</main>
+<dialog id="guia" class="sate-modal" aria-labelledby="guia-titulo">
+<div class="sate-modal__cab"><h2 id="guia-titulo" class="sate-modal__titulo" tabindex="-1">{{grupos.guia.titulo}}</h2><button id="cerrar-guia" class="sate-btn" type="button">{{grupos.guia.cerrar}}</button></div>
+<div class="sate-modal__cuerpo">
+<div class="grupos-guia-tarjetas">
+<article><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><h3>{{grupos.guia.buscar}}</h3><p>{{grupos.guia.buscar_texto}}</p></article>
+<article><svg viewBox="0 0 24 24"><path d="M3 5h18M6 12h12M9 19h6"/></svg><h3>{{grupos.guia.filtrar}}</h3><p>{{grupos.guia.filtrar_texto}}</p></article>
+<article><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v5m10-5v5M3 11h18m-13 5h8"/></svg><h3>{{grupos.guia.tus}}</h3><p>{{grupos.guia.tus_texto}}</p></article>
+<article><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg><h3>{{grupos.guia.agregar}}</h3><p>{{grupos.guia.agregar_texto}}</p></article>
+<article><svg viewBox="0 0 24 24"><path d="M20 7a9 9 0 0 0-15-1L3 9m0-6v6h6m-5 8a9 9 0 0 0 15 1l2-3m0 6v-6h-6"/></svg><h3>{{grupos.guia.reemplazar}}</h3><p>{{grupos.guia.reemplazar_texto}}</p></article>
+<article><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="3"/><circle cx="19" cy="5" r="3"/><circle cx="19" cy="19" r="3"/><path d="m8 11 8-5M8 13l8 5"/></svg><h3>{{grupos.guia.compartir}}</h3><p>{{grupos.guia.compartir_texto}}</p></article>
+</div><p class="tenue">{{grupos.guia.estado}}</p>
+<section aria-labelledby="guia-reglas"><h3 id="guia-reglas">{{grupos.reglas.titulo}}</h3><!--__GRUPOS_REGLAS__--></section></div>
+</dialog>
+<dialog id="reglas" class="sate-modal sate-modal--pequeno" aria-labelledby="reglas-titulo">
+<div class="sate-modal__cab"><h2 id="reglas-titulo" class="sate-modal__titulo" tabindex="-1" autofocus>{{grupos.reglas.antes}}</h2></div>
+<div class="sate-modal__cuerpo"><!--__GRUPOS_REGLAS__--></div>
+<div class="sate-modal__pie"><a id="reglas-guia" class="sate-enlace" href="#guia">{{grupos.reglas.guia}}</a><button id="aceptar-reglas" class="sate-btn sate-btn--primario" type="button">{{grupos.reglas.aceptar}}</button></div>
+</dialog>
+<div id="mensaje" class="grupos-aviso sate-aviso" data-estado="info" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+</div>
+<script>/*__GRUPOS__*/</script><script src="grupos.js" defer></script></body></html>

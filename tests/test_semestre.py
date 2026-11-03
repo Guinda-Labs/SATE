@@ -331,6 +331,8 @@ class DatosSinPaginas(unittest.TestCase):
         out = {}
         for p in sorted(base.rglob('*')):
             rel = p.relative_to(base).as_posix()
+            if rel in ('dist/sate/grupos/oferta.json', 'dist/sate/grupos/config.json'):
+                continue
             if p.is_file() and '/datos/' not in rel and not rel.startswith(('dist/qa', 'qa-')) and rel not in ('dist/sw.js', 'dist/sw-manifest.json'):
                 out[rel] = hashlib.sha256(p.read_bytes()).hexdigest()
         return out
