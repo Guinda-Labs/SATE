@@ -106,7 +106,7 @@ const mapa=leer('web/sate/mapa.js');
 assert.match(mapa,/open\?`<div class="tl-more">\$\{inspParts\(k\)\.l2\}/,
   'la ficha expandida de Lista consume el mismo bloque de relaciones');
 assert.match(nucleo,/const l2=.*SATE\.relacionesHtml\(SATE\.relacionesMateria\(k\)\)/,
-  'la ficha compartida incluye Lo que aplica y Trámite para situaciones del perfil');
+  'la ficha compartida incluye Fundamento y Trámite para situaciones del perfil');
 assert.match(leer('web/sate/horarios.js'),/SATE\.relacionesHtml\(SATE\.relacionesMateria\(k\)\)/,
   'Horarios usa las mismas relaciones de la ficha');
 const unidadesConfig=JSON.parse(leer('data/sate.json')).unidades;

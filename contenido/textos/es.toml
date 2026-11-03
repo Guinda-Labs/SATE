@@ -2230,7 +2230,7 @@ procedimientos = "Participación en procedimientos"
 "denuncias" = "Canales de denuncia"
 "denuncias_pendiente" = "La instancia responsable y los canales de denuncia institucional o anónima están por confirmar."
 [sate.puentes]
-aplica = "Lo que aplica:"
+aplica = "Fundamento:"
 tramite = "Trámite:"
 llenar = "Llenar en la Ventanilla ›"
 entrega = "Se entrega en"
